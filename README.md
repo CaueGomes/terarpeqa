@@ -18,23 +18,19 @@ As permissões são aplicadas no servidor, não no navegador.
 
 ## Rodando localmente
 
-Você precisa de um Postgres acessível. Copie `.env.example` para `.env` e preencha:
+Não precisa instalar Postgres. Com `DATABASE_URL=pglite:./.pgdata` (o padrão do
+`.env.example`), o banco sobe dentro do próprio processo da API e grava em
+`.pgdata/`. Para zerar tudo, apague essa pasta.
+
+```bash
+npm install
+```
 
 ```bash
 cp .env.example .env
 ```
 
-Gere o segredo da sessão:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-```
-
-Instale e suba os dois processos (em terminais separados):
-
-```bash
-npm install
-```
+Suba os dois processos, em terminais separados:
 
 ```bash
 npm run dev:api
@@ -45,12 +41,27 @@ npm run dev
 ```
 
 O front fica em `http://localhost:5173` e repassa `/api` para a porta 3001.
+Lembre que **a primeira conta criada vira a mestra**, inclusive localmente.
 
 Para rodar igual à produção, num processo só:
 
 ```bash
 npm run build && npm start
 ```
+
+## Depurando no VS Code
+
+O `.vscode/launch.json` já vem pronto. Abra a aba **Run and Debug** (`Ctrl+Shift+D`)
+e escolha:
+
+- **API (servidor)** — sobe o Express com o banco junto. Breakpoints nas rotas
+  e nas consultas funcionam direto.
+- **Front (navegador)** — inicia o Vite e abre o Chrome anexado. Breakpoints em
+  `src/App.jsx` param no código-fonte, via sourcemap.
+- **Tudo (API + front)** — as duas coisas de uma vez.
+
+A API não reinicia sozinha ao salvar: use o botão de restart do depurador
+(`Ctrl+Shift+F5`). O front tem hot reload normal do Vite.
 
 ## Deploy no Render
 
