@@ -1,13 +1,13 @@
 databases:
   - name: terarpeqa-db
     databaseName: terarpeqa
-    plan: basic-256mb
+    plan: free
 
 services:
   - type: web
     name: terarpeqa
     runtime: node
-    plan: starter
+    plan: free
     # --include=dev garante o Vite e o Tailwind mesmo com NODE_ENV=production.
     buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start

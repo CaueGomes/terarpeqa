@@ -64,3 +64,19 @@ no passo a passo do projeto. Variáveis necessárias:
 | `NODE_ENV` | `production` — liga o cookie `secure` |
 
 O schema é criado sozinho no primeiro start.
+
+### Atenção ao plano free
+
+O `render.yaml` usa o plano gratuito nos dois serviços. Duas consequências:
+
+- O serviço **hiberna após 15 minutos** sem acesso. O primeiro acesso depois
+  disso demora cerca de 1 minuto para responder.
+- O **Postgres gratuito é apagado pelo Render após 30 dias**. Quando isso
+  acontecer, as contas e fichas vão junto.
+
+Antes do prazo acabar, faça backup ou migre para um plano pago:
+
+```bash
+pg_dump "$DATABASE_URL" > backup.sql
+```
+
