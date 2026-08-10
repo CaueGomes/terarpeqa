@@ -69,6 +69,19 @@ async function requireAuth(req, res, next) {
    content:*      -> todos leem, só o mestre escreve
    char:<dono>:*  -> o dono e o mestre leem/escrevem
    qualquer outra -> negada                                        */
+/* Fichas de deus, inimigo e especial só existem pela mão da mestra. A checagem
+   mora aqui porque o navegador não é confiável: esconder o botão não impede
+   ninguém de montar a requisição na mão. */
+const TIPOS_FICHA_MESTRE = ['deus', 'inimigo', 'especial'];
+
+function ehFichaDeMestre(value) {
+  try {
+    return TIPOS_FICHA_MESTRE.includes(JSON.parse(value)?.tipoFicha);
+  } catch {
+    return false; // valor que não é JSON não é ficha
+  }
+}
+
 function canAccess(account, key, write) {
   if (key.startsWith('content:')) return write ? account.isMaster : true;
   if (key.startsWith('char:')) {
@@ -181,6 +194,9 @@ app.put(
     const key = req.params[0];
     if (!canAccess(req.account, key, true)) return res.status(403).json({ error: 'Sem permissão.' });
     const value = String(req.body?.value ?? '');
+    if (key.startsWith('char:') && !req.account.isMaster && ehFichaDeMestre(value)) {
+      return res.status(403).json({ error: 'Só a conta mestra cria fichas de deus, inimigo ou especial.' });
+    }
     await pool.query(
       `INSERT INTO kv (key, value, updated_at) VALUES ($1, $2, $3)
        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at`,

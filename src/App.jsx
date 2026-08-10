@@ -92,6 +92,36 @@ Seu próximo passo é descobrir seu lugar na tríade da corte!` },
 /* Fallback interno para fichas sem classe válida — nunca aparece na seleção. */
 const SEM_CLASSE = { id: 'sem_classe', nome: 'Sem classe', deus: '—', dominio: '—', cor: '#6f6291', corClara: '#a89bc9', frase: '' };
 
+/* ---------- fichas da mestra ----------
+   Deuses, inimigos e personagens especiais não seguem as mecânicas dos
+   jogadores: vida, sanidade e mana começam em 0 e são digitadas na mão, os
+   atributos não têm teto, nenhuma perícia vem travada e nenhum catálogo é
+   pré-carregado — só os botões de criar. Só a conta mestra pode criá-las,
+   e o servidor recusa a gravação de quem não for mestra. */
+const TIPOS_MESTRE = [
+  { id: 'deus', nome: 'Deus', plural: 'Deuses', cor: '#D4AF37', corClara: '#F0DD9A', Icon: Crown,
+    deus: '—', dominio: 'Divino', escolheClasse: false, poderesUnificados: true,
+    frase: 'Uma divindade de Terarpeqá. Tudo nesta ficha é definido por você.' },
+  { id: 'inimigo', nome: 'Inimigo', plural: 'Inimigos', cor: '#e0577a', corClara: '#f5aabc', Icon: Skull,
+    deus: '—', dominio: 'Ameaça', escolheClasse: false, poderesUnificados: false,
+    frase: 'Uma ameaça do mundo. Sem classe, sem teto e sem catálogo.' },
+  { id: 'especial', nome: 'Especial', plural: 'Especiais', cor: '#7c5cff', corClara: '#c3b3ff', Icon: Sparkles,
+    deus: '—', dominio: 'Exceção', escolheClasse: true, poderesUnificados: false,
+    frase: 'Segue uma classe do universo, mas nenhuma das regras dela.' },
+];
+const TIPOS_MESTRE_IDS = TIPOS_MESTRE.map((t) => t.id);
+const tipoMestre = (char) => TIPOS_MESTRE.find((t) => t.id === char?.tipoFicha) || null;
+/* Ficha livre = sem fórmulas, sem tetos e sem catálogo. */
+const fichaLivre = (char) => !!tipoMestre(char);
+
+/* Identidade visual da ficha: a classe escolhida quando existe (o caso do
+   especial), senão o próprio tipo de ficha da mestra, senão o vazio. */
+function originDaFicha(char) {
+  const classe = ORIGINS.find((o) => o.id === char?.originId);
+  if (classe) return classe;
+  return tipoMestre(char) || SEM_CLASSE;
+}
+
 /* ---------- subdivisões ---------- */
 const TIPOS_ANIMAL = [
   { id: 'mistico', nome: 'Animal místico', desc: 'Seu uso é muito restrito, e seu laço é complexo, assim como seu ser.' },
@@ -527,6 +557,7 @@ const ARMAS_CATALOGO = [
 
 /* Mesmo filtro das habilidades: classe + subdivisão quando houver */
 function armaDisponivel(arma, char) {
+  if (fichaLivre(char)) return false; // ficha da mestra nasce sem catálogo
   if (arma.classe !== char.originId) return false;
   if (arma.subdivisaoId && arma.subdivisaoId !== char.subdivisaoId) return false;
   return true;
@@ -616,6 +647,7 @@ const ARMADURAS_CATALOGO = [
 ];
 
 function armaduraDisponivel(a, char) {
+  if (fichaLivre(char)) return false;
   if (a.classe !== char.originId) return false;
   if (a.subdivisaoId && a.subdivisaoId !== char.subdivisaoId) return false;
   if (a.animalTipo && a.animalTipo !== char.subdivisaoAnimalTipo) return false;
@@ -715,6 +747,7 @@ const ITENS_CATALOGO = [
 
 /* Mesmo filtro do resto, com trava extra de nível para itens de mago negro. */
 function itemDisponivel(item, char) {
+  if (fichaLivre(char)) return false;
   if (item.classe !== char.originId) return false;
   if (item.subdivisaoId && item.subdivisaoId !== char.subdivisaoId) return false;
   if (item.animalTipo && item.animalTipo !== char.subdivisaoAnimalTipo) return false;
@@ -847,6 +880,7 @@ const HABILIDADES_CATALOGO = [
 /* Uma habilidade está disponível se bate com a classe e, quando houver,
    com a subdivisão ou o tipo de animal-laço do personagem. */
 function habilidadeDisponivel(hab, char) {
+  if (fichaLivre(char)) return false;
   if (hab.classe !== char.originId) return false;
   if (hab.subdivisaoId && hab.subdivisaoId !== char.subdivisaoId) return false;
   if (hab.animalTipo && hab.animalTipo !== char.subdivisaoAnimalTipo) return false;
@@ -970,6 +1004,8 @@ const TIERS = [
 
 /* Junta todas as perícias que o personagem ganha de graça pela classe + subdivisão */
 function periciasConcedidas(char) {
+  // Fichas da mestra não herdam perícia nenhuma: as 23 ficam livres.
+  if (fichaLivre(char)) return new Set();
   const out = new Set(PERICIAS_POR_CLASSE[char.originId] || []);
   const listas = [...TIPOS_AGUA, ...FAMILIAS_GUERREIRO, ...REPUTACOES_PIRATA, ...CORTE_NASCIDO_OURO];
   const sub = listas.find((x) => x.id === char.subdivisaoId);
@@ -1051,6 +1087,17 @@ function markColor(origin, char) {
   return origin.cor;
 }
 function computeRecursos(char) {
+  /* Ficha da mestra ignora as fórmulas: cada máximo nasce em 0 e é digitado
+     na mão, sem teto. A mana existe sempre, mesmo sem classe de mago. */
+  if (fichaLivre(char)) {
+    const r = char.recursosLivres || {};
+    return {
+      vidaMax: Math.max(0, Number(r.vidaMax) || 0),
+      sanidadeMax: Math.max(0, Number(r.sanidadeMax) || 0),
+      manaMax: Math.max(0, Number(r.manaMax) || 0),
+      vidaNivel: 0, sanidadeNivel: 0,
+    };
+  }
   const nivel = char.originId === 'mago' ? (char.subdivisaoNivel || NIVEL_MIN) : 0;
   /* O nível mágico dá um ganho extra: até +12 de vida e +15 de sanidade no nível 100. */
   const vidaNivel = Math.floor(nivel / 25) * 3;
@@ -1344,7 +1391,7 @@ function AuthScreen({ onAuth }) {
    ============================================================ */
 
 function CharacterCard({ char, onOpen, showOwner }) {
-  const origin = ORIGINS.find((o) => o.id === char.originId) || SEM_CLASSE;
+  const origin = originDaFicha(char);
   const der = computeRecursos(char);
   return (
     <button onClick={() => onOpen(char)} className="text-left rounded-xl p-4 transition-transform hover:-translate-y-0.5 w-full"
@@ -1357,7 +1404,13 @@ function CharacterCard({ char, onOpen, showOwner }) {
         <div className="min-w-0">
           <p className="truncate" style={{ fontFamily: F.display, color: G.text, fontWeight: 700 }}>{char.name || 'Sem nome'}</p>
           <p className="text-xs" style={{ color: origin.cor, fontFamily: F.body }}>
-            {origin.nome} · {origin.deus}{showOwner ? ` · @${char.owner}` : ''}
+            {(() => {
+              const tipo = tipoMestre(char);
+              /* No especial mostramos o tipo e a classe escolhida. */
+              if (tipo) return tipo.escolheClasse && char.originId ? `${tipo.nome} · ${origin.nome}` : tipo.nome;
+              return `${origin.nome} · ${origin.deus}`;
+            })()}
+            {showOwner ? ` · @${char.owner}` : ''}
           </p>
         </div>
       </div>
@@ -1451,6 +1504,13 @@ function DicionariosScreen({ onBack, inicial }) {
 }
 
 function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios }) {
+  /* A mestra ganha uma aba por tipo de ficha; os jogadores nem veem isso. */
+  const [aba, setAba] = useState('jogadores');
+  const abaAtiva = account.isMaster ? aba : 'jogadores';
+  const tipoAtivo = TIPOS_MESTRE.find((t) => t.id === abaAtiva) || null;
+  const visiveis = characters.filter((c) => (c.tipoFicha || 'jogadores') === (tipoAtivo ? tipoAtivo.id : 'jogadores'));
+  const corAba = tipoAtivo ? tipoAtivo.cor : G.accent;
+
   return (
     <div className="min-h-screen w-full" style={{ background: G.bg }}>
       <style>{FONTS}</style>
@@ -1481,13 +1541,25 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
           </div>
         </div>
 
+        {account.isMaster && (
+          <div className="flex gap-1 mb-4 overflow-x-auto border-b" style={{ borderColor: G.border }}>
+            {[{ id: 'jogadores', plural: 'Jogadores', cor: G.accent }, ...TIPOS_MESTRE].map((t) => (
+              <button key={t.id} onClick={() => setAba(t.id)} className="px-3 py-2 text-sm whitespace-nowrap transition-colors"
+                style={{ fontFamily: F.body, color: abaAtiva === t.id ? t.cor : G.muted,
+                  borderBottom: `2px solid ${abaAtiva === t.id ? t.cor : 'transparent'}`, fontWeight: abaAtiva === t.id ? 600 : 400 }}>
+                {t.plural}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-4">
           <h2 style={{ fontFamily: F.display, color: G.text, fontSize: '1.25rem', fontWeight: 700 }}>
-            {account.isMaster ? 'Todos os personagens' : 'Seus personagens'}
+            {tipoAtivo ? tipoAtivo.plural : account.isMaster ? 'Todos os personagens' : 'Seus personagens'}
           </h2>
-          <button onClick={onNew} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-opacity hover:opacity-90"
-            style={{ background: G.accent, color: '#111', fontFamily: F.body, fontWeight: 600 }}>
-            <Plus size={16} /> Novo personagem
+          <button onClick={() => onNew(tipoAtivo ? tipoAtivo.id : null)} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-opacity hover:opacity-90"
+            style={{ background: corAba, color: '#111', fontFamily: F.body, fontWeight: 600 }}>
+            <Plus size={16} /> {tipoAtivo ? `Novo ${tipoAtivo.nome.toLowerCase()}` : 'Novo personagem'}
           </button>
         </div>
 
@@ -1495,19 +1567,24 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
           <div className="flex items-center gap-2 py-16 justify-center" style={{ color: G.muted }}>
             <Loader2 size={18} className="animate-spin" /> Carregando fichas…
           </div>
-        ) : characters.length === 0 ? (
+        ) : visiveis.length === 0 ? (
           <div className="rounded-2xl p-10 text-center" style={{ background: G.surface, border: `1px dashed ${G.border}` }}>
-            <Sparkles size={28} style={{ color: G.accent }} className="mx-auto mb-3" />
-            <p style={{ fontFamily: F.body, color: G.text }}>Nenhum personagem ainda.</p>
-            <p className="text-sm mt-1" style={{ fontFamily: F.body, color: G.muted }}>Toda história de Terarpeqá começa com uma marca. Crie a sua.</p>
-            <button onClick={onNew} className="mt-5 rounded-lg px-4 py-2 text-sm transition-opacity hover:opacity-90"
-              style={{ background: G.accent, color: '#111', fontFamily: F.body, fontWeight: 600 }}>
-              Criar meu primeiro personagem
+            {tipoAtivo ? <tipoAtivo.Icon size={28} style={{ color: corAba }} className="mx-auto mb-3" />
+              : <Sparkles size={28} style={{ color: G.accent }} className="mx-auto mb-3" />}
+            <p style={{ fontFamily: F.body, color: G.text }}>
+              {tipoAtivo ? `Nenhuma ficha de ${tipoAtivo.nome.toLowerCase()} ainda.` : 'Nenhum personagem ainda.'}
+            </p>
+            <p className="text-sm mt-1" style={{ fontFamily: F.body, color: G.muted }}>
+              {tipoAtivo ? tipoAtivo.frase : 'Toda história de Terarpeqá começa com uma marca. Crie a sua.'}
+            </p>
+            <button onClick={() => onNew(tipoAtivo ? tipoAtivo.id : null)} className="mt-5 rounded-lg px-4 py-2 text-sm transition-opacity hover:opacity-90"
+              style={{ background: corAba, color: '#111', fontFamily: F.body, fontWeight: 600 }}>
+              {tipoAtivo ? `Criar ${tipoAtivo.nome.toLowerCase()}` : 'Criar meu primeiro personagem'}
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {characters.map((c) => <CharacterCard key={c.id} char={c} onOpen={onOpen} showOwner={account.isMaster} />)}
+            {visiveis.map((c) => <CharacterCard key={c.id} char={c} onOpen={onOpen} showOwner={account.isMaster} />)}
           </div>
         )}
       </div>
@@ -1521,11 +1598,22 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
 
 const STEPS = ['Classe', 'Origem', 'Herança', 'Perfil', 'Atributos', 'Perícias', 'Equipamento', 'Revisão'];
 
-function Stepper({ step, origin }) {
+/* Os passos mudam conforme o tipo de ficha. Deuses e inimigos não escolhem
+   classe, então nem passam por Classe/Origem/Herança; o especial escolhe a
+   classe mas a subdivisão é opcional. O wizard decide o que renderizar pelo
+   NOME do passo, não pelo índice — assim as listas podem divergir sem risco. */
+function stepsDaFicha(draft) {
+  const tipo = tipoMestre(draft);
+  if (!tipo) return STEPS;
+  if (tipo.escolheClasse) return ['Classe', 'Herança', 'Perfil', 'Atributos', 'Perícias', 'Poderes', 'Revisão'];
+  return ['Perfil', 'Atributos', 'Perícias', 'Poderes', 'Revisão'];
+}
+
+function Stepper({ step, origin, steps = STEPS }) {
   const color = origin ? origin.cor : V.brand;
   return (
     <div className="flex sm:flex-col gap-2 sm:gap-1 mb-6 sm:mb-0 sm:w-40 sm:pr-6 sm:border-r overflow-x-auto" style={{ borderColor: V.border }}>
-      {STEPS.map((s, i) => (
+      {steps.map((s, i) => (
         <div key={s} className="flex items-center gap-2 sm:py-2 shrink-0">
           <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0"
             style={{ fontFamily: F.mono, background: i < step ? color : i === step ? `${color}33` : '#231a3d',
@@ -1749,10 +1837,11 @@ function DicionarioInline({ classeId, color }) {
   );
 }
 
-function StepPerfil({ draft, setDraft, origin }) {
+function StepPerfil({ draft, setDraft, origin, comNome }) {
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const color = origin?.cor || V.brand;
+  const livre = fichaLivre(draft);
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
@@ -1767,6 +1856,13 @@ function StepPerfil({ draft, setDraft, origin }) {
 
   return (
     <div>
+      {comNome && (
+        <Field label="Nome">
+          <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+            className="w-full rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500" style={inputStyle}
+            placeholder="Como esta ficha é chamada?" />
+        </Field>
+      )}
       <div className="flex items-center gap-4 mb-6">
         <button onClick={() => fileRef.current?.click()} className="w-20 h-20 rounded-full flex items-center justify-center shrink-0 overflow-hidden transition-opacity hover:opacity-90"
           style={{ background: `${color}22`, border: `2px dashed ${color}88` }}>
@@ -1789,7 +1885,7 @@ function StepPerfil({ draft, setDraft, origin }) {
           placeholder="De onde ele veio, como a marca apareceu, o que já viveu até aqui..." />
       </Field>
 
-      {origin && <DicionarioInline classeId={origin.id} color={color} />}
+      {origin && !livre && <DicionarioInline classeId={origin.id} color={color} />}
     </div>
   );
 }
@@ -1800,6 +1896,52 @@ function StepAtributos({ draft, setDraft, origin }) {
   const remaining = ATTR_POOL - spent;
   const der = computeRecursos(draft);
   const color = origin?.cor || V.brand;
+
+  /* Ficha da mestra: sem pool e sem teto, e os máximos de vida, sanidade e
+     mana são digitados aqui em vez de saírem das fórmulas. */
+  if (fichaLivre(draft)) {
+    const setAttr = (key, val) =>
+      setDraft({ ...draft, attributes: { ...attrs, [key]: Math.max(0, Math.floor(Number(val) || 0)) } });
+    const setRec = (key, val) =>
+      setDraft({ ...draft, recursosLivres: { ...(draft.recursosLivres || {}), [key]: Math.max(0, Math.floor(Number(val) || 0)) } });
+
+    return (
+      <div>
+        <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+          <Sliders size={13} /> Atributos
+        </p>
+        <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+          Sem pontos para distribuir e sem valor máximo — digite o que quiser.
+        </p>
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {ATTRS.map((a) => (
+            <Field key={a.key} label={a.nome} hint={a.desc}>
+              <input type="number" min="0" value={attrs[a.key]} onChange={(e) => setAttr(a.key, e.target.value)}
+                className="w-full rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-violet-500" style={inputStyle} />
+            </Field>
+          ))}
+        </div>
+
+        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Recursos</p>
+        <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+          Começam em 0 e não seguem nenhuma fórmula. A mana aparece na ficha mesmo sem classe de mago.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { campo: 'vidaMax', label: 'Vida máxima', cor: '#e0577a' },
+            { campo: 'sanidadeMax', label: 'Sanidade máxima', cor: '#caa24a' },
+            { campo: 'manaMax', label: 'Mana máxima', cor: '#8FB4F5' },
+          ].map(({ campo, label, cor }) => (
+            <Field key={campo} label={label}>
+              <input type="number" min="0" value={draft.recursosLivres?.[campo] ?? 0} onChange={(e) => setRec(campo, e.target.value)}
+                className="w-full rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-violet-500"
+                style={{ ...inputStyle, color: cor, fontFamily: F.mono }} />
+            </Field>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const bump = (key, delta) => {
     const val = attrs[key] + delta;
@@ -1945,8 +2087,10 @@ function StepPericias({ draft, setDraft, origin }) {
       <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
       <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
         Destreinado 0 · Treinado +5 · Veterano +10 · Expert +15. "Dados" mostra o atributo
-        usado na rolagem; ele não entra no bônus. Perícias marcadas com estrela vêm da sua
-        classe ou subdivisão e não podem cair abaixo de Treinado.
+        usado na rolagem; ele não entra no bônus.{' '}
+        {fichaLivre(draft)
+          ? 'Nesta ficha as 23 estão livres: nenhuma vem travada por classe ou subdivisão.'
+          : 'Perícias marcadas com estrela vêm da sua classe ou subdivisão e não podem cair abaixo de Treinado.'}
       </p>
       <TabelaPericias char={draft} onChangeGrau={changeGrau} onChangeOutros={changeOutros} color={color} />
     </div>
@@ -2005,7 +2149,7 @@ function ContentPicker({ title, Icon, items, selectedIds, onToggle, color, canCr
 }
 
 /* Seletor de armas: catálogo filtrado por classe/subdivisão, com peso */
-function SeletorArmas({ char, selecionadas, onToggle, color, customs, canCreate, onCreate }) {
+function SeletorArmas({ char, selecionadas, onToggle, color, customs, canCreate, onCreate, vazio }) {
   const [showForm, setShowForm] = useState(false);
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -2067,7 +2211,7 @@ function SeletorArmas({ char, selecionadas, onToggle, color, customs, canCreate,
 
       {disponiveis.length === 0 && customs.length === 0 ? (
         <p className="text-xs italic mb-2" style={{ color: '#6f6291', fontFamily: F.body }}>
-          Nenhuma arma disponível ainda — escolha sua subdivisão primeiro.
+          {vazio || 'Nenhuma arma disponível ainda — escolha sua subdivisão primeiro.'}
         </p>
       ) : (
         <div className="space-y-2 mb-3">
@@ -2118,7 +2262,9 @@ function SeletorItens({ char, inventario, onAdd, onRemove, color }) {
   const [novaQtd, setNovaQtd] = useState('1');
   const [novaDesc, setNovaDesc] = useState('');
   const [novoPeso, setNovoPeso] = useState('0');
-  const [mostrarCatalogo, setMostrarCatalogo] = useState(true);
+  /* Ficha da mestra não tem catálogo, então nem abre a seção. */
+  const semCatalogo = fichaLivre(char);
+  const [mostrarCatalogo, setMostrarCatalogo] = useState(!semCatalogo);
 
   const disponiveis = ITENS_CATALOGO.filter((i) => itemDisponivel(i, char));
   const bloqueados = ITENS_CATALOGO.filter((i) => i.classe === char.originId && itemBloqueadoPorNivel(i, char));
@@ -2138,10 +2284,12 @@ function SeletorItens({ char, inventario, onAdd, onRemove, color }) {
         <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
           <Backpack size={13} /> Itens
         </p>
-        <button onClick={() => setMostrarCatalogo((v) => !v)} className="text-xs rounded-full px-2.5 py-1"
-          style={{ color, border: `1px solid ${color}88`, fontFamily: F.body }}>
-          {mostrarCatalogo ? 'Ocultar catálogo' : 'Ver catálogo'}
-        </button>
+        {!semCatalogo && (
+          <button onClick={() => setMostrarCatalogo((v) => !v)} className="text-xs rounded-full px-2.5 py-1"
+            style={{ color, border: `1px solid ${color}88`, fontFamily: F.body }}>
+            {mostrarCatalogo ? 'Ocultar catálogo' : 'Ver catálogo'}
+          </button>
+        )}
       </div>
 
       {mostrarCatalogo && (
@@ -2229,7 +2377,7 @@ function SeletorItens({ char, inventario, onAdd, onRemove, color }) {
 }
 
 /* Seletor de armadura: só uma equipada por vez */
-function SeletorArmadura({ char, equipada, onSelect, color, customs, canCreate, onCreate }) {
+function SeletorArmadura({ char, equipada, onSelect, color, customs, canCreate, onCreate, vazio }) {
   const [showForm, setShowForm] = useState(false);
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -2272,7 +2420,7 @@ function SeletorArmadura({ char, equipada, onSelect, color, customs, canCreate, 
 
       {disponiveis.length === 0 && customs.length === 0 ? (
         <p className="text-xs italic mb-2" style={{ color: '#6f6291', fontFamily: F.body }}>
-          Nenhuma armadura disponível ainda — escolha sua subdivisão primeiro.
+          {vazio || 'Nenhuma armadura disponível ainda — escolha sua subdivisão primeiro.'}
         </p>
       ) : (
         <div className="space-y-2 mb-3">
@@ -2308,7 +2456,8 @@ function SeletorArmadura({ char, equipada, onSelect, color, customs, canCreate, 
 }
 
 /* Seletor de habilidades: mostra só as que a classe/subdivisão do personagem libera */
-function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canCreate, onCreate }) {
+function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canCreate, onCreate,
+  titulo = 'Habilidades', rotuloCriar = 'Criar habilidade própria', vazio }) {
   const [showForm, setShowForm] = useState(false);
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -2347,12 +2496,12 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
   return (
     <div className="mb-6">
       <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
-        <Flame size={13} /> Habilidades
+        <Flame size={13} /> {titulo}
       </p>
 
       {disponiveis.length === 0 && customs.length === 0 ? (
         <p className="text-xs italic mb-2" style={{ color: '#6f6291', fontFamily: F.body }}>
-          Nenhuma habilidade disponível ainda — escolha sua subdivisão primeiro.
+          {vazio || 'Nenhuma habilidade disponível ainda — escolha sua subdivisão primeiro.'}
         </p>
       ) : (
         <div className="space-y-2 mb-3">
@@ -2364,7 +2513,7 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
       {canCreate && (
         <>
           <button onClick={() => setShowForm((v) => !v)} className="text-xs flex items-center gap-1 rounded-full px-2.5 py-1.5" style={{ color, border: `1px solid ${color}88`, fontFamily: F.body }}>
-            <Plus size={12} /> Criar habilidade própria
+            <Plus size={12} /> {rotuloCriar}
           </button>
           {showForm && (
             <div className="rounded-lg p-3 mt-2" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
@@ -2382,7 +2531,7 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
 }
 
 /* Seletor de feitiços: catálogo com bloqueio por nível + feitiços criados pela mestra */
-function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, canCreate, onCreate }) {
+function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, canCreate, onCreate, semCatalogo }) {
   const [showForm, setShowForm] = useState(false);
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -2434,17 +2583,26 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, 
         <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
           <Wand2 size={13} /> Feitiços
         </p>
-        <span className="text-xs rounded-full px-2.5 py-1" style={{ fontFamily: F.mono, background: '#171029', border: `1px solid ${V.border}`, color }}>
-          nível {nivelMagico}
-        </span>
+        {!semCatalogo && (
+          <span className="text-xs rounded-full px-2.5 py-1" style={{ fontFamily: F.mono, background: '#171029', border: `1px solid ${V.border}`, color }}>
+            nível {nivelMagico}
+          </span>
+        )}
       </div>
 
-      <div className="space-y-2 mb-3">
-        {FEITICOS_CATALOGO.map((f) => (
-          <Card key={f.id} f={f} bloqueado={!feiticoLiberado(f, nivelMagico)} />
-        ))}
-        {customs.map((f) => <Card key={f.id} f={f} bloqueado={false} custom />)}
-      </div>
+      {/* Ficha da mestra não puxa o catálogo nem o bloqueio por nível mágico. */}
+      {semCatalogo && customs.length === 0 ? (
+        <p className="text-xs italic mb-2" style={{ color: '#6f6291', fontFamily: F.body }}>
+          Nada criado ainda — use o botão abaixo.
+        </p>
+      ) : (
+        <div className="space-y-2 mb-3">
+          {!semCatalogo && FEITICOS_CATALOGO.map((f) => (
+            <Card key={f.id} f={f} bloqueado={!feiticoLiberado(f, nivelMagico)} />
+          ))}
+          {customs.map((f) => <Card key={f.id} f={f} bloqueado={false} custom />)}
+        </div>
+      )}
 
       {canCreate && (
         <>
@@ -2468,6 +2626,8 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, 
 
 function StepEquipamento({ draft, setDraft, origin, account, content, onCreateContent }) {
   const color = origin?.cor || V.brand;
+  const tipo = tipoMestre(draft);
+  const unificado = !!tipo?.poderesUnificados; // deus: habilidades e feitiços viram um só
   const { armas, feiticos, loading: loadingContent } = content;
   const createContent = (type, data) => onCreateContent(type, data);
 
@@ -2480,19 +2640,24 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
   return (
     <div>
       <SeletorArmas char={draft} selecionadas={draft.armas} onToggle={toggleArma} color={color}
-        customs={armas} canCreate={account?.isMaster} onCreate={(d) => createContent('arma', d)} />
+        customs={armas} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
+        canCreate={account?.isMaster} onCreate={(d) => createContent('arma', d)} />
       <SeletorArmadura char={draft} equipada={draft.armaduraId}
         onSelect={(id) => setDraft({ ...draft, armaduraId: id })} color={color}
-        customs={content.armaduras || []} canCreate={account?.isMaster} onCreate={(d) => createContent('armadura', d)} />
+        customs={content.armaduras || []} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
+        canCreate={account?.isMaster} onCreate={(d) => createContent('armadura', d)} />
 
       <SeletorHabilidades char={draft} selecionadas={draft.habilidades || []}
         onToggle={(id) => setDraft({ ...draft, habilidades: (draft.habilidades || []).includes(id) ? draft.habilidades.filter((x) => x !== id) : [...(draft.habilidades || []), id] })}
         color={color} customs={content.habilidades || []}
+        titulo={unificado ? 'Poderes Divinos' : 'Habilidades'}
+        rotuloCriar={unificado ? 'Criar poder divino' : 'Criar habilidade própria'}
+        vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
         canCreate={account?.isMaster} onCreate={(d) => createContent('habilidade', d)} />
 
       {origin?.id === 'mago' && (
         <SeletorFeiticos nivelMagico={draft.subdivisaoNivel || NIVEL_MIN} selecionados={draft.feiticos}
-          onToggle={toggleFeitico} color={color} customs={feiticos}
+          onToggle={toggleFeitico} color={color} customs={feiticos} semCatalogo={!!tipo}
           canCreate={account?.isMaster} onCreate={(d) => createContent('feitico', d)} />
       )}
 
@@ -2509,7 +2674,7 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
    ============================================================ */
 
 function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
-  const origin = ORIGINS.find((o) => o.id === char.originId) || SEM_CLASSE;
+  const origin = originDaFicha(char);
   const der = computeRecursos(char);
   const mColor = markColor(origin, char);
 
@@ -2533,7 +2698,14 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
         </div>
         <div>
           <h3 style={{ fontFamily: F.display, color: V.text, fontWeight: 700, fontSize: '1.4rem' }}>{char.name || 'Personagem sem nome'}</h3>
-          <p className="text-sm" style={{ color: origin.cor, fontFamily: F.body }}>{origin.nome} · filho(a) de {origin.deus}</p>
+          <p className="text-sm" style={{ color: origin.cor, fontFamily: F.body }}>
+            {(() => {
+              const tipo = tipoMestre(char);
+              if (!tipo) return `${origin.nome} · filho(a) de ${origin.deus}`;
+              /* Deus e inimigo não têm classe; o especial mostra a que escolheu. */
+              return tipo.escolheClasse && char.originId ? `${tipo.nome} · ${origin.nome}` : tipo.nome;
+            })()}
+          </p>
           {subdivLabel() && <p className="text-xs mt-0.5" style={{ color: V.muted, fontFamily: F.body }}>{subdivLabel()}</p>}
         </div>
       </div>
@@ -2643,12 +2815,17 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
    Wizard container
    ============================================================ */
 
-function blankDraft(owner) {
+function blankDraft(owner, tipoFicha = null) {
+  /* Na ficha da mestra tudo começa em 0 — atributos inclusive — para ela
+     montar do zero, sem herdar nenhum valor inicial das regras de jogador. */
+  const livre = !!tipoFicha;
+  const base = livre ? 0 : ATTR_BASE;
   return {
-    id: null, owner, name: '', originId: null,
+    id: null, owner, name: '', originId: null, tipoFicha,
     subdivisaoId: null, subdivisaoAnimalTipo: null, subdivisaoNivel: NIVEL_MIN,
     fotoUrl: '', historia: '',
-    attributes: { intelecto: ATTR_BASE, psique: ATTR_BASE, fisico: ATTR_BASE, motoras: ATTR_BASE },
+    attributes: { intelecto: base, psique: base, fisico: base, motoras: base },
+    recursosLivres: { vidaMax: 0, sanidadeMax: 0, manaMax: 0 },
     pericias: {}, periciasOutros: {}, recursos: { vidaBonusLore: 0, sanidadeBonusLore: 0 },
     atual: { vida: null, sanidade: null, mana: null },
     defesas: { equipamento: 0, defesaOutros: 0, bloqueioOutros: 0, esquivaOutros: 0 },
@@ -2657,12 +2834,12 @@ function blankDraft(owner) {
   };
 }
 
-function CreateWizard({ account, onSave, onCancel }) {
+function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
   const [step, setStep] = useState(0);
-  const [draft, setDraft] = useState(blankDraft(account.username));
+  const [draft, setDraft] = useState(blankDraft(account.username, tipoFicha));
   const [saving, setSaving] = useState(false);
   const [content, setContent] = useState({ armas: [], armaduras: [], feiticos: [], habilidades: [], loading: true });
-  const origin = ORIGINS.find((o) => o.id === draft.originId);
+  const origin = ORIGINS.find((o) => o.id === draft.originId) || tipoMestre(draft);
 
   const loadContent = useCallback(async () => {
     setContent((c) => ({ ...c, loading: true }));
@@ -2689,13 +2866,22 @@ function CreateWizard({ account, onSave, onCancel }) {
     setDraft((d) => ({ ...d, [campo]: [...(d[campo] || []), id] }));
   };
 
+  const steps = stepsDaFicha(draft);
+  const passo = steps[step];
+  const ultimo = step >= steps.length - 1;
+  const tipo = tipoMestre(draft);
+  /* Quando não há passo de Classe, o nome é pedido no Perfil. */
+  const nomeNoPerfil = !steps.includes('Classe');
+
   const canNext =
-    step === 0 ? draft.name.trim().length > 0 && draft.originId :
-    step === 2 ? (
+    passo === 'Classe' ? draft.name.trim().length > 0 && !!draft.originId :
+    passo === 'Perfil' && nomeNoPerfil ? draft.name.trim().length > 0 :
+    /* No especial a subdivisão é opcional; nas fichas de jogador continua obrigatória. */
+    passo === 'Herança' ? (tipo ? true : (
       origin?.subdivisao === 'animal' ? !!draft.subdivisaoAnimalTipo :
       origin?.subdivisao === 'nivel' ? true :
       !!draft.subdivisaoId
-    ) : true;
+    )) : true;
 
   const save = async () => { setSaving(true); await onSave(draft); setSaving(false); };
 
@@ -2707,25 +2893,34 @@ function CreateWizard({ account, onSave, onCancel }) {
           <ArrowLeft size={14} /> Voltar ao painel
         </button>
         <div className="flex flex-col sm:flex-row gap-6">
-          <Stepper step={step} origin={origin} />
+          <Stepper step={step} origin={origin} steps={steps} />
           <div className="flex-1 min-w-0">
+            {tipo && (
+              <div className="rounded-xl px-4 py-3 mb-4 flex items-center gap-2.5" style={{ background: `${tipo.cor}14`, border: `1px solid ${tipo.cor}66` }}>
+                <tipo.Icon size={16} color={tipo.cor} />
+                <div className="min-w-0">
+                  <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>Ficha de {tipo.nome.toLowerCase()}</p>
+                  <p className="text-xs" style={{ fontFamily: F.body, color: V.muted }}>{tipo.frase}</p>
+                </div>
+              </div>
+            )}
             <div className="rounded-2xl p-5 sm:p-6 mb-4" style={{ background: V.surface, border: `1px solid ${V.border}` }}>
-              {step === 0 && <StepClasse draft={draft} setDraft={setDraft} />}
-              {step === 1 && <StepNarrativa draft={draft} origin={origin} />}
-              {step === 2 && <StepHeranca draft={draft} setDraft={setDraft} origin={origin} />}
-              {step === 3 && <StepPerfil draft={draft} setDraft={setDraft} origin={origin} />}
-              {step === 4 && <StepAtributos draft={draft} setDraft={setDraft} origin={origin} />}
-              {step === 5 && <StepPericias draft={draft} setDraft={setDraft} origin={origin} />}
-              {step === 6 && <StepEquipamento draft={draft} setDraft={setDraft} origin={origin} account={account} content={content} onCreateContent={createContent} />}
-              {step === 7 && <CharacterSheetBody char={draft} contentIndex={content} />}
+              {passo === 'Classe' && <StepClasse draft={draft} setDraft={setDraft} />}
+              {passo === 'Origem' && <StepNarrativa draft={draft} origin={origin} />}
+              {passo === 'Herança' && <StepHeranca draft={draft} setDraft={setDraft} origin={origin} />}
+              {passo === 'Perfil' && <StepPerfil draft={draft} setDraft={setDraft} origin={origin} comNome={nomeNoPerfil} />}
+              {passo === 'Atributos' && <StepAtributos draft={draft} setDraft={setDraft} origin={origin} />}
+              {passo === 'Perícias' && <StepPericias draft={draft} setDraft={setDraft} origin={origin} />}
+              {(passo === 'Equipamento' || passo === 'Poderes') && <StepEquipamento draft={draft} setDraft={setDraft} origin={origin} account={account} content={content} onCreateContent={createContent} />}
+              {passo === 'Revisão' && <CharacterSheetBody char={draft} contentIndex={content} />}
             </div>
             <div className="flex items-center justify-between">
               <button onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}
                 className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm disabled:opacity-30" style={{ color: V.muted, fontFamily: F.body, border: `1px solid ${V.border}` }}>
                 <ChevronLeft size={15} /> Voltar
               </button>
-              {step < STEPS.length - 1 ? (
-                <button onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))} disabled={!canNext}
+              {!ultimo ? (
+                <button onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))} disabled={!canNext}
                   className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm disabled:opacity-40 transition-opacity hover:opacity-90"
                   style={{ background: origin ? origin.cor : V.brand, color: '#0d0a16', fontFamily: F.body, fontWeight: 600 }}>
                   Continuar <ChevronRight size={15} />
@@ -2749,15 +2944,20 @@ function CreateWizard({ account, onSave, onCancel }) {
    Ficha salva (com edição pela mestra)
    ============================================================ */
 
-/* A aba de Feitiços só existe para magos. */
+/* A aba de Feitiços só existe para magos. Nos deuses, habilidades e feitiços
+   se fundem numa aba só: Poderes Divinos. */
 function abasDaFicha(char) {
   const base = [
     { id: 'ficha', nome: 'Ficha' },
     { id: 'pericias', nome: 'Perícias' },
     { id: 'combate', nome: 'Combate' },
-    { id: 'habilidades', nome: 'Habilidades' },
   ];
-  if (char.originId === 'mago') base.push({ id: 'feiticos', nome: 'Feitiços' });
+  if (tipoMestre(char)?.poderesUnificados) {
+    base.push({ id: 'poderes', nome: 'Poderes Divinos' });
+  } else {
+    base.push({ id: 'habilidades', nome: 'Habilidades' });
+    if (char.originId === 'mago') base.push({ id: 'feiticos', nome: 'Feitiços' });
+  }
   base.push({ id: 'inventario', nome: 'Inventário' });
   return base;
 }
@@ -2875,7 +3075,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
   const [saving, setSaving] = useState(false);
   const [contentIndex, setContentIndex] = useState({ armas: [], armaduras: [], feiticos: [], habilidades: [] });
   const [tab, setTab] = useState('ficha');
-  const origin = ORIGINS.find((o) => o.id === char.originId) || SEM_CLASSE;
+  const origin = originDaFicha(char);
   const isOwner = account.username === char.owner;
   const canEdit = account.isMaster || isOwner;
 
@@ -2978,21 +3178,42 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               {ATTRS.map((a) => (
                 <Field key={a.key} label={a.nome}>
                   <input type="number" value={editDraft.attributes[a.key]}
-                    onChange={(e) => setEditDraft({ ...editDraft, attributes: { ...editDraft.attributes, [a.key]: clamp(Number(e.target.value) || 0, ATTR_MIN, ATTR_MAX) } })}
+                    onChange={(e) => setEditDraft({ ...editDraft, attributes: { ...editDraft.attributes,
+                      /* Ficha da mestra não tem teto de atributo. */
+                      [a.key]: fichaLivre(editDraft) ? Math.max(ATTR_MIN, Math.floor(Number(e.target.value) || 0)) : clamp(Number(e.target.value) || 0, ATTR_MIN, ATTR_MAX) } })}
                     className="w-full rounded-lg px-3 py-2 outline-none" style={inputStyle} />
                 </Field>
               ))}
             </div>
-            <Field label="Bônus de vida (lore) — atribuído pela mestra">
-              <input type="number" value={editDraft.recursos?.vidaBonusLore || 0}
-                onChange={(e) => setEditDraft({ ...editDraft, recursos: { ...editDraft.recursos, vidaBonusLore: Number(e.target.value) || 0 } })}
-                className="w-full rounded-lg px-3 py-2 outline-none" style={inputStyle} />
-            </Field>
-            <Field label="Bônus de sanidade (lore) — atribuído pela mestra">
-              <input type="number" value={editDraft.recursos?.sanidadeBonusLore || 0}
-                onChange={(e) => setEditDraft({ ...editDraft, recursos: { ...editDraft.recursos, sanidadeBonusLore: Number(e.target.value) || 0 } })}
-                className="w-full rounded-lg px-3 py-2 outline-none" style={inputStyle} />
-            </Field>
+            {fichaLivre(editDraft) ? (
+              /* Sem fórmula: os máximos são digitados direto, sem teto. */
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                {[
+                  { campo: 'vidaMax', label: 'Vida máxima', cor: '#e0577a' },
+                  { campo: 'sanidadeMax', label: 'Sanidade máxima', cor: '#caa24a' },
+                  { campo: 'manaMax', label: 'Mana máxima', cor: '#8FB4F5' },
+                ].map(({ campo, label, cor }) => (
+                  <Field key={campo} label={label}>
+                    <input type="number" min="0" value={editDraft.recursosLivres?.[campo] ?? 0}
+                      onChange={(e) => setEditDraft({ ...editDraft, recursosLivres: { ...(editDraft.recursosLivres || {}), [campo]: Math.max(0, Math.floor(Number(e.target.value) || 0)) } })}
+                      className="w-full rounded-lg px-3 py-2 outline-none" style={{ ...inputStyle, color: cor, fontFamily: F.mono }} />
+                  </Field>
+                ))}
+              </div>
+            ) : (
+              <>
+                <Field label="Bônus de vida (lore) — atribuído pela mestra">
+                  <input type="number" value={editDraft.recursos?.vidaBonusLore || 0}
+                    onChange={(e) => setEditDraft({ ...editDraft, recursos: { ...editDraft.recursos, vidaBonusLore: Number(e.target.value) || 0 } })}
+                    className="w-full rounded-lg px-3 py-2 outline-none" style={inputStyle} />
+                </Field>
+                <Field label="Bônus de sanidade (lore) — atribuído pela mestra">
+                  <input type="number" value={editDraft.recursos?.sanidadeBonusLore || 0}
+                    onChange={(e) => setEditDraft({ ...editDraft, recursos: { ...editDraft.recursos, sanidadeBonusLore: Number(e.target.value) || 0 } })}
+                    className="w-full rounded-lg px-3 py-2 outline-none" style={inputStyle} />
+                </Field>
+              </>
+            )}
             <Field label="História">
               <textarea value={editDraft.historia} onChange={(e) => setEditDraft({ ...editDraft, historia: e.target.value })} className="w-full rounded-lg px-3 py-2.5 outline-none resize-none" style={{ ...inputStyle, minHeight: '120px' }} />
             </Field>
@@ -3041,20 +3262,26 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               <SeletorArmas char={editDraft} selecionadas={editDraft.armas || []}
                 onToggle={(id) => setEditDraft({ ...editDraft, armas: (editDraft.armas || []).includes(id) ? editDraft.armas.filter((x) => x !== id) : [...(editDraft.armas || []), id] })}
                 color={origin.cor} customs={contentIndex.armas || []}
+                vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
                 canCreate={account.isMaster} onCreate={(d) => createAndAttach('arma', d)} />
               <SeletorArmadura char={editDraft} equipada={editDraft.armaduraId}
                 onSelect={(id) => setEditDraft({ ...editDraft, armaduraId: id })} color={origin.cor}
-                customs={contentIndex.armaduras || []} canCreate={account.isMaster} onCreate={(d) => createAndAttach('armadura', d)} />
+                customs={contentIndex.armaduras || []}
+                vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
+                canCreate={account.isMaster} onCreate={(d) => createAndAttach('armadura', d)} />
 
               <SeletorHabilidades char={editDraft} selecionadas={editDraft.habilidades || []}
                 onToggle={(id) => setEditDraft({ ...editDraft, habilidades: (editDraft.habilidades || []).includes(id) ? editDraft.habilidades.filter((x) => x !== id) : [...(editDraft.habilidades || []), id] })}
                 color={origin.cor} customs={contentIndex.habilidades || []}
+                titulo={tipoMestre(editDraft)?.poderesUnificados ? 'Poderes Divinos' : 'Habilidades'}
+                rotuloCriar={tipoMestre(editDraft)?.poderesUnificados ? 'Criar poder divino' : 'Criar habilidade própria'}
+                vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
                 canCreate={account.isMaster} onCreate={(d) => createAndAttach('habilidade', d)} />
 
               {editDraft.originId === 'mago' && (
                 <SeletorFeiticos nivelMagico={editDraft.subdivisaoNivel || NIVEL_MIN} selecionados={editDraft.feiticos || []}
                   onToggle={(id) => setEditDraft({ ...editDraft, feiticos: (editDraft.feiticos || []).includes(id) ? editDraft.feiticos.filter((x) => x !== id) : [...(editDraft.feiticos || []), id] })}
-                  color={origin.cor} customs={contentIndex.feiticos}
+                  color={origin.cor} customs={contentIndex.feiticos} semCatalogo={fichaLivre(editDraft)}
                   canCreate={account.isMaster} onCreate={(d) => createAndAttach('feitico', d)} />
               )}
             </div>
@@ -3129,6 +3356,14 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               catalogo={[...HABILIDADES_CATALOGO, ...(contentIndex.habilidades || [])]}
               color={origin.cor} vazio="Nenhuma habilidade escolhida." />
           )}
+          {tab === 'poderes' && (
+            /* Deuses: uma lista só, juntando o que foi criado como habilidade
+               e como feitiço, para não dividir o poder divino em duas abas. */
+            <ListaConteudo titulo="Poderes Divinos" Icon={Flame}
+              ids={[...(char.habilidades || []), ...(char.feiticos || [])]}
+              catalogo={[...HABILIDADES_CATALOGO, ...(contentIndex.habilidades || []), ...FEITICOS_CATALOGO, ...(contentIndex.feiticos || [])]}
+              color={origin.cor} vazio="Nenhum poder divino criado ainda." />
+          )}
           {tab === 'feiticos' && (
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -3183,6 +3418,7 @@ export default function App() {
   const [loadingChars, setLoadingChars] = useState(false);
   const [viewingChar, setViewingChar] = useState(null);
   const [dicionarioInicial, setDicionarioInicial] = useState('geral');
+  const [novoTipo, setNovoTipo] = useState(null); // deus, inimigo, especial ou null
 
   const loadCharacters = useCallback(async (acc) => {
     setLoadingChars(true);
@@ -3244,7 +3480,7 @@ export default function App() {
   }
 
   if (screen === 'auth' || !account) return <AuthScreen onAuth={handleAuth} />;
-  if (screen === 'create') return <CreateWizard account={account} onSave={handleSaveDraft} onCancel={() => setScreen('dashboard')} />;
+  if (screen === 'create') return <CreateWizard account={account} tipoFicha={novoTipo} onSave={handleSaveDraft} onCancel={() => setScreen('dashboard')} />;
   if (screen === 'dicionarios') return <DicionariosScreen onBack={() => setScreen('dashboard')} inicial={dicionarioInicial} />;
   if (screen === 'sheet' && viewingChar) {
     return <SheetScreen char={viewingChar} account={account} onBack={() => setScreen('dashboard')} onDelete={handleDelete} onSaveEdit={handleSaveDraft} />;
@@ -3252,7 +3488,12 @@ export default function App() {
 
   return (
     <Dashboard account={account} characters={characters} loading={loadingChars}
-      onNew={() => setScreen('create')} onOpen={(c) => { setViewingChar(c); setScreen('sheet'); }} onLogout={handleLogout}
+      onNew={(tipo) => {
+        // Só a mestra abre o wizard nos tipos especiais; o servidor recusa o resto.
+        setNovoTipo(account.isMaster && TIPOS_MESTRE_IDS.includes(tipo) ? tipo : null);
+        setScreen('create');
+      }}
+      onOpen={(c) => { setViewingChar(c); setScreen('sheet'); }} onLogout={handleLogout}
       onDicionarios={() => { setDicionarioInicial('geral'); setScreen('dicionarios'); }} />
   );
 }
