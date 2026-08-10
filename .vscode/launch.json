@@ -8,23 +8,31 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/server/index.js",
+      "cwd": "${workspaceFolder}",
       "envFile": "${workspaceFolder}/.env",
       "console": "integratedTerminal",
       "restart": true,
       "skipFiles": ["<node_internals>/**", "${workspaceFolder}/node_modules/**"]
     },
     {
-      // Breakpoints no App.jsx, direto no código-fonte via sourcemap.
+      // Sobe o Vite e, quando ele anuncia a URL, abre o Chrome já anexado ao
+      // depurador. Breakpoints em src/App.jsx param no código-fonte.
+      // NO_COLOR mantém a saída limpa para o padrão abaixo casar.
       "name": "Front (navegador)",
-      "type": "chrome",
+      "type": "node",
       "request": "launch",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "front (vite)",
-      "sourceMapPathOverrides": {
-        "webpack:///./src/*": "${workspaceFolder}/src/*",
-        "/src/*": "${workspaceFolder}/src/*"
-      }
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "console": "internalConsole",
+      "env": { "NO_COLOR": "1" },
+      "serverReadyAction": {
+        "pattern": "Local:\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome",
+        "webRoot": "${workspaceFolder}"
+      },
+      "skipFiles": ["<node_internals>/**"]
     }
   ],
   "compounds": [
