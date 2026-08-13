@@ -83,7 +83,16 @@ function ehFichaDeMestre(value) {
 }
 
 function canAccess(account, key, write) {
-  if (key.startsWith('content:')) return write ? account.isMaster : true;
+  if (key.startsWith('content:')) {
+    if (write) return account.isMaster;
+    /* content:<escopo>:<tipo>:<id> — o conteúdo criado numa ficha de deus,
+       inimigo ou especial não sai de lá. Esconder no navegador não bastava:
+       o jogador via tudo pedindo a lista direto na API. As chaves antigas
+       (content:<tipo>:<id>) seguem legíveis para não quebrar ficha existente. */
+    const escopo = key.split(':')[1];
+    if (TIPOS_FICHA_MESTRE.includes(escopo)) return account.isMaster;
+    return true;
+  }
   if (key.startsWith('char:')) {
     const owner = key.split(':')[1] || '';
     return account.isMaster || owner.toLowerCase() === account.usernameLc;

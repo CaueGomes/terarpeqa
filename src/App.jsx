@@ -113,6 +113,9 @@ const TIPOS_MESTRE_IDS = TIPOS_MESTRE.map((t) => t.id);
 const tipoMestre = (char) => TIPOS_MESTRE.find((t) => t.id === char?.tipoFicha) || null;
 /* Ficha livre = sem fórmulas, sem tetos e sem catálogo. */
 const fichaLivre = (char) => !!tipoMestre(char);
+/* Compartimento do conteúdo criado pela mestra. O que nasce numa ficha de deus
+   fica só entre deuses; jogador nunca enxerga nada além do próprio escopo. */
+const escopoDaFicha = (char) => char?.tipoFicha || 'jogador';
 
 /* Identidade visual da ficha: a classe escolhida quando existe (o caso do
    especial), senão o próprio tipo de ficha da mestra, senão o vazio. */
@@ -971,13 +974,13 @@ const ATTR_BASE = 1, ATTR_MIN = 0, ATTR_MAX = 5, ATTR_POOL = 4;
 const PERICIAS = [
   { id: 'logica', nome: 'Lógica', atributo: 'intelecto', desc: 'Deduza o mundo. Siga seus padrões.' },
   { id: 'dicionario_mental', nome: 'Dicionário mental', atributo: 'intelecto', desc: 'O quão bem você acumula as coisas que você viu/ouviu/pensou no passado.' },
-  { id: 'drama', nome: 'Drama', atributo: 'intelecto', desc: 'Faça do mundo um espetáculo só seu. Minta e saiba quando os outros estão mentindo.' },
+  { id: 'drama', nome: 'Drama', atributo: 'psique', desc: 'Faça do mundo um espetáculo só seu. Minta e saiba quando os outros estão mentindo.' },
   { id: 'cest_la_vie', nome: "C'est la vie", atributo: 'intelecto', desc: 'Você é o mestre do improviso.' },
   { id: 'esprit_de_corps', nome: 'Esprit de Corps', atributo: 'intelecto', desc: 'Conecte-se a cenas passadas, investigue. Solucione o caso.' },
   { id: 'apotheca', nome: 'Apotheca', atributo: 'intelecto', desc: 'Você conhece o corpo humano e sabe o que fazer para que não sucumba.' },
   { id: 'volicao', nome: 'Volição', atributo: 'psique', desc: 'Não se prenda às agarras do mundo. Faça simplesmente porque você quer.' },
   { id: 'imperio_interior', nome: 'Império interior', atributo: 'psique', desc: 'O quão bem você conhece as pessoas ao seu redor? (Ou a si mesmo?)' },
-  { id: 'autoridade', nome: 'Autoridade', atributo: 'psique', desc: 'Seja o mestre das marionetes. O mundo te ouve quando você quer.' },
+  { id: 'autoridade', nome: 'Autoridade', atributo: 'intelecto', desc: 'Seja o mestre das marionetes. O mundo te ouve quando você quer.' },
   { id: 'controle_demonios', nome: 'Controle seus demônios', atributo: 'psique', desc: 'Talvez você não esteja preparado para quando o pior acontece.' },
   { id: 'deja_vu', nome: 'Déjà-vu', atributo: 'psique', desc: 'Talvez você já tenha vivido este momento. E talvez essa sensação te dê as respostas que procura.' },
   { id: 'agape', nome: 'Ágape', atributo: 'psique', desc: 'Você ama incondicionalmente. E esse amor vai te salvar um dia.' },
@@ -1035,26 +1038,29 @@ function nomesPericias(ids) {
 
 /* ---------- defesa, bloqueio e esquiva (estrutura do CRIS) ----------
    Defesa  = 10 + Motoras + equipamento + outros  (valor passivo)
-   Bloqueio = 10 + Físico  + treino de Instrumento físico + equipamento + outros
-   Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros */
-const PERICIA_BLOQUEIO = 'instrumento_fisico';
+   Bloqueio = bônus de Resistência + equipamento + outros
+   Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros
+
+   O Bloqueio é o único sem base 10 e sem atributo: ele vale exatamente o que a
+   perícia Resistência somar. Quem tem +5 de Resistência bloqueia 5. */
+const PERICIA_BLOQUEIO = 'resistencia';
 const PERICIA_ESQUIVA = 'velocidade_reacao';
 
 function computeDefesas(char, armadurasCustom = []) {
   const d = char.defesas || {};
   const motoras = char.attributes?.motoras ?? 0;
-  const fisico = char.attributes?.fisico ?? 0;
   const equip = (d.equipamento || 0) + bonusArmadura(char, armadurasCustom);
 
-  const treinoBloqueio = TIERS[grauDaPericia(char, PERICIA_BLOQUEIO)].bonus;
+  const periciaResistencia = PERICIAS.find((p) => p.id === PERICIA_BLOQUEIO);
+  const bonusResistencia = periciaResistencia ? bonusDaPericia(char, periciaResistencia).total : 0;
   const treinoEsquiva = TIERS[grauDaPericia(char, PERICIA_ESQUIVA)].bonus;
 
   return {
     equipamento: equip,
     defesa: 10 + motoras + equip + (d.defesaOutros || 0),
     defesaPartes: { base: 10, atributo: motoras, equip, outros: d.defesaOutros || 0 },
-    bloqueio: 10 + fisico + treinoBloqueio + equip + (d.bloqueioOutros || 0),
-    bloqueioPartes: { base: 10, atributo: fisico, treino: treinoBloqueio, equip, outros: d.bloqueioOutros || 0 },
+    bloqueio: bonusResistencia + equip + (d.bloqueioOutros || 0),
+    bloqueioPartes: { base: 0, atributo: 0, resistencia: bonusResistencia, equip, outros: d.bloqueioOutros || 0 },
     esquiva: 10 + motoras + treinoEsquiva + equip + (d.esquivaOutros || 0),
     esquivaPartes: { base: 10, atributo: motoras, treino: treinoEsquiva, equip, outros: d.esquivaOutros || 0 },
   };
@@ -1161,6 +1167,63 @@ async function sList(prefix) {
     const r = await api(`/kv?prefix=${encodeURIComponent(prefix || '')}`);
     return (r && r.keys) || [];
   } catch (e) { return []; }
+}
+
+/* ---------- conteúdo criado pela mestra ----------
+   Cada item vive sob o escopo da ficha em que nasceu:
+
+     content:<escopo>:<tipo>:<id>     escopo = jogador | deus | inimigo | especial
+
+   É isso que impede o feitiço de um deus de aparecer na lista de um mago.
+   O servidor reforça a regra: quem não é mestra não lê os escopos de mestra.
+
+   As chaves antigas (content:<tipo>:<id>, sem escopo) continuam sendo lidas,
+   mas só para resolver o nome do que já está preso em alguma ficha — elas não
+   são mais oferecidas em lista nenhuma, porque não dá para saber de que ficha
+   vieram. Como o prefixo antigo não colide com o novo, os dois convivem. */
+const CAMPOS_CONTEUDO = { arma: 'armas', armadura: 'armaduras', feitico: 'feiticos', habilidade: 'habilidades' };
+const TIPOS_CONTEUDO = Object.keys(CAMPOS_CONTEUDO);
+const conteudoVazio = () => ({ armas: [], armaduras: [], feiticos: [], habilidades: [], legado: { armas: [], armaduras: [], feiticos: [], habilidades: [] } });
+
+async function lerConteudo(prefixo) {
+  const keys = await sList(prefixo);
+  const out = [];
+  for (const k of keys) {
+    const raw = await sGet(k);
+    if (raw) { try { out.push(JSON.parse(raw)); } catch (e) { /* item corrompido, ignora */ } }
+  }
+  return out;
+}
+
+async function carregarConteudo(escopo) {
+  const [doEscopo, legado] = await Promise.all([
+    Promise.all(TIPOS_CONTEUDO.map((t) => lerConteudo(`content:${escopo}:${t}:`))),
+    Promise.all(TIPOS_CONTEUDO.map((t) => lerConteudo(`content:${t}:`))),
+  ]);
+  const index = conteudoVazio();
+  TIPOS_CONTEUDO.forEach((t, i) => {
+    index[CAMPOS_CONTEUDO[t]] = doEscopo[i];
+    index.legado[CAMPOS_CONTEUDO[t]] = legado[i];
+  });
+  return index;
+}
+
+/* Catálogo de exibição: precisa resolver tudo que a ficha referencia, inclusive
+   os itens antigos sem escopo. */
+function catalogoDe(contentIndex, campo, base = []) {
+  return [...base, ...(contentIndex?.[campo] || []), ...(contentIndex?.legado?.[campo] || [])];
+}
+
+/* Lista dos seletores: o conteúdo do escopo da ficha, mais os itens antigos.
+
+   Os antigos não têm escopo, então não dá para saber a que ficha pertenciam.
+   A mestra continua enxergando todos eles (senão perderia o que já criou antes
+   desta separação); para o jogador só aparecem os que já estão presos na ficha
+   dele, para que ele consiga vê-los e a mestra consiga removê-los. */
+function customsDe(contentIndex, campo, idsPresos = [], ehMestra = false) {
+  const antigos = contentIndex?.legado?.[campo] || [];
+  const visiveis = ehMestra ? antigos : antigos.filter((x) => idsPresos.includes(x.id));
+  return [...(contentIndex?.[campo] || []), ...visiveis];
 }
 
 function resizeImage(file, maxDim = 360, quality = 0.82) {
@@ -2628,7 +2691,7 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
   const color = origin?.cor || V.brand;
   const tipo = tipoMestre(draft);
   const unificado = !!tipo?.poderesUnificados; // deus: habilidades e feitiços viram um só
-  const { armas, feiticos, loading: loadingContent } = content;
+  const { loading: loadingContent } = content;
   const createContent = (type, data) => onCreateContent(type, data);
 
   const toggleArma = (id) => setDraft({ ...draft, armas: draft.armas.includes(id) ? draft.armas.filter((x) => x !== id) : [...draft.armas, id] });
@@ -2640,16 +2703,16 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
   return (
     <div>
       <SeletorArmas char={draft} selecionadas={draft.armas} onToggle={toggleArma} color={color}
-        customs={armas} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
+        customs={customsDe(content, 'armas', draft.armas, account?.isMaster)} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
         canCreate={account?.isMaster} onCreate={(d) => createContent('arma', d)} />
       <SeletorArmadura char={draft} equipada={draft.armaduraId}
         onSelect={(id) => setDraft({ ...draft, armaduraId: id })} color={color}
-        customs={content.armaduras || []} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
+        customs={customsDe(content, 'armaduras', draft.armaduraId ? [draft.armaduraId] : [], account?.isMaster)} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
         canCreate={account?.isMaster} onCreate={(d) => createContent('armadura', d)} />
 
       <SeletorHabilidades char={draft} selecionadas={draft.habilidades || []}
         onToggle={(id) => setDraft({ ...draft, habilidades: (draft.habilidades || []).includes(id) ? draft.habilidades.filter((x) => x !== id) : [...(draft.habilidades || []), id] })}
-        color={color} customs={content.habilidades || []}
+        color={color} customs={customsDe(content, 'habilidades', draft.habilidades, account?.isMaster)}
         titulo={unificado ? 'Poderes Divinos' : 'Habilidades'}
         rotuloCriar={unificado ? 'Criar poder divino' : 'Criar habilidade própria'}
         vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
@@ -2657,7 +2720,7 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
 
       {origin?.id === 'mago' && (
         <SeletorFeiticos nivelMagico={draft.subdivisaoNivel || NIVEL_MIN} selecionados={draft.feiticos}
-          onToggle={toggleFeitico} color={color} customs={feiticos} semCatalogo={!!tipo}
+          onToggle={toggleFeitico} color={color} customs={customsDe(content, 'feiticos', draft.feiticos, account?.isMaster)} semCatalogo={!!tipo}
           canCreate={account?.isMaster} onCreate={(d) => createContent('feitico', d)} />
       )}
 
@@ -2778,19 +2841,19 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
           {char.armas?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Swords size={12} /> Armas</p>
-              {namesFrom(char.armas, [...ARMAS_CATALOGO, ...(contentIndex.armas || [])]).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
+              {namesFrom(char.armas, catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
           {char.habilidades?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Flame size={12} /> Habilidades</p>
-              {namesFrom(char.habilidades, [...HABILIDADES_CATALOGO, ...(contentIndex.habilidades || [])]).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
+              {namesFrom(char.habilidades, catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
           {char.feiticos?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Wand2 size={12} /> Feitiços</p>
-              {namesFrom(char.feiticos, [...FEITICOS_CATALOGO, ...contentIndex.feiticos]).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
+              {namesFrom(char.feiticos, catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
         </div>
@@ -2838,27 +2901,22 @@ function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState(blankDraft(account.username, tipoFicha));
   const [saving, setSaving] = useState(false);
-  const [content, setContent] = useState({ armas: [], armaduras: [], feiticos: [], habilidades: [], loading: true });
+  const [content, setContent] = useState({ ...conteudoVazio(), loading: true });
+  const escopo = tipoFicha || 'jogador';
   const origin = ORIGINS.find((o) => o.id === draft.originId) || tipoMestre(draft);
 
   const loadContent = useCallback(async () => {
     setContent((c) => ({ ...c, loading: true }));
-    const loadType = async (type) => {
-      const keys = await sList(`content:${type}:`, true);
-      const out = [];
-      for (const k of keys) { const raw = await sGet(k, true); if (raw) { try { out.push(JSON.parse(raw)); } catch (e) {} } }
-      return out;
-    };
-    const [armas, armaduras, feiticos, habilidades] = await Promise.all([loadType('arma'), loadType('armadura'), loadType('feitico'), loadType('habilidade')]);
-    setContent({ armas, armaduras, feiticos, habilidades, loading: false });
-  }, []);
+    const index = await carregarConteudo(escopo);
+    setContent({ ...index, loading: false });
+  }, [escopo]);
 
   useEffect(() => { loadContent(); }, [loadContent]);
 
   const createContent = async (type, data) => {
     const id = uid();
-    const item = { id, nome: data.nome, descricao: data.descricao, dano: data.dano, teste: data.teste, defesa: data.defesa, peso: data.peso || 0, createdAt: Date.now() };
-    await sSet(`content:${type}:${id}`, JSON.stringify(item), true);
+    const item = { id, nome: data.nome, descricao: data.descricao, dano: data.dano, teste: data.teste, defesa: data.defesa, peso: data.peso || 0, escopo, createdAt: Date.now() };
+    await sSet(`content:${escopo}:${type}:${id}`, JSON.stringify(item));
     await loadContent();
     // já vincula ao personagem que está sendo criado, senão o item some da ficha
     if (type === 'armadura') { setDraft((d) => ({ ...d, armaduraId: id })); return; }
@@ -3022,7 +3080,7 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
         <Bloco titulo="Defesa" valor={d.defesa} destaque
           formula={`10+${d.defesaPartes.atributo}${d.defesaPartes.equip ? `+${d.defesaPartes.equip}` : ''}${d.defesaPartes.outros ? `+${d.defesaPartes.outros}` : ''}`} />
         <Bloco titulo="Bloqueio" valor={d.bloqueio}
-          formula={`10+${d.bloqueioPartes.atributo}+${d.bloqueioPartes.treino}${d.bloqueioPartes.equip ? `+${d.bloqueioPartes.equip}` : ''}${d.bloqueioPartes.outros ? `+${d.bloqueioPartes.outros}` : ''}`} />
+          formula={`${d.bloqueioPartes.resistencia}${d.bloqueioPartes.equip ? `+${d.bloqueioPartes.equip}` : ''}${d.bloqueioPartes.outros ? `+${d.bloqueioPartes.outros}` : ''}`} />
         <Bloco titulo="Esquiva" valor={d.esquiva}
           formula={`10+${d.esquivaPartes.atributo}+${d.esquivaPartes.treino}${d.esquivaPartes.equip ? `+${d.esquivaPartes.equip}` : ''}${d.esquivaPartes.outros ? `+${d.esquivaPartes.outros}` : ''}`} />
       </div>
@@ -3037,8 +3095,8 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
       )}
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
         Defesa é o valor passivo (10 + Motoras + equipamento). Bloqueio e Esquiva são
-        reações — uma por rodada — somando Físico + Instrumento físico e Motoras +
-        Velocidade de reação, respectivamente.
+        reações — uma por rodada. O Bloqueio vale o bônus de <strong style={{ color }}>Resistência</strong>,
+        sem base 10 e sem atributo; a Esquiva soma 10 + Motoras + Velocidade de reação.
       </p>
     </div>
   );
@@ -3073,7 +3131,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
   const [editing, setEditing] = useState(false);
   const [editDraft, setEditDraft] = useState(char);
   const [saving, setSaving] = useState(false);
-  const [contentIndex, setContentIndex] = useState({ armas: [], armaduras: [], feiticos: [], habilidades: [] });
+  const [contentIndex, setContentIndex] = useState(conteudoVazio());
   const [tab, setTab] = useState('ficha');
   const origin = originDaFicha(char);
   const isOwner = account.username === char.owner;
@@ -3093,23 +3151,18 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
     setUploadingFoto(false);
   };
 
+  const escopo = escopoDaFicha(char);
+
   const reloadContent = useCallback(async () => {
-    const loadType = async (type) => {
-      const keys = await sList(`content:${type}:`, true);
-      const out = [];
-      for (const k of keys) { const raw = await sGet(k, true); if (raw) { try { out.push(JSON.parse(raw)); } catch (e) {} } }
-      return out;
-    };
-    const [armas, armaduras, feiticos, habilidades] = await Promise.all([loadType('arma'), loadType('armadura'), loadType('feitico'), loadType('habilidade')]);
-    setContentIndex({ armas, armaduras, feiticos, habilidades });
-  }, []);
+    setContentIndex(await carregarConteudo(escopo));
+  }, [escopo]);
 
   useEffect(() => { reloadContent(); }, [reloadContent, char.id]);
 
   const createAndAttach = async (type, data) => {
     const id = uid();
-    const item = { id, nome: data.nome, descricao: data.descricao, dano: data.dano, teste: data.teste, defesa: data.defesa, peso: data.peso || 0, createdAt: Date.now() };
-    await sSet(`content:${type}:${id}`, JSON.stringify(item), true);
+    const item = { id, nome: data.nome, descricao: data.descricao, dano: data.dano, teste: data.teste, defesa: data.defesa, peso: data.peso || 0, escopo, createdAt: Date.now() };
+    await sSet(`content:${escopo}:${type}:${id}`, JSON.stringify(item));
     await reloadContent();
     if (type === 'armadura') { setEditDraft((d) => ({ ...d, armaduraId: id })); return; }
     const campo = { arma: 'armas', feitico: 'feiticos', habilidade: 'habilidades' }[type];
@@ -3238,7 +3291,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               </div>
               <div className="rounded-lg p-3 mb-2" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
                 {(() => {
-                  const d = computeDefesas(editDraft, contentIndex.armaduras || []);
+                  const d = computeDefesas(editDraft, catalogoDe(contentIndex, 'armaduras'));
                   return (
                     <p className="text-xs" style={{ fontFamily: F.mono, color: V.muted }}>
                       Defesa <span style={{ color: origin.cor }}>{d.defesa}</span> ·
@@ -3261,18 +3314,18 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               <p className="text-xs uppercase tracking-widest mb-3 mt-3" style={{ color: V.muted, fontFamily: F.body }}>Equipamento</p>
               <SeletorArmas char={editDraft} selecionadas={editDraft.armas || []}
                 onToggle={(id) => setEditDraft({ ...editDraft, armas: (editDraft.armas || []).includes(id) ? editDraft.armas.filter((x) => x !== id) : [...(editDraft.armas || []), id] })}
-                color={origin.cor} customs={contentIndex.armas || []}
+                color={origin.cor} customs={customsDe(contentIndex, 'armas', editDraft.armas, account.isMaster)}
                 vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
                 canCreate={account.isMaster} onCreate={(d) => createAndAttach('arma', d)} />
               <SeletorArmadura char={editDraft} equipada={editDraft.armaduraId}
                 onSelect={(id) => setEditDraft({ ...editDraft, armaduraId: id })} color={origin.cor}
-                customs={contentIndex.armaduras || []}
+                customs={customsDe(contentIndex, 'armaduras', editDraft.armaduraId ? [editDraft.armaduraId] : [], account.isMaster)}
                 vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
                 canCreate={account.isMaster} onCreate={(d) => createAndAttach('armadura', d)} />
 
               <SeletorHabilidades char={editDraft} selecionadas={editDraft.habilidades || []}
                 onToggle={(id) => setEditDraft({ ...editDraft, habilidades: (editDraft.habilidades || []).includes(id) ? editDraft.habilidades.filter((x) => x !== id) : [...(editDraft.habilidades || []), id] })}
-                color={origin.cor} customs={contentIndex.habilidades || []}
+                color={origin.cor} customs={customsDe(contentIndex, 'habilidades', editDraft.habilidades, account.isMaster)}
                 titulo={tipoMestre(editDraft)?.poderesUnificados ? 'Poderes Divinos' : 'Habilidades'}
                 rotuloCriar={tipoMestre(editDraft)?.poderesUnificados ? 'Criar poder divino' : 'Criar habilidade própria'}
                 vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
@@ -3281,7 +3334,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               {editDraft.originId === 'mago' && (
                 <SeletorFeiticos nivelMagico={editDraft.subdivisaoNivel || NIVEL_MIN} selecionados={editDraft.feiticos || []}
                   onToggle={(id) => setEditDraft({ ...editDraft, feiticos: (editDraft.feiticos || []).includes(id) ? editDraft.feiticos.filter((x) => x !== id) : [...(editDraft.feiticos || []), id] })}
-                  color={origin.cor} customs={contentIndex.feiticos} semCatalogo={fichaLivre(editDraft)}
+                  color={origin.cor} customs={customsDe(contentIndex, 'feiticos', editDraft.feiticos, account.isMaster)} semCatalogo={fichaLivre(editDraft)}
                   canCreate={account.isMaster} onCreate={(d) => createAndAttach('feitico', d)} />
               )}
             </div>
@@ -3347,13 +3400,13 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
           )}
           {tab === 'combate' && (
             <div>
-              <PainelDefesas char={char} color={origin.cor} armadurasCustom={contentIndex.armaduras || []} />
-              <ListaArmas char={char} catalogo={[...ARMAS_CATALOGO, ...(contentIndex.armas || [])]} color={origin.cor} />
+              <PainelDefesas char={char} color={origin.cor} armadurasCustom={catalogoDe(contentIndex, 'armaduras')} />
+              <ListaArmas char={char} catalogo={catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO)} color={origin.cor} />
             </div>
           )}
           {tab === 'habilidades' && (
             <ListaConteudo titulo="Habilidades" Icon={Flame} ids={char.habilidades}
-              catalogo={[...HABILIDADES_CATALOGO, ...(contentIndex.habilidades || [])]}
+              catalogo={catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO)}
               color={origin.cor} vazio="Nenhuma habilidade escolhida." />
           )}
           {tab === 'poderes' && (
@@ -3361,7 +3414,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                e como feitiço, para não dividir o poder divino em duas abas. */
             <ListaConteudo titulo="Poderes Divinos" Icon={Flame}
               ids={[...(char.habilidades || []), ...(char.feiticos || [])]}
-              catalogo={[...HABILIDADES_CATALOGO, ...(contentIndex.habilidades || []), ...FEITICOS_CATALOGO, ...(contentIndex.feiticos || [])]}
+              catalogo={[...catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO), ...catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)]}
               color={origin.cor} vazio="Nenhum poder divino criado ainda." />
           )}
           {tab === 'feiticos' && (
@@ -3375,7 +3428,24 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                   nível {char.subdivisaoNivel}{char.subdivisaoNivel === NIVEL_MAX ? ' · mago negro' : ''}
                 </span>
               </div>
-              <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={char.feiticos} catalogo={[...FEITICOS_CATALOGO, ...contentIndex.feiticos]} color={origin.cor} vazio="Nenhum feitiço conhecido." />
+              {(() => {
+                const nivel = char.subdivisaoNivel || NIVEL_MIN;
+                const porNivel = 2 * Math.floor(nivel / 5);
+                return (
+                  <div className="rounded-lg p-3 mb-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
+                    <p className="text-xs uppercase tracking-widest mb-1.5" style={{ color: V.muted, fontFamily: F.body }}>Como funciona a DT</p>
+                    <p className="text-xs leading-relaxed" style={{ color: V.text, fontFamily: F.body }}>
+                      <strong style={{ color: origin.cor }}>10</strong> de base
+                      {' '}+{' '}<strong style={{ color: origin.cor }}>2</strong> a cada 5 níveis mágicos
+                      {' '}+{' '}<strong style={{ color: origin.cor }}>1</strong> para cada 10 do nível do feitiço.
+                    </p>
+                    <p className="text-xs mt-2" style={{ color: '#6f6291', fontFamily: F.mono }}>
+                      nível mágico {nivel} → 10 + {porNivel} = <span style={{ color: origin.corClara }}>{10 + porNivel}</span>, antes de somar o nível do feitiço
+                    </p>
+                  </div>
+                );
+              })()}
+              <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={char.feiticos} catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido." />
             </div>
           )}
           {tab === 'inventario' && (
