@@ -3430,13 +3430,13 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               </div>
               {(() => {
                 const nivel = char.subdivisaoNivel || NIVEL_MIN;
-                const porNivel = 2 * Math.floor(nivel / 5);
+                const porNivel = Math.floor(nivel / 5);
                 return (
                   <div className="rounded-lg p-3 mb-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
                     <p className="text-xs uppercase tracking-widest mb-1.5" style={{ color: V.muted, fontFamily: F.body }}>Como funciona a DT</p>
                     <p className="text-xs leading-relaxed" style={{ color: V.text, fontFamily: F.body }}>
                       <strong style={{ color: origin.cor }}>10</strong> de base
-                      {' '}+{' '}<strong style={{ color: origin.cor }}>2</strong> a cada 5 níveis mágicos
+                      {' '}+{' '}<strong style={{ color: origin.cor }}>1</strong> a cada 5 níveis mágicos
                       {' '}+{' '}<strong style={{ color: origin.cor }}>1</strong> para cada 10 do nível do feitiço.
                     </p>
                     <p className="text-xs mt-2" style={{ color: '#6f6291', fontFamily: F.mono }}>
