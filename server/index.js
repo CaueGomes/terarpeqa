@@ -18,6 +18,10 @@ if (!SESSION_SECRET) {
   process.exit(1);
 }
 
+/* Vira true quando o schema estiver preparado. Enquanto isso o servidor já
+   responde, para que o Render consiga acordar o serviço. */
+let schemaPronto = false;
+
 const COOKIE = 'terarpeqa_session';
 const COOKIE_OPTS = {
   httpOnly: true,
@@ -101,6 +105,14 @@ function canAccess(account, key, write) {
 }
 
 const asyncRoute = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+
+/* Enquanto o banco não responde, as rotas que dependem dele devolvem 503 em
+   vez de estourar. O /api/health fica de fora de propósito: é o health check
+   do Render, e precisa passar para o serviço subir mesmo com o banco lento. */
+app.use('/api', (req, res, next) => {
+  if (schemaPronto || req.path === '/health') return next();
+  res.status(503).json({ error: 'O banco ainda está subindo. Tente de novo em alguns segundos.' });
+});
 
 /* ---------------- auth ---------------- */
 
@@ -226,7 +238,7 @@ app.delete(
   })
 );
 
-app.get('/api/health', (req, res) => res.json({ ok: true }));
+app.get('/api/health', (req, res) => res.json({ ok: true, db: schemaPronto ? 'pronto' : 'iniciando' }));
 
 /* ---------------- front ---------------- */
 
@@ -241,11 +253,34 @@ app.use((err, req, res, _next) => {
   res.status(500).json({ error: 'Algo deu errado no servidor.' });
 });
 
-initSchema()
-  .then(() => {
-    app.listen(PORT, () => console.log(`[terarpeqa] ouvindo na porta ${PORT}`));
-  })
-  .catch((err) => {
-    console.error('[db] falha ao preparar o schema:', err);
-    process.exit(1);
-  });
+/* O servidor ouve imediatamente e prepara o schema em segundo plano, tentando
+   de novo até conseguir.
+
+   Antes ele só passava a ouvir depois do schema e encerrava o processo em
+   qualquer falha do banco. No plano gratuito do Render isso derrubava o
+   serviço ao acordar da hibernação, quando o Postgres ainda não respondia: o
+   processo morria, o roteador devolvia hibernate-wake-error e o site só
+   voltava com um deploy manual. */
+async function prepararSchema() {
+  for (let tentativa = 1; ; tentativa++) {
+    try {
+      await initSchema();
+      schemaPronto = true;
+      console.log('[db] schema pronto');
+      return;
+    } catch (err) {
+      const espera = Math.min(30000, 1000 * 2 ** Math.min(tentativa, 5));
+      console.error(`[db] tentativa ${tentativa} de preparar o schema falhou: ${err.message}. Nova tentativa em ${espera / 1000}s`);
+      await new Promise((r) => setTimeout(r, espera));
+    }
+  }
+}
+
+/* Um cliente ocioso derrubado pelo Postgres emite 'error' no pool; sem este
+   ouvinte o Node encerra o processo inteiro. */
+if (typeof pool.on === 'function') {
+  pool.on('error', (err) => console.error('[db] erro em conexão ociosa:', err.message));
+}
+
+app.listen(PORT, () => console.log(`[terarpeqa] ouvindo na porta ${PORT}`));
+prepararSchema();
