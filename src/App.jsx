@@ -159,7 +159,52 @@ const PERICIAS_POR_CLASSE = {
   druida: ['agape'],
   mago: ['savoir_faire', 'logica'],
 };
-const SUBDIV_VIDA_BONUS = { brutus: 10, predileto_mares: 8, ensanguentado: 8 };
+/* ---------- níveis de classe ----------
+   Todo personagem tem um nível de 1 a 10, independente da classe. Ele governa
+   vida, sanidade, mana e quantos pontos de atributo e de perícia o jogador tem
+   para distribuir. O mago mantém, além disso, o nível mágico (5 a 100), que
+   continua sendo o que libera feitiços e enche a mana. */
+const NIVEL_CLASSE_MIN = 1, NIVEL_CLASSE_MAX = 10;
+const nivelDaFicha = (char) => clamp(Number(char?.nivel) || NIVEL_CLASSE_MIN, NIVEL_CLASSE_MIN, NIVEL_CLASSE_MAX);
+
+/* Vida e sanidade por classe. Todas partem do mesmo total (58 pontos) e crescem
+   o mesmo tanto por nível (9), só que divididos de formas diferentes: quem
+   aguenta pancada tem menos cabeça, e vice-versa. Inspirado nos dados de vida
+   do D&D, onde o guerreiro sobe d10 e o mago d6. */
+const BALANCO_CLASSE = {
+  guerreiro:    { vidaBase: 34, vidaPorNivel: 6, sanBase: 24, sanPorNivel: 3 },
+  pirata:       { vidaBase: 32, vidaPorNivel: 5, sanBase: 26, sanPorNivel: 4 },
+  sereia:       { vidaBase: 30, vidaPorNivel: 5, sanBase: 28, sanPorNivel: 4 },
+  druida:       { vidaBase: 28, vidaPorNivel: 4, sanBase: 30, sanPorNivel: 5 },
+  nascido_ouro: { vidaBase: 26, vidaPorNivel: 4, sanBase: 32, sanPorNivel: 5 },
+  mago:         { vidaBase: 24, vidaPorNivel: 3, sanBase: 34, sanPorNivel: 6 },
+};
+const BALANCO_PADRAO = { vidaBase: 30, vidaPorNivel: 4, sanBase: 28, sanPorNivel: 4 };
+
+/* Subdivisões: cada uma soma 6 pontos, distribuídos conforme o foco. Quem foca
+   no corpo troca cabeça por casco; quem foca na mente faz o contrário. */
+const BALANCO_SUBDIVISAO = {
+  // druida — pelo tipo de animal-laço
+  mistico: { vida: 0, sanidade: 6 },
+  natural: { vida: 6, sanidade: 0 },
+  // sereia / tritão
+  sereia: { vida: 0, sanidade: 6 },
+  triton: { vida: 6, sanidade: 0 },
+  // guerreiro
+  brutus: { vida: 8, sanidade: -2 },
+  pritzk: { vida: 0, sanidade: 6 },
+  nerena: { vida: 4, sanidade: 2 },
+  // pirata
+  predileto_mares: { vida: 8, sanidade: -2 },
+  trapaceiro: { vida: 0, sanidade: 6 },
+  mestre_redemoinhos: { vida: 4, sanidade: 2 },
+  // nascido de ouro
+  bobo_corte: { vida: 0, sanidade: 6 },
+  dono_coroa: { vida: 2, sanidade: 4 },
+  ensanguentado: { vida: 8, sanidade: -2 },
+};
+const balancoSubdivisao = (char) =>
+  BALANCO_SUBDIVISAO[char?.subdivisaoId] || BALANCO_SUBDIVISAO[char?.subdivisaoAnimalTipo] || { vida: 0, sanidade: 0 };
 
 
 /* ---------- dicionários do universo e das classes ---------- */
@@ -1127,22 +1172,65 @@ function computeRecursos(char) {
       vidaNivel: 0, sanidadeNivel: 0,
     };
   }
-  const nivel = char.originId === 'mago' ? (char.subdivisaoNivel || NIVEL_MIN) : 0;
+  const nivelMagico = char.originId === 'mago' ? (char.subdivisaoNivel || NIVEL_MIN) : 0;
   /* O nível mágico dá um ganho extra: até +12 de vida e +15 de sanidade no nível 100. */
-  const vidaNivel = Math.floor(nivel / 25) * 3;
-  const sanidadeNivel = Math.floor(nivel / 20) * 3;
+  const vidaNivel = Math.floor(nivelMagico / 25) * 3;
+  const sanidadeNivel = Math.floor(nivelMagico / 20) * 3;
 
-  const vidaBase = 30;
-  const subBonus = SUBDIV_VIDA_BONUS[char.subdivisaoId] || 0;
+  const nivel = nivelDaFicha(char);
+  const classe = BALANCO_CLASSE[char.originId] || BALANCO_PADRAO;
+  const sub = balancoSubdivisao(char);
+  /* Cada nível acima do primeiro soma o ganho da classe. */
+  const degraus = nivel - NIVEL_CLASSE_MIN;
+
+  const vidaClasse = classe.vidaBase + classe.vidaPorNivel * degraus;
   const vidaBonusLore = char.recursos?.vidaBonusLore || 0;
-  const vidaMax = vidaBase + (char.attributes.fisico * 12) + subBonus + vidaNivel + vidaBonusLore;
+  const vidaMax = vidaClasse + sub.vida + (char.attributes.fisico * 12) + vidaNivel + vidaBonusLore;
 
+  const sanClasse = classe.sanBase + classe.sanPorNivel * degraus;
   const sanBonus = char.recursos?.sanidadeBonusLore || 0;
-  const sanidadeMax = 30 + (char.attributes.psique * 12) + sanidadeNivel + sanBonus;
+  const sanidadeMax = sanClasse + sub.sanidade + (char.attributes.psique * 12) + sanidadeNivel + sanBonus;
 
-  const manaMax = char.originId === 'mago' ? nivel : null;
-  return { vidaMax, sanidadeMax, manaMax, vidaNivel, sanidadeNivel };
+  /* Mana só existe para o mago: o nível mágico enche o reservatório e o nível
+     de classe dá um reforço. Ela só é gasta ao conjurar rituais. */
+  const manaMax = char.originId === 'mago' ? nivelMagico + 2 * nivel : null;
+
+  return {
+    vidaMax, sanidadeMax, manaMax, vidaNivel, sanidadeNivel,
+    nivel, vidaClasse, sanClasse, subVida: sub.vida, subSanidade: sub.sanidade,
+  };
 }
+
+/* ---------- pontos que o nível concede ----------
+   Atributos: 4 pontos no nível 1, +1 por nível (13 no nível 10).
+   Perícias: 4 degraus no nível 1, +2 por nível (22 no nível 10). Um degrau é
+   subir uma perícia um grau; as perícias dadas pela classe já vêm no Treinado
+   e não consomem nada. */
+const pontosDeAtributo = (char) => 3 + nivelDaFicha(char);
+const degrausDePericia = (char) => 4 + 2 * (nivelDaFicha(char) - NIVEL_CLASSE_MIN);
+
+function degrausGastos(char) {
+  const concedidas = periciasConcedidas(char);
+  return PERICIAS.reduce((soma, p) => {
+    const grau = grauDaPericia(char, p.id);
+    return soma + Math.max(0, grau - (concedidas.has(p.id) ? 1 : 0));
+  }, 0);
+}
+
+/* ---------- feitiços do mago ----------
+   Começa com 2 vagas e ganha 1 a cada 10 níveis mágicos (12 no nível 100).
+   Cada feitiço custa vagas conforme a evolução escolhida: 1, 2 ou 3. */
+const vagasDeFeitico = (char) => 2 + Math.floor((char?.subdivisaoNivel || NIVEL_MIN) / 10);
+const feiticoId = (f) => (typeof f === 'string' ? f : f?.id);
+const feiticoEvolucao = (f) => (typeof f === 'string' ? 1 : clamp(Number(f?.evolucao) || 1, 1, 3));
+const idsDeFeiticos = (lista) => (lista || []).map(feiticoId).filter(Boolean);
+const vagasGastas = (lista) => (lista || []).reduce((s, f) => s + feiticoEvolucao(f), 0);
+const detalhesDeFeiticos = (lista) =>
+  (lista || []).reduce((mapa, f) => {
+    const id = feiticoId(f);
+    if (id) mapa[id] = `evolução ${'I'.repeat(feiticoEvolucao(f))}`;
+    return mapa;
+  }, {});
 
 /* Armazenamento no servidor. Personagens e conteúdos vivem numa tabela
    chave/valor no Postgres; a sessão é um cookie httpOnly, então toda
@@ -1850,7 +1938,7 @@ function StepHeranca({ draft, setDraft, origin }) {
             <span className="w-10 text-right text-sm" style={{ fontFamily: F.mono, color: V.text }}>{draft.subdivisaoNivel}</span>
           </div>
           <p className="text-xs" style={{ color: '#6f6291', fontFamily: F.body }}>
-            Todo mago nasce com um pouco de magia (mínimo 5). A marca escurece conforme o nível sobe, até ficar negra no 100. A mana máxima será igual ao nível escolhido.
+            Todo mago nasce com um pouco de magia (mínimo 5). A marca escurece conforme o nível sobe, até ficar negra no 100. O nível mágico também enche a mana e define quantas vagas de feitiço você tem. A mana só é gasta ao conjurar rituais.
           </p>
         </div>
       )}
@@ -1976,10 +2064,44 @@ function StepPerfil({ draft, setDraft, origin, comNome }) {
   );
 }
 
+/* Nível de classe, de 1 a 10. Vale para todas as classes e é o que abre pontos
+   de atributo, degraus de perícia e ganho de vida, sanidade e mana. */
+function SeletorNivel({ draft, setDraft, color }) {
+  const nivel = nivelDaFicha(draft);
+  return (
+    <div className="mb-6">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+          <Star size={13} /> Nível
+        </p>
+        <span className="text-xs rounded-full px-2.5 py-1" style={{ fontFamily: F.mono, background: '#171029', border: `1px solid ${V.border}`, color }}>
+          {nivel} de {NIVEL_CLASSE_MAX}
+        </span>
+      </div>
+      <div className="flex gap-1.5 flex-wrap">
+        {Array.from({ length: NIVEL_CLASSE_MAX }, (_, i) => i + NIVEL_CLASSE_MIN).map((n) => {
+          const ativo = n === nivel;
+          return (
+            <button key={n} onClick={() => setDraft({ ...draft, nivel: n })}
+              className="w-9 h-9 rounded-lg text-sm transition-all"
+              style={{ fontFamily: F.mono, background: ativo ? color : '#171029',
+                border: `1px solid ${ativo ? color : V.border}`, color: ativo ? '#0d0a16' : V.muted, fontWeight: ativo ? 700 : 400 }}>
+              {n}
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+        Cada nível soma vida e sanidade conforme a classe, e libera mais pontos de atributo e de perícia.
+      </p>
+    </div>
+  );
+}
+
 function StepAtributos({ draft, setDraft, origin }) {
   const attrs = draft.attributes;
   const spent = ATTRS.reduce((s, a) => s + (attrs[a.key] - ATTR_BASE), 0);
-  const remaining = ATTR_POOL - spent;
+  const remaining = pontosDeAtributo(draft) - spent;
   const der = computeRecursos(draft);
   const color = origin?.cor || V.brand;
 
@@ -2036,12 +2158,16 @@ function StepAtributos({ draft, setDraft, origin }) {
     setDraft({ ...draft, attributes: { ...attrs, [key]: val } });
   };
 
+  const nivel = nivelDaFicha(draft);
+
   return (
     <div>
+      <SeletorNivel draft={draft} setDraft={setDraft} color={color} />
+
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Sliders size={13} /> Atributos</p>
         <span className="text-xs rounded-full px-2.5 py-1" style={{ fontFamily: F.mono, color: remaining === 0 ? '#9bdcb4' : V.text, background: '#171029', border: `1px solid ${V.border}` }}>
-          {remaining} pontos restantes
+          {remaining} de {pontosDeAtributo(draft)} pontos restantes
         </span>
       </div>
 
@@ -2065,25 +2191,27 @@ function StepAtributos({ draft, setDraft, origin }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
           <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>
-            Vida (30+Físico×12{der.vidaNivel ? ` +${der.vidaNivel} nível` : ''})
+            Vida ({der.vidaClasse} da classe{der.subVida ? ` ${der.subVida > 0 ? '+' : '−'}${Math.abs(der.subVida)} subdivisão` : ''} +Físico×12{der.vidaNivel ? ` +${der.vidaNivel} mágico` : ''})
           </p>
           <p style={{ fontFamily: F.mono, color: '#e0577a', fontSize: '1.15rem' }}>{der.vidaMax}</p>
         </div>
         <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
           <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>
-            Sanidade (30+Psique×12{der.sanidadeNivel ? ` +${der.sanidadeNivel} nível` : ''})
+            Sanidade ({der.sanClasse} da classe{der.subSanidade ? ` ${der.subSanidade > 0 ? '+' : '−'}${Math.abs(der.subSanidade)} subdivisão` : ''} +Psique×12{der.sanidadeNivel ? ` +${der.sanidadeNivel} mágico` : ''})
           </p>
           <p style={{ fontFamily: F.mono, color: '#caa24a', fontSize: '1.15rem' }}>{der.sanidadeMax}</p>
         </div>
         {der.manaMax !== null && (
           <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
-            <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>Mana (= nível mágico)</p>
+            <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>Mana (nível mágico + 2 por nível)</p>
             <p style={{ fontFamily: F.mono, color: '#8FB4F5', fontSize: '1.15rem' }}>{der.manaMax}</p>
           </div>
         )}
       </div>
-      <p className="text-xs mt-2" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Vida e Sanidade partem de um valor inicial — a mestra pode ajustar com bônus de lore depois.
+      <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+        A classe e a subdivisão definem o ponto de partida, e cada nível soma o ganho da sua
+        classe. A mestra ainda pode ajustar com bônus de lore depois.
+        {der.manaMax !== null && ' A mana só é gasta ao conjurar rituais.'}
       </p>
     </div>
   );
@@ -2171,16 +2299,38 @@ function StepPericias({ draft, setDraft, origin }) {
   const color = origin?.cor || V.brand;
   const changeGrau = (id, grau) => setDraft({ ...draft, pericias: { ...draft.pericias, [id]: grau } });
   const changeOutros = (id, val) => setDraft({ ...draft, periciasOutros: { ...draft.periciasOutros, [id]: val } });
+
+  /* Ficha da mestra não tem orçamento: ela distribui à vontade. */
+  const livre = fichaLivre(draft);
+  const total = degrausDePericia(draft);
+  const gastos = degrausGastos(draft);
+  const restantes = total - gastos;
+
   return (
     <div>
-      <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
+      <div className="flex items-center justify-between mb-1">
+        <p className="text-xs uppercase tracking-widest" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
+        {!livre && (
+          <span className="text-xs rounded-full px-2.5 py-1" style={{ fontFamily: F.mono,
+            color: restantes < 0 ? '#e0577a' : restantes === 0 ? '#9bdcb4' : V.text,
+            background: '#171029', border: `1px solid ${restantes < 0 ? '#e0577a' : V.border}` }}>
+            {restantes} de {total} degraus restantes
+          </span>
+        )}
+      </div>
       <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
         Destreinado 0 · Treinado +2 · Veterano +4 · Expert +6. "Dados" mostra o atributo
         usado na rolagem; ele não entra no bônus.{' '}
-        {fichaLivre(draft)
+        {livre
           ? 'Nesta ficha as 23 estão livres: nenhuma vem travada por classe ou subdivisão.'
-          : 'Perícias marcadas com estrela vêm da sua classe ou subdivisão e não podem cair abaixo de Treinado.'}
+          : 'Cada grau que você sobe custa um degrau do seu nível. As perícias marcadas com estrela vêm da classe ou subdivisão, já entram no Treinado e não custam nada.'}
       </p>
+      {!livre && restantes < 0 && (
+        <p className="text-xs mb-3 flex items-start gap-1.5" style={{ color: '#e0577a', fontFamily: F.body }}>
+          <AlertCircle size={12} className="shrink-0 mt-0.5" />
+          <span>Você passou do que o seu nível permite. Suba de nível ou baixe alguma perícia.</span>
+        </p>
+      )}
       <TabelaPericias char={draft} onChangeGrau={changeGrau} onChangeOutros={changeOutros} color={color} />
     </div>
   );
@@ -2620,7 +2770,7 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
 }
 
 /* Seletor de feitiços: catálogo com bloqueio por nível + feitiços criados pela mestra */
-function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, canCreate, onCreate, semCatalogo }) {
+function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vagas, color, customs, canCreate, onCreate, semCatalogo }) {
   const [showForm, setShowForm] = useState(false);
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -2633,7 +2783,9 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, 
   };
 
   const Card = ({ f, bloqueado, custom }) => {
-    const ativo = selecionados.includes(f.id);
+    const escolhido = (selecionados || []).find((x) => feiticoId(x) === f.id);
+    const ativo = !!escolhido;
+    const evolucao = ativo ? feiticoEvolucao(escolhido) : 1;
     const expandido = aberto === f.id;
     return (
       <div className="rounded-lg" style={{
@@ -2659,6 +2811,29 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, 
             )}
           </button>
         </div>
+
+        {/* A evolução escolhida define quanto o feitiço custa em vagas: a I
+            ocupa uma, a II duas e a III três. */}
+        {ativo && !bloqueado && onEvolucao && (
+          <div className="flex items-center gap-1.5 px-2.5 pb-2.5 flex-wrap">
+            <span className="text-xs mr-1" style={{ fontFamily: F.body, color: V.muted }}>Evolução</span>
+            {[1, 2, 3].map((n) => {
+              const sel = evolucao === n;
+              return (
+                <button key={n} onClick={() => onEvolucao(f.id, n)}
+                  className="px-2 py-0.5 rounded-md text-xs transition-all"
+                  style={{ fontFamily: F.mono, background: sel ? color : 'transparent',
+                    border: `1px solid ${sel ? color : V.border}`, color: sel ? '#0d0a16' : V.muted, fontWeight: sel ? 700 : 400 }}
+                  title={`Ocupa ${n} ${n === 1 ? 'vaga' : 'vagas'}`}>
+                  {'I'.repeat(n)}
+                </button>
+              );
+            })}
+            <span className="text-xs" style={{ fontFamily: F.mono, color: '#6f6291' }}>
+              · {evolucao} {evolucao === 1 ? 'vaga' : 'vagas'}
+            </span>
+          </div>
+        )}
         {expandido && !bloqueado && (
           <p className="text-xs leading-relaxed px-2.5 pb-2.5" style={{ fontFamily: F.body, color: V.muted }}>{f.descricao}</p>
         )}
@@ -2678,6 +2853,23 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, color, customs, 
           </span>
         )}
       </div>
+
+      {/* Quantas vagas o nível mágico concede e quantas já foram usadas. */}
+      {typeof vagas === 'number' && (() => {
+        const usadas = vagasGastas(selecionados);
+        const estourou = usadas > vagas;
+        return (
+          <div className="rounded-lg p-2.5 mb-3" style={{ background: '#171029', border: `1px solid ${estourou ? '#e0577a' : V.border}` }}>
+            <p className="text-xs" style={{ fontFamily: F.mono, color: estourou ? '#e0577a' : V.text }}>
+              {usadas} de {vagas} vagas usadas
+            </p>
+            <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: '#6f6291' }}>
+              São 2 vagas de início e mais 1 a cada 10 níveis mágicos. Um feitiço na evolução II
+              ocupa 2 vagas e na evolução III ocupa 3.
+            </p>
+          </div>
+        );
+      })()}
 
       {/* Ficha da mestra não puxa o catálogo nem o bloqueio por nível mágico. */}
       {semCatalogo && customs.length === 0 ? (
@@ -2721,7 +2913,15 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
   const createContent = (type, data) => onCreateContent(type, data);
 
   const toggleArma = (id) => setDraft({ ...draft, armas: draft.armas.includes(id) ? draft.armas.filter((x) => x !== id) : [...draft.armas, id] });
-  const toggleFeitico = (id) => setDraft({ ...draft, feiticos: draft.feiticos.includes(id) ? draft.feiticos.filter((x) => x !== id) : [...draft.feiticos, id] });
+  /* Cada feitiço guarda a evolução escolhida. As fichas antigas gravaram só o
+     id em texto; feiticoEvolucao trata esse caso como evolução 1. */
+  const toggleFeitico = (id) => {
+    const atuais = draft.feiticos || [];
+    const jaTem = atuais.some((f) => feiticoId(f) === id);
+    setDraft({ ...draft, feiticos: jaTem ? atuais.filter((f) => feiticoId(f) !== id) : [...atuais, { id, evolucao: 1 }] });
+  };
+  const mudarEvolucao = (id, evo) =>
+    setDraft({ ...draft, feiticos: (draft.feiticos || []).map((f) => (feiticoId(f) === id ? { id, evolucao: evo } : f)) });
 
 
   if (loadingContent) return <div className="flex items-center gap-2 py-10 justify-center" style={{ color: V.muted }}><Loader2 size={16} className="animate-spin" /> Carregando conteúdo do jogo…</div>;
@@ -2746,7 +2946,8 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
 
       {origin?.id === 'mago' && (
         <SeletorFeiticos nivelMagico={draft.subdivisaoNivel || NIVEL_MIN} selecionados={draft.feiticos}
-          onToggle={toggleFeitico} color={color} customs={customsDe(content, 'feiticos', draft.feiticos, account?.isMaster)} semCatalogo={!!tipo}
+          onToggle={toggleFeitico} onEvolucao={mudarEvolucao} vagas={tipo ? undefined : vagasDeFeitico(draft)}
+          color={color} customs={customsDe(content, 'feiticos', idsDeFeiticos(draft.feiticos), account?.isMaster)} semCatalogo={!!tipo}
           canCreate={account?.isMaster} onCreate={(d) => createContent('feitico', d)} />
       )}
 
@@ -2795,7 +2996,11 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
               return tipo.escolheClasse && char.originId ? `${tipo.nome} · ${origin.nome}` : tipo.nome;
             })()}
           </p>
-          {subdivLabel() && <p className="text-xs mt-0.5" style={{ color: V.muted, fontFamily: F.body }}>{subdivLabel()}</p>}
+          <p className="text-xs mt-0.5" style={{ color: V.muted, fontFamily: F.body }}>
+            {!fichaLivre(char) && <span style={{ fontFamily: F.mono }}>nível {nivelDaFicha(char)}</span>}
+            {!fichaLivre(char) && subdivLabel() ? ' · ' : ''}
+            {subdivLabel()}
+          </p>
         </div>
       </div>
 
@@ -2879,7 +3084,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
           {char.feiticos?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Wand2 size={12} /> Feitiços</p>
-              {namesFrom(char.feiticos, catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
+              {namesFrom(idsDeFeiticos(char.feiticos), catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
         </div>
@@ -2911,8 +3116,9 @@ function blankDraft(owner, tipoFicha = null) {
   const base = livre ? 0 : ATTR_BASE;
   return {
     id: null, owner, name: '', originId: null, tipoFicha,
+    nivel: NIVEL_CLASSE_MIN,
     subdivisaoId: null, subdivisaoAnimalTipo: null, subdivisaoNivel: NIVEL_MIN,
-    fotoUrl: '', historia: '',
+    fotoUrl: '', historia: '', animal: null,
     attributes: { intelecto: base, psique: base, fisico: base, motoras: base },
     recursosLivres: { vidaMax: 0, sanidadeMax: 0, manaMax: 0 },
     pericias: {}, periciasOutros: {}, recursos: { vidaBonusLore: 0, sanidadeBonusLore: 0 },
@@ -2947,7 +3153,9 @@ function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
     // já vincula ao personagem que está sendo criado, senão o item some da ficha
     if (type === 'armadura') { setDraft((d) => ({ ...d, armaduraId: id })); return; }
     const campo = { arma: 'armas', feitico: 'feiticos', habilidade: 'habilidades' }[type];
-    setDraft((d) => ({ ...d, [campo]: [...(d[campo] || []), id] }));
+    // O feitico guarda tambem a evolucao escolhida; os outros sao so o id.
+    const entrada = type === 'feitico' ? { id, evolucao: 1 } : id;
+    setDraft((d) => ({ ...d, [campo]: [...(d[campo] || []), entrada] }));
   };
 
   const steps = stepsDaFicha(draft);
@@ -3042,6 +3250,8 @@ function abasDaFicha(char) {
     base.push({ id: 'habilidades', nome: 'Habilidades' });
     if (char.originId === 'mago') base.push({ id: 'feiticos', nome: 'Feitiços' });
   }
+  /* O druida carrega a ficha do animal-laço junto com a dele. */
+  if (char.originId === 'druida') base.push({ id: 'animal', nome: 'Animal' });
   base.push({ id: 'inventario', nome: 'Inventário' });
   return base;
 }
@@ -3129,7 +3339,143 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
 }
 
 /* Lista de itens (armas, habilidades, feitiços) resolvendo os IDs no catálogo global */
-function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio }) {
+/* Ficha do animal-laço do druida. Nasce inteiramente vazia: nome, espécie,
+   recursos e golpes são escritos à mão, porque cada laço é único e não existe
+   catálogo de animais. Fica guardada dentro da própria ficha, em char.animal. */
+const animalVazio = () => ({ nome: '', especie: '', descricao: '', vida: 0, sanidade: 0, notas: '', golpes: [] });
+
+function FichaAnimal({ char, color, podeEditar, onSalvar }) {
+  const [draft, setDraft] = useState(() => ({ ...animalVazio(), ...(char.animal || {}) }));
+  const [salvando, setSalvando] = useState(false);
+  const [salvo, setSalvo] = useState(false);
+
+  useEffect(() => { setDraft({ ...animalVazio(), ...(char.animal || {}) }); setSalvo(false); }, [char.id]);
+
+  const set = (campo, valor) => { setSalvo(false); setDraft((d) => ({ ...d, [campo]: valor })); };
+  const golpes = draft.golpes || [];
+  const setGolpe = (id, campo, valor) => set('golpes', golpes.map((g) => (g.id === id ? { ...g, [campo]: valor } : g)));
+
+  const salvar = async () => {
+    setSalvando(true);
+    await onSalvar(draft);
+    setSalvando(false);
+    setSalvo(true);
+  };
+
+  const campo = (rotulo, valor, aoMudar, extras = {}) => (
+    <Field label={rotulo}>
+      {podeEditar ? (
+        <input value={valor} onChange={(e) => aoMudar(e.target.value)} {...extras}
+          className="w-full rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-violet-500" style={inputStyle} />
+      ) : (
+        <p className="text-sm" style={{ fontFamily: F.body, color: valor ? V.text : '#6f6291' }}>{valor || '—'}</p>
+      )}
+    </Field>
+  );
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+          <PawPrint size={13} /> Animal-laço
+        </p>
+        {podeEditar && (
+          <button onClick={salvar} disabled={salvando} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-1.5 disabled:opacity-60"
+            style={{ background: color, color: '#0d0a16', fontFamily: F.body, fontWeight: 600 }}>
+            {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            {salvo && !salvando ? 'Salvo' : 'Salvar animal'}
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3">
+        {campo('Nome do animal', draft.nome, (v) => set('nome', v), { placeholder: 'Como você o chama' })}
+        {campo('Espécie', draft.especie, (v) => set('especie', v), { placeholder: 'Corvo, lobo, algo que ninguém viu...' })}
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-3">
+        {campo('Vida', draft.vida, (v) => set('vida', Math.max(0, Math.floor(Number(v) || 0))), { type: 'number', min: '0' })}
+        {campo('Sanidade', draft.sanidade, (v) => set('sanidade', Math.max(0, Math.floor(Number(v) || 0))), { type: 'number', min: '0' })}
+      </div>
+
+      <Field label="Descrição">
+        {podeEditar ? (
+          <textarea value={draft.descricao} onChange={(e) => set('descricao', e.target.value)}
+            placeholder="Como ele é, como o laço foi feito, o que ele carrega de você..."
+            className="w-full rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 resize-none" style={{ ...inputStyle, minHeight: '90px' }} />
+        ) : (
+          <p className="text-sm leading-relaxed whitespace-pre-line" style={{ fontFamily: F.body, color: draft.descricao ? V.text : '#6f6291' }}>{draft.descricao || '—'}</p>
+        )}
+      </Field>
+
+      <div className="pt-2 mt-2 border-t" style={{ borderColor: V.border }}>
+        <div className="flex items-center justify-between mb-2 mt-3">
+          <p className="text-xs uppercase tracking-widest" style={{ color: V.muted, fontFamily: F.body }}>Golpes</p>
+          {podeEditar && (
+            <button onClick={() => set('golpes', [...golpes, { id: uid(), nome: '', dano: '', teste: '', descricao: '' }])}
+              className="text-xs flex items-center gap-1 rounded-full px-2.5 py-1" style={{ color, border: `1px solid ${color}88`, fontFamily: F.body }}>
+              <Plus size={12} /> Novo golpe
+            </button>
+          )}
+        </div>
+
+        {golpes.length === 0 ? (
+          <p className="text-xs italic" style={{ color: '#6f6291', fontFamily: F.body }}>Nenhum golpe ainda.</p>
+        ) : (
+          <div className="space-y-2">
+            {golpes.map((g) => (
+              <div key={g.id} className="rounded-lg p-2.5" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
+                {podeEditar ? (
+                  <>
+                    <div className="flex gap-2 mb-2">
+                      <input value={g.nome} onChange={(e) => setGolpe(g.id, 'nome', e.target.value)} placeholder="Nome do golpe"
+                        className="flex-1 rounded-md px-2.5 py-2 outline-none text-sm" style={inputStyle} />
+                      <button onClick={() => set('golpes', golpes.filter((x) => x.id !== g.id))}
+                        className="w-9 rounded-md flex items-center justify-center shrink-0"
+                        style={{ border: `1px solid ${V.border}`, color: '#e0577a' }} title="Remover golpe">
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                    <div className="flex gap-2 mb-2">
+                      <input value={g.dano} onChange={(e) => setGolpe(g.id, 'dano', e.target.value)} placeholder="Dano (ex: 1d8)"
+                        className="flex-1 rounded-md px-2.5 py-2 outline-none text-sm" style={inputStyle} />
+                      <input value={g.teste} onChange={(e) => setGolpe(g.id, 'teste', e.target.value)} placeholder="Teste (ex: Guerra)"
+                        className="flex-1 rounded-md px-2.5 py-2 outline-none text-sm" style={inputStyle} />
+                    </div>
+                    <textarea value={g.descricao} onChange={(e) => setGolpe(g.id, 'descricao', e.target.value)} placeholder="O que o golpe faz, custo, condições..."
+                      className="w-full rounded-md px-2.5 py-2 outline-none text-sm resize-none" style={{ ...inputStyle, minHeight: '54px' }} />
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{g.nome || 'Golpe sem nome'}</p>
+                      {g.dano && <span className="text-xs shrink-0" style={{ fontFamily: F.mono, color }}>{g.dano}</span>}
+                    </div>
+                    {g.teste && <p className="text-xs mt-0.5" style={{ fontFamily: F.body, color: '#6f6291' }}>Teste de {g.teste}</p>}
+                    {g.descricao && <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{g.descricao}</p>}
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Field label="Anotações">
+        {podeEditar ? (
+          <textarea value={draft.notas} onChange={(e) => set('notas', e.target.value)} placeholder="Bônus combinados com a mestra, limites, tudo o mais."
+            className="w-full rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 resize-none" style={{ ...inputStyle, minHeight: '70px' }} />
+        ) : (
+          <p className="text-sm leading-relaxed whitespace-pre-line" style={{ fontFamily: F.body, color: draft.notas ? V.text : '#6f6291' }}>{draft.notas || '—'}</p>
+        )}
+      </Field>
+    </div>
+  );
+}
+
+/* `detalhes` é um mapa id → texto curto, usado para mostrar a evolução do
+   feitiço ao lado do nome sem mexer no catálogo. */
+function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes }) {
   const itens = (ids || []).map((id) => catalogo.find((x) => x.id === id)).filter(Boolean);
   return (
     <div className="mb-5">
@@ -3142,7 +3488,12 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio }) {
         <div className="space-y-2">
           {itens.map((it) => (
             <div key={it.id} className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
-              <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{it.nome}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{it.nome}</p>
+                {detalhes?.[it.id] && (
+                  <span className="text-xs shrink-0" style={{ fontFamily: F.mono, color }}>{detalhes[it.id]}</span>
+                )}
+              </div>
               {it.descricao && <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.descricao}</p>}
             </div>
           ))}
@@ -3192,7 +3543,9 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
     await reloadContent();
     if (type === 'armadura') { setEditDraft((d) => ({ ...d, armaduraId: id })); return; }
     const campo = { arma: 'armas', feitico: 'feiticos', habilidade: 'habilidades' }[type];
-    setEditDraft((d) => ({ ...d, [campo]: [...(d[campo] || []), id] }));
+    // O feitico guarda tambem a evolucao escolhida; os outros sao so o id.
+    const entrada = type === 'feitico' ? { id, evolucao: 1 } : id;
+    setEditDraft((d) => ({ ...d, [campo]: [...(d[campo] || []), entrada] }));
   };
 
   /* Alterar as barras salva na hora — não precisa entrar no modo de edição. */
@@ -3253,6 +3606,13 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             <Field label="Nome">
               <input value={editDraft.name} onChange={(e) => setEditDraft({ ...editDraft, name: e.target.value })} className="w-full rounded-lg px-3 py-2.5 outline-none" style={inputStyle} />
             </Field>
+            {!fichaLivre(editDraft) && (
+              <Field label={`Nível (1 a ${NIVEL_CLASSE_MAX})`} hint="Define vida, sanidade, mana e quantos pontos de atributo e perícia cabem na ficha.">
+                <input type="number" min={NIVEL_CLASSE_MIN} max={NIVEL_CLASSE_MAX} value={nivelDaFicha(editDraft)}
+                  onChange={(e) => setEditDraft({ ...editDraft, nivel: clamp(Number(e.target.value) || NIVEL_CLASSE_MIN, NIVEL_CLASSE_MIN, NIVEL_CLASSE_MAX) })}
+                  className="w-full rounded-lg px-3 py-2 outline-none" style={inputStyle} />
+              </Field>
+            )}
             <div className="grid grid-cols-2 gap-3 mb-4">
               {ATTRS.map((a) => (
                 <Field key={a.key} label={a.nome}>
@@ -3359,8 +3719,14 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
 
               {editDraft.originId === 'mago' && (
                 <SeletorFeiticos nivelMagico={editDraft.subdivisaoNivel || NIVEL_MIN} selecionados={editDraft.feiticos || []}
-                  onToggle={(id) => setEditDraft({ ...editDraft, feiticos: (editDraft.feiticos || []).includes(id) ? editDraft.feiticos.filter((x) => x !== id) : [...(editDraft.feiticos || []), id] })}
-                  color={origin.cor} customs={customsDe(contentIndex, 'feiticos', editDraft.feiticos, account.isMaster)} semCatalogo={fichaLivre(editDraft)}
+                  onToggle={(id) => {
+                    const atuais = editDraft.feiticos || [];
+                    const jaTem = atuais.some((f) => feiticoId(f) === id);
+                    setEditDraft({ ...editDraft, feiticos: jaTem ? atuais.filter((f) => feiticoId(f) !== id) : [...atuais, { id, evolucao: 1 }] });
+                  }}
+                  onEvolucao={(id, evo) => setEditDraft({ ...editDraft, feiticos: (editDraft.feiticos || []).map((f) => (feiticoId(f) === id ? { id, evolucao: evo } : f)) })}
+                  vagas={fichaLivre(editDraft) ? undefined : vagasDeFeitico(editDraft)}
+                  color={origin.cor} customs={customsDe(contentIndex, 'feiticos', idsDeFeiticos(editDraft.feiticos), account.isMaster)} semCatalogo={fichaLivre(editDraft)}
                   canCreate={account.isMaster} onCreate={(d) => createAndAttach('feitico', d)} />
               )}
             </div>
@@ -3439,7 +3805,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             /* Deuses: uma lista só, juntando o que foi criado como habilidade
                e como feitiço, para não dividir o poder divino em duas abas. */
             <ListaConteudo titulo="Poderes Divinos" Icon={Flame}
-              ids={[...(char.habilidades || []), ...(char.feiticos || [])]}
+              ids={[...(char.habilidades || []), ...idsDeFeiticos(char.feiticos)]}
               catalogo={[...catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO), ...catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)]}
               color={origin.cor} vazio="Nenhum poder divino criado ainda." />
           )}
@@ -3459,8 +3825,12 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                   A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>.
                 </p>
               </div>
-              <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={char.feiticos} catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido." />
+              <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={idsDeFeiticos(char.feiticos)} detalhes={detalhesDeFeiticos(char.feiticos)} catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido." />
             </div>
+          )}
+          {tab === 'animal' && (
+            <FichaAnimal char={char} color={origin.cor} podeEditar={canEdit}
+              onSalvar={(animal) => onSaveEdit({ ...char, animal }, { silencioso: true })} />
           )}
           {tab === 'inventario' && (
             <div>
