@@ -972,37 +972,60 @@ const ATTR_BASE = 1, ATTR_MIN = 0, ATTR_MAX = 5, ATTR_POOL = 4;
 
 /* ---------- perícias ---------- */
 const PERICIAS = [
-  { id: 'logica', nome: 'Lógica', atributo: 'intelecto', desc: 'Deduza o mundo. Siga seus padrões.' },
-  { id: 'dicionario_mental', nome: 'Dicionário mental', atributo: 'intelecto', desc: 'O quão bem você acumula as coisas que você viu/ouviu/pensou no passado.' },
-  { id: 'drama', nome: 'Drama', atributo: 'psique', desc: 'Faça do mundo um espetáculo só seu. Minta e saiba quando os outros estão mentindo.' },
-  { id: 'cest_la_vie', nome: "C'est la vie", atributo: 'intelecto', desc: 'Você é o mestre do improviso.' },
-  { id: 'esprit_de_corps', nome: 'Esprit de Corps', atributo: 'intelecto', desc: 'Conecte-se a cenas passadas, investigue. Solucione o caso.' },
-  { id: 'apotheca', nome: 'Apotheca', atributo: 'intelecto', desc: 'Você conhece o corpo humano e sabe o que fazer para que não sucumba.' },
-  { id: 'volicao', nome: 'Volição', atributo: 'psique', desc: 'Não se prenda às agarras do mundo. Faça simplesmente porque você quer.' },
-  { id: 'imperio_interior', nome: 'Império interior', atributo: 'psique', desc: 'O quão bem você conhece as pessoas ao seu redor? (Ou a si mesmo?)' },
-  { id: 'autoridade', nome: 'Autoridade', atributo: 'intelecto', desc: 'Seja o mestre das marionetes. O mundo te ouve quando você quer.' },
-  { id: 'controle_demonios', nome: 'Controle seus demônios', atributo: 'psique', desc: 'Talvez você não esteja preparado para quando o pior acontece.' },
-  { id: 'deja_vu', nome: 'Déjà-vu', atributo: 'psique', desc: 'Talvez você já tenha vivido este momento. E talvez essa sensação te dê as respostas que procura.' },
-  { id: 'agape', nome: 'Ágape', atributo: 'psique', desc: 'Você ama incondicionalmente. E esse amor vai te salvar um dia.' },
-  { id: 'limiar_dor', nome: 'Limiar da dor', atributo: 'fisico', desc: 'Eles terão que te machucar mais.' },
-  { id: 'instrumento_fisico', nome: 'Instrumento físico', atributo: 'fisico', desc: 'Esses músculos são seus, e você fará bom uso deles.' },
-  { id: 'eletroquimica', nome: 'Eletroquímica', atributo: 'fisico', desc: 'Você quer aquilo que te faz sentir bem, mesmo que talvez isso te custe muito.' },
-  { id: 'resistencia', nome: 'Resistência', atributo: 'fisico', desc: 'Não deixe o mundo te matar. Você ainda tem uma missão a cumprir.' },
-  { id: 'furia_sangue', nome: 'Fúria de sangue', atributo: 'fisico', desc: 'Deixe a fera vencer por um instante. Ela sempre soube lutar melhor que você.' },
-  { id: 'doenca', nome: 'Doença', atributo: 'fisico', desc: 'Talvez ataques e ferimentos não te derrubem, mas e quanto ao resto?' },
-  { id: 'compostura', nome: 'Compostura', atributo: 'motoras', desc: 'Fique na linha. Você não pode deixar que os outros te leiam.' },
-  { id: 'velocidade_reacao', nome: 'Velocidade de reação', atributo: 'motoras', desc: 'É preciso saber quando agir (e rápido).' },
-  { id: 'coordenacao_motora', nome: 'Coordenação motora', atributo: 'motoras', desc: 'Esqueça sua força, apenas concentre-se em cada passo.' },
-  { id: 'savoir_faire', nome: 'Savoir-faire', atributo: 'motoras', desc: 'Controle seu corpo. Faça isso como ninguém.' },
-  { id: 'silencio', nome: 'Silêncio', atributo: 'motoras', desc: 'Você sabe se esconder nas sombras.' },
+  { id: 'logica', nome: 'Percepção', atributo: 'intelecto', desc: 'Deduza o mundo. Siga seus padrões.',
+    detalhe: 'Essa perícia geralmente é utilizada para perceber eventos, sentimentos e mudanças no ambiente ou nas pessoas.' },
+  { id: 'dicionario_mental', nome: 'Dicionário mental', atributo: 'intelecto', desc: 'O quão bem você acumula as coisas que você viu/ouviu/pensou no passado.',
+    detalhe: 'Essa perícia é geralmente usada como uma ferramenta de bônus narrativo, que pode te dar algumas informações adicionais sobre o acontecimento a depender de fatores como lore.' },
+  { id: 'drama', nome: 'Drama', atributo: 'psique', desc: 'Faça do mundo um espetáculo só seu. Minta e saiba quando os outros estão mentindo.',
+    detalhe: 'Essa perícia é geralmente utilizada para aumentar uma situação muito pequena, dramatizando-a a ponto das pessoas ao seu redor acreditarem na sua versão, por sua encenação. Você também sabe identificar se o drama de outra pessoa é tão verossímil quanto parece.' },
+  { id: 'cest_la_vie', nome: "C'est la vie", atributo: 'intelecto', desc: 'Você é o mestre do improviso.',
+    detalhe: 'Essa perícia geralmente é usada em momentos de tensão, como por exemplo arrombar uma porta para sair de uma enrascada. O óbvio é sempre visto, mas uma nova saída pode ser percebida com base no improviso.' },
+  { id: 'esprit_de_corps', nome: 'Esprit de Corps', atributo: 'intelecto', desc: 'Conecte-se a cenas passadas, investigue. Solucione o caso.',
+    detalhe: 'Você não necessariamente quer ver algo, mas sim entender, solucionar o que pode ter acontecido. A mestra pode te fazer perceber coisas que não podem ser vistas a olho nu.' },
+  { id: 'apotheca', nome: 'Apotheca', atributo: 'intelecto', desc: 'Você conhece o corpo humano e sabe o que fazer para que não sucumba.',
+    detalhe: 'Essa perícia é geralmente usada para tratar ferimentos, usando artimanhas medicinais.' },
+  { id: 'volicao', nome: 'Volição', atributo: 'psique', desc: 'Não se prenda às agarras do mundo. Faça simplesmente porque você quer.',
+    detalhe: 'Essa perícia é geralmente usada contra Autoridade, para não obedecer aos outros ou a algo. Fazer o que você quer.' },
+  { id: 'imperio_interior', nome: 'Império interior', atributo: 'psique', desc: 'O quão bem você conhece as pessoas ao seu redor? (Ou a si mesmo?)',
+    detalhe: 'Essa perícia é parecida com Percepção, mas é utilizada no âmbito social e psicológico. Você sabe quando um amigo próximo está agindo estranho, sabe como você mesmo está se sentindo, quando algo está errado.' },
+  { id: 'autoridade', nome: 'Autoridade', atributo: 'intelecto', desc: 'Seja o mestre das marionetes. O mundo te ouve quando você quer.',
+    detalhe: 'Essa perícia é geralmente usada para impor coisas, ou fazer as pessoas te obedecerem.' },
+  { id: 'controle_demonios', nome: 'Controle seus demônios', atributo: 'psique', desc: 'Talvez você não esteja preparado para quando o pior acontece.',
+    detalhe: 'Essa perícia é utilizada em casos de loucura, quando sua sanidade está baixa ou um evento catastrófico acontece bem em frente aos seus olhos. Como você lida com situações de puro estresse e medo.' },
+  { id: 'deja_vu', nome: 'Déjà-vu', atributo: 'psique', desc: 'Talvez você já tenha vivido este momento. E talvez essa sensação te dê as respostas que procura.',
+    detalhe: 'Essa perícia é parecida com Dicionário mental, mas é mais tática. Com um bom teste de Déjà-vu, e a depender de fatores como lore, talvez seu personagem saiba exatamente como se comportar em um ambiente hostil, ou saiba exatamente como fazer uma tarefa absurdamente anormal.' },
+  { id: 'agape', nome: 'Ágape', atributo: 'psique', desc: 'Você ama incondicionalmente. E esse amor vai te salvar um dia.',
+    detalhe: 'Assim como os druidas criam laços com animais, o restante das classes usa esse teste para se apegar a pessoas de diversas maneiras. Um bom teste de Ágape pode ir mudando aos poucos a maneira como certo NPC ou personagem age perto de você.' },
+  { id: 'limiar_dor', nome: 'Guerra', atributo: 'fisico', desc: 'Eles escolheram te enfrentar, então terão que te machucar mais.',
+    detalhe: 'Essa perícia é utilizada em cenas de luta, para acertar alguém corpo a corpo com você. A DT é sempre a defesa do personagem.' },
+  { id: 'instrumento_fisico', nome: 'Instrumento físico', atributo: 'fisico', desc: 'Esses músculos são seus, e você fará bom uso deles.',
+    detalhe: 'Essa perícia é geralmente usada em testes que dependam da sua força bruta, como por exemplo arrombar uma porta ou abrir uma garrafa muito bem fechada.' },
+  { id: 'eletroquimica', nome: 'Eletroquímica', atributo: 'fisico', desc: 'Você quer aquilo que te faz sentir bem, mesmo que talvez isso te custe muito.',
+    detalhe: 'Essa perícia é geralmente utilizada para não sucumbir a algo carnal, talvez até mesmo químico, como um vício em drogas. Seu corpo reage diferente do seu cérebro a certos estímulos e é preciso resistir fisicamente a isso.' },
+  { id: 'resistencia', nome: 'Resistência', atributo: 'fisico', desc: 'Não deixe o mundo te matar. Você ainda tem uma missão a cumprir.',
+    detalhe: 'Essa perícia é geralmente utilizada em lutas ou situações de fôlego, para te manter em pé ou até mesmo acordado.' },
+  { id: 'furia_sangue', nome: 'Fúria de sangue', atributo: 'fisico', desc: 'Deixe a fera vencer por um instante. Ela sempre soube lutar melhor que você.',
+    detalhe: 'Essa perícia é geralmente utilizada para resistir a uma vontade de matar dentro de você. Seu passado pode influenciar nestes testes, ou pode fazer com que eles apareçam com mais frequência.' },
+  { id: 'doenca', nome: 'Doença', atributo: 'fisico', desc: 'Talvez ataques e ferimentos não te derrubem, mas e quanto ao resto?',
+    detalhe: 'Essa perícia geralmente é utilizada para resistir a sintomas de doenças, ou para aguentar um ambiente insalubre sem ficar com suas desvantagens.' },
+  { id: 'compostura', nome: 'Compostura', atributo: 'motoras', desc: 'Fique na linha. Você não pode deixar que os outros te leiam.',
+    detalhe: 'Essa perícia é utilizada para esconder o que você está sentindo, como por exemplo um nervosismo ou uma tristeza.' },
+  { id: 'velocidade_reacao', nome: 'Velocidade de reação', atributo: 'motoras', desc: 'É preciso saber quando agir (e rápido).',
+    detalhe: 'Essa perícia é utilizada para testes que necessitam de um pensamento rápido para escapar de uma situação que pode te ferir, como um tiro ou uma rachadura no chão.' },
+  { id: 'coordenacao_motora', nome: 'Coordenação motora', atributo: 'motoras', desc: 'Esqueça sua força, apenas concentre-se em cada passo.',
+    detalhe: 'Essa perícia é geralmente utilizada em testes que dependem de um senso sobre seu próprio corpo, como uma pontaria, dirigir um carro ou pular uma janela sem se quebrar todo.' },
+  { id: 'savoir_faire', nome: 'Savoir-faire', atributo: 'motoras', desc: 'Controle seu corpo. Faça isso como ninguém.',
+    detalhe: 'Essa perícia diz o quão bem você faz aquilo que você sabe fazer. Por exemplo, como um carpinteiro faz um móvel, ou com que velocidade um corredor corre. Essa perícia também pode te fazer aprender coisas novas sem nunca ter tido contato com aquilo antes.' },
+  { id: 'silencio', nome: 'Silêncio', atributo: 'motoras', desc: 'Você sabe se esconder nas sombras.',
+    detalhe: 'Essa perícia geralmente é utilizada para fazer com que o personagem se esconda, talvez para um ataque furtivo ou para ouvir algo sem ninguém te perceber no ambiente.' },
 ];
 
 /* ---------- graus de treinamento ---------- */
 const TIERS = [
   { id: 0, nome: 'Destreinado', bonus: 0, abrev: 'DES' },
-  { id: 1, nome: 'Treinado', bonus: 5, abrev: 'TRE' },
-  { id: 2, nome: 'Veterano', bonus: 10, abrev: 'VET' },
-  { id: 3, nome: 'Expert', bonus: 15, abrev: 'EXP' },
+  { id: 1, nome: 'Treinado', bonus: 2, abrev: 'TRE' },
+  { id: 2, nome: 'Veterano', bonus: 4, abrev: 'VET' },
+  { id: 3, nome: 'Expert', bonus: 6, abrev: 'EXP' },
 ];
 
 /* Junta todas as perícias que o personagem ganha de graça pela classe + subdivisão */
@@ -2126,6 +2149,9 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly })
               {expandida && (
                 <div className="mx-2 mb-1.5 px-3 py-2 rounded-md" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
                   <p className="text-xs leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{p.desc}</p>
+                  {p.detalhe && (
+                    <p className="text-xs leading-relaxed mt-1.5" style={{ fontFamily: F.body, color: '#8b7fae' }}>{p.detalhe}</p>
+                  )}
                   <p className="text-xs mt-1.5" style={{ fontFamily: F.body, color: '#6f6291' }}>
                     Rolagem por <strong style={{ color }}>{ATTRS.find((x) => x.key === p.atributo)?.nome}</strong>
                     {travada && ' · treino garantido pela sua classe ou subdivisão'}
@@ -2149,7 +2175,7 @@ function StepPericias({ draft, setDraft, origin }) {
     <div>
       <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
       <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Destreinado 0 · Treinado +5 · Veterano +10 · Expert +15. "Dados" mostra o atributo
+        Destreinado 0 · Treinado +2 · Veterano +4 · Expert +6. "Dados" mostra o atributo
         usado na rolagem; ele não entra no bônus.{' '}
         {fichaLivre(draft)
           ? 'Nesta ficha as 23 estão livres: nenhuma vem travada por classe ou subdivisão.'
@@ -3393,7 +3419,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             <div>
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
               <p className="text-xs mb-4" style={{ color: '#6f6291', fontFamily: F.body }}>
-                Destreinado +0 · Treinado +5 · Veterano +10 · Expert +15
+                Destreinado +0 · Treinado +2 · Veterano +4 · Expert +6
               </p>
               <TabelaPericias char={char} color={origin.cor} readOnly onChangeGrau={() => {}} />
             </div>
@@ -3428,23 +3454,11 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                   nível {char.subdivisaoNivel}{char.subdivisaoNivel === NIVEL_MAX ? ' · mago negro' : ''}
                 </span>
               </div>
-              {(() => {
-                const nivel = char.subdivisaoNivel || NIVEL_MIN;
-                const porNivel = Math.floor(nivel / 5);
-                return (
-                  <div className="rounded-lg p-3 mb-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
-                    <p className="text-xs uppercase tracking-widest mb-1.5" style={{ color: V.muted, fontFamily: F.body }}>Como funciona a DT</p>
-                    <p className="text-xs leading-relaxed" style={{ color: V.text, fontFamily: F.body }}>
-                      <strong style={{ color: origin.cor }}>10</strong> de base
-                      {' '}+{' '}<strong style={{ color: origin.cor }}>1</strong> a cada 5 níveis mágicos
-                      {' '}+{' '}<strong style={{ color: origin.cor }}>1</strong> para cada 10 do nível do feitiço.
-                    </p>
-                    <p className="text-xs mt-2" style={{ color: '#6f6291', fontFamily: F.mono }}>
-                      nível mágico {nivel} → 10 + {porNivel} = <span style={{ color: origin.corClara }}>{10 + porNivel}</span>, antes de somar o nível do feitiço
-                    </p>
-                  </div>
-                );
-              })()}
+              <div className="rounded-lg p-3 mb-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
+                <p className="text-xs leading-relaxed" style={{ color: V.muted, fontFamily: F.body }}>
+                  A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>.
+                </p>
+              </div>
               <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={char.feiticos} catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido." />
             </div>
           )}
