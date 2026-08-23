@@ -520,86 +520,86 @@ const DICIONARIOS = [
 const ARMAS_CATALOGO = [
   /* ===== GUERREIRO ===== */
   { id: 'arm_manoplas_ferro', nome: 'Manoplas de ferro bruto', classe: 'guerreiro', subdivisaoId: 'brutus',
-    dano: '3d10', teste: 'Instrumento físico', peso: 2,
+    dano: '3d10', teste: 'Instrumento físico', peso: 3,
     descricao: 'Placas grosseiras amarradas nos punhos, sem acabamento nenhum.' },
   { id: 'arm_correntes_arena', nome: 'Correntes de arena', classe: 'guerreiro', subdivisaoId: 'brutus',
-    dano: '3d8', teste: 'Instrumento físico', peso: 1,
+    dano: '3d8', teste: 'Instrumento físico', peso: 2,
     descricao: 'As mesmas que te prenderam quando criança, agora enroladas nos braços. Permite puxar o alvo pra perto.' },
   { id: 'arm_garrote_seda', nome: 'Garrote de seda', classe: 'guerreiro', subdivisaoId: 'pritzk',
-    dano: '3d6 (8d6 por surpresa)', teste: 'Silêncio', peso: 0,
+    dano: '3d6 (8d6 por surpresa)', teste: 'Silêncio', peso: 1,
     descricao: 'Fio fino que não faz som nenhum. Causa 3d6 se o alvo não sabia da sua presença.' },
   { id: 'arm_bastao_peso', nome: 'Bastão de peso', classe: 'guerreiro', subdivisaoId: 'pritzk',
-    dano: '3d8 não-letal', teste: 'Velocidade de reação', peso: 1,
+    dano: '3d8 não-letal', teste: 'Velocidade de reação', peso: 2,
     descricao: 'Bastão curto e denso, feito pra derrubar sem matar.' },
   { id: 'arm_espada_longa', nome: 'Espada de lâmina longa', classe: 'guerreiro', subdivisaoId: 'nerena',
-    dano: '3d12', teste: 'Coordenação motora', peso: 3,
+    dano: '3d12', teste: 'Coordenação motora', peso: 4,
     descricao: 'Bem balanceada, feita sob medida pela família.' },
   { id: 'arm_arco_osso', nome: 'Arco recurvo de osso', classe: 'guerreiro', subdivisaoId: 'nerena',
-    dano: '3d10', teste: 'Coordenação motora', peso: 2,
+    dano: '3d10', teste: 'Coordenação motora', peso: 3,
     descricao: 'Alcance longo, silencioso, feito de material que ninguém pergunta a origem.' },
 
   /* ===== DRUIDA ===== */
   { id: 'arm_cajado_raiz', nome: 'Cajado de raiz viva', classe: 'druida',
-    dano: '3d8', teste: 'Instrumento físico', peso: 1,
+    dano: '3d8', teste: 'Instrumento físico', peso: 2,
     descricao: 'Madeira que ainda cresce um pouco a cada estação.' },
   { id: 'arm_foice_pedra_lua', nome: 'Foice de pedra-lua', classe: 'druida',
-    dano: '3d10', teste: 'Coordenação motora', peso: 2,
+    dano: '3d10', teste: 'Coordenação motora', peso: 3,
     descricao: 'Lâmina curva usada em rituais e, quando preciso, em pescoços.' },
 
   /* ===== SEREIA / TRITÃO ===== */
   { id: 'arm_concha_afiada', nome: 'Concha afiada', classe: 'sereia', subdivisaoId: 'sereia',
-    dano: '3d6 (6d6 na água)', teste: 'Coordenação motora', peso: 0,
+    dano: '3d6 (6d6 na água)', teste: 'Coordenação motora', peso: 1,
     descricao: 'Borda cortante, quase invisível na água.' },
   { id: 'arm_corrente_perolas', nome: 'Corrente de pérolas negras', classe: 'sereia', subdivisaoId: 'sereia',
-    dano: '3d8', teste: 'Compostura', peso: 1,
+    dano: '3d8', teste: 'Compostura', peso: 2,
     descricao: 'Bonita de longe, pesada de perto. Pode enrolar no pescoço do alvo.' },
   { id: 'arm_tridente', nome: 'Tridente das profundezas', classe: 'sereia', subdivisaoId: 'triton',
-    dano: '3d12', teste: 'Instrumento físico', peso: 3,
+    dano: '3d12', teste: 'Instrumento físico', peso: 4,
     descricao: 'Três pontas, haste longa, feito pra alcançar quem foge.' },
   { id: 'arm_lanca_coral', nome: 'Lança de coral', classe: 'sereia', subdivisaoId: 'triton',
-    dano: '3d10', teste: 'Instrumento físico', peso: 2,
+    dano: '3d10', teste: 'Instrumento físico', peso: 3,
     descricao: 'Leve o bastante pra arremessar, dura o bastante pra atravessar.' },
 
   /* ===== MAGO ===== */
   { id: 'arm_cajado_escrito', nome: 'Cajado escrito', classe: 'mago',
-    dano: '3d6', teste: 'Savoir-faire', peso: 0,
+    dano: '3d6', teste: 'Savoir-faire', peso: 1,
     descricao: 'Coberto de palavras gravadas até o topo. Devolve 2 de mana quando acerta.' },
   { id: 'arm_pena_aco', nome: 'Pena de aço', classe: 'mago',
-    dano: '3d8', teste: 'Savoir-faire', peso: 1,
+    dano: '3d8', teste: 'Savoir-faire', peso: 2,
     descricao: 'Uma pena de escrever afiada como estilete.' },
 
   /* ===== PIRATA ===== */
   { id: 'arm_sabre_pesado', nome: 'Sabre pesado', classe: 'pirata', subdivisaoId: 'predileto_mares',
-    dano: '3d12', teste: 'Instrumento físico', peso: 3,
+    dano: '3d12', teste: 'Instrumento físico', peso: 4,
     descricao: 'Lâmina larga que corta mais por peso do que por técnica.' },
   { id: 'arm_ancora_mao', nome: 'Âncora de mão', classe: 'pirata', subdivisaoId: 'predileto_mares',
-    dano: '3d10', teste: 'Instrumento físico', peso: 2,
+    dano: '3d10', teste: 'Instrumento físico', peso: 3,
     descricao: 'Uma âncora pequena usada como maça. Derruba o alvo se ele falhar em Coordenação motora.' },
   { id: 'arm_adaga_duas_faces', nome: 'Adaga de duas faces', classe: 'pirata', subdivisaoId: 'trapaceiro',
-    dano: '3d8 (6d8 se mentiu ao alvo)', teste: 'Drama', peso: 1,
+    dano: '3d8 (6d8 se mentiu ao alvo)', teste: 'Drama', peso: 2,
     descricao: 'Uma lâmina de cada lado do punho, pra quando a conversa vira.' },
   { id: 'arm_pistola_emperrada', nome: 'Pistola emperrada', classe: 'pirata', subdivisaoId: 'trapaceiro',
-    dano: '5d10', teste: 'Compostura', peso: 2,
+    dano: '5d10', teste: 'Compostura', peso: 3,
     descricao: 'Falha muito, mas ninguém sabe disso além de você. Role 1d6 antes de atirar: em 1 ou 2, ela falha.' },
   { id: 'arm_chave_mestra', nome: 'Chave-mestra reforçada', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
-    dano: '3d8', teste: "C'est la vie", peso: 1,
+    dano: '3d8', teste: "C'est la vie", peso: 2,
     descricao: 'Ferramenta que abre fechaduras e crânios com a mesma eficiência.' },
   { id: 'arm_rede_cordas', nome: 'Rede de cordas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
-    dano: 'sem dano', teste: 'Coordenação motora', peso: 1,
+    dano: 'sem dano', teste: 'Coordenação motora', peso: 2,
     descricao: 'Prende o alvo em vez de feri-lo. O alvo resiste com Instrumento físico ou fica imóvel por 1 rodada.' },
 
   /* ===== NASCIDO DE OURO ===== */
   { id: 'arm_cetro_guizos', nome: 'Cetro de guizos', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte',
-    dano: '3d8', teste: 'Império interior', peso: 1,
+    dano: '3d8', teste: 'Império interior', peso: 2,
     descricao: 'Barulhento, ridículo e mais pesado do que parece.' },
   { id: 'arm_espada_cerimonial', nome: 'Espada cerimonial', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
-    dano: '3d10', teste: 'Autoridade', peso: 2,
+    dano: '3d10', teste: 'Autoridade', peso: 3,
     descricao: 'Feita pra ser vista, não usada — o que a torna surpreendente.' },
   { id: 'arm_lamina_sem_brasao', nome: 'Lâmina sem brasão', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    dano: '3d12', teste: 'Instrumento físico', peso: 3,
+    dano: '3d12', teste: 'Instrumento físico', peso: 4,
     descricao: 'Você lixou o símbolo da família de propósito.' },
   { id: 'arm_escudo_vanguarda', nome: 'Escudo de vanguarda', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    dano: '3d6', teste: 'Limiar da dor', peso: 2,
+    dano: '3d6', teste: 'Limiar da dor', peso: 3,
     descricao: 'Pesado, feito pra ficar entre alguém e o perigo. Concede +5 de defesa enquanto empunhado.' },
 ];
 
@@ -629,69 +629,69 @@ function pesoCarregado(char, armasCustom = []) {
 const ARMADURAS_CATALOGO = [
   /* ===== GUERREIRO ===== */
   { id: 'arma_faixas_couro', nome: 'Faixas de couro cru', classe: 'guerreiro', subdivisaoId: 'brutus',
-    defesa: 2, peso: 1, descricao: 'Tiras enroladas nos antebraços e no tronco, mais pra não sangrar do que pra não apanhar.' },
+    defesa: 2, peso: 2, descricao: 'Tiras enroladas nos antebraços e no tronco, mais pra não sangrar do que pra não apanhar.' },
   { id: 'arma_peitoral_arena', nome: 'Peitoral de arena', classe: 'guerreiro', subdivisaoId: 'brutus',
-    defesa: 5, peso: 3, descricao: 'Chapa dianteira apenas; as costas ficam expostas porque Brutus não recua.' },
+    defesa: 5, peso: 4, descricao: 'Chapa dianteira apenas; as costas ficam expostas porque Brutus não recua.' },
   { id: 'arma_traje_sombra', nome: 'Traje de sombra', classe: 'guerreiro', subdivisaoId: 'pritzk',
-    defesa: 2, peso: 0, descricao: 'Tecido escuro sem fivelas, sem fechos, sem barulho. Concede +2 em testes de Silêncio.' },
+    defesa: 2, peso: 1, descricao: 'Tecido escuro sem fivelas, sem fechos, sem barulho. Concede +2 em testes de Silêncio.' },
   { id: 'arma_gibao_acolchoado', nome: 'Gibão acolchoado', classe: 'guerreiro', subdivisaoId: 'pritzk',
-    defesa: 3, peso: 1, descricao: 'Proteção discreta sob a roupa comum.' },
+    defesa: 3, peso: 2, descricao: 'Proteção discreta sob a roupa comum.' },
   { id: 'arma_meia_armadura', nome: 'Meia-armadura de placas', classe: 'guerreiro', subdivisaoId: 'nerena',
-    defesa: 4, peso: 2, descricao: 'Protege torso e ombros, deixa os braços livres para o arco.' },
+    defesa: 4, peso: 3, descricao: 'Protege torso e ombros, deixa os braços livres para o arco.' },
   { id: 'arma_bracadeiras_tiro', nome: 'Braçadeiras de tiro', classe: 'guerreiro', subdivisaoId: 'nerena',
-    defesa: 3, peso: 1, descricao: 'Reforço nos antebraços e no peito, feito por armeiro da família.' },
+    defesa: 3, peso: 2, descricao: 'Reforço nos antebraços e no peito, feito por armeiro da família.' },
 
   /* ===== DRUIDA ===== */
   { id: 'arma_manto_liquen', nome: 'Manto de líquen', classe: 'druida',
-    defesa: 2, peso: 0, descricao: 'Cresce junto com você e endurece no frio.' },
+    defesa: 2, peso: 1, descricao: 'Cresce junto com você e endurece no frio.' },
   { id: 'arma_casca_viva', nome: 'Casca viva', classe: 'druida',
-    defesa: 4, peso: 2, descricao: 'Placas de casca de árvore que se renovam sozinhas.' },
+    defesa: 4, peso: 3, descricao: 'Placas de casca de árvore que se renovam sozinhas.' },
   { id: 'arma_pele_segunda_muda', nome: 'Pele de segunda muda', classe: 'druida', animalTipo: 'mistico',
-    defesa: 3, peso: 1, descricao: 'Feita do que seu animal descartou. A cada Catástrofe, o DT do teste de Eletroquímica sobe 2 — ela lembra de quem veio.' },
+    defesa: 3, peso: 2, descricao: 'Feita do que seu animal descartou. A cada Catástrofe, o DT do teste de Eletroquímica sobe 2 — ela lembra de quem veio.' },
 
   /* ===== SEREIA / TRITÃO ===== */
   { id: 'arma_veu_escamas', nome: 'Véu de escamas', classe: 'sereia', subdivisaoId: 'sereia',
-    defesa: 2, peso: 0, descricao: 'Camada fina e iridescente, quase invisível fora d\u2019água.' },
+    defesa: 2, peso: 1, descricao: 'Camada fina e iridescente, quase invisível fora d\u2019água.' },
   { id: 'arma_coroa_nacar', nome: 'Coroa de nácar', classe: 'sereia', subdivisaoId: 'sereia',
-    defesa: 3, peso: 1, descricao: 'Adorno rígido que protege cabeça e pescoço.' },
+    defesa: 3, peso: 2, descricao: 'Adorno rígido que protege cabeça e pescoço.' },
   { id: 'arma_couraca_casco', nome: 'Couraça de casco', classe: 'sereia', subdivisaoId: 'triton',
-    defesa: 5, peso: 3, descricao: 'Feita de carapaças de criaturas do fundo.' },
+    defesa: 5, peso: 4, descricao: 'Feita de carapaças de criaturas do fundo.' },
   { id: 'arma_placas_arraia', nome: 'Placas de arraia', classe: 'sereia', subdivisaoId: 'triton',
-    defesa: 3, peso: 1, descricao: 'Cobre o dorso e desliza na água.' },
+    defesa: 3, peso: 2, descricao: 'Cobre o dorso e desliza na água.' },
 
   /* ===== MAGO ===== */
   { id: 'arma_vestes_escritas', nome: 'Vestes escritas', classe: 'mago',
-    defesa: 2, peso: 0, descricao: 'Túnica coberta de anotações a tinta. Devolve 1 de mana no começo de cada cena.' },
+    defesa: 2, peso: 1, descricao: 'Túnica coberta de anotações a tinta. Devolve 1 de mana no começo de cada cena.' },
   { id: 'arma_manto_margem', nome: 'Manto de margem', classe: 'mago',
-    defesa: 3, peso: 1, descricao: 'Forro grosso com bolsos internos para páginas soltas.' },
+    defesa: 3, peso: 2, descricao: 'Forro grosso com bolsos internos para páginas soltas.' },
 
   /* ===== PIRATA ===== */
   { id: 'arma_casaco_capitao', nome: 'Casaco de capitão', classe: 'pirata', subdivisaoId: 'predileto_mares',
-    defesa: 4, peso: 2, descricao: 'Couro pesado, botões de latão, ombros reforçados.' },
+    defesa: 4, peso: 3, descricao: 'Couro pesado, botões de latão, ombros reforçados.' },
   { id: 'arma_colete_cordas', nome: 'Colete de cordas', classe: 'pirata', subdivisaoId: 'predileto_mares',
-    defesa: 2, peso: 1, descricao: 'Nós apertados que amortecem golpes.' },
+    defesa: 2, peso: 2, descricao: 'Nós apertados que amortecem golpes.' },
   { id: 'arma_casaca_duas_caras', nome: 'Casaca de duas caras', classe: 'pirata', subdivisaoId: 'trapaceiro',
-    defesa: 3, peso: 1, descricao: 'Reversível: de um lado nobre, do outro maltrapilha. Concede +2 em testes de Drama.' },
+    defesa: 3, peso: 2, descricao: 'Reversível: de um lado nobre, do outro maltrapilha. Concede +2 em testes de Drama.' },
   { id: 'arma_faixa_bolsos', nome: 'Faixa de bolsos falsos', classe: 'pirata', subdivisaoId: 'trapaceiro',
-    defesa: 2, peso: 0, descricao: 'Cheia de compartimentos, quase todos vazios.' },
+    defesa: 2, peso: 1, descricao: 'Cheia de compartimentos, quase todos vazios.' },
   { id: 'arma_avental_couro', nome: 'Avental de couro e ferramentas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
-    defesa: 3, peso: 1, descricao: 'Prático, resistente, sempre com algo útil pendurado.' },
+    defesa: 3, peso: 2, descricao: 'Prático, resistente, sempre com algo útil pendurado.' },
   { id: 'arma_placas_casco_navio', nome: 'Placas de casco de navio', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
-    defesa: 4, peso: 2, descricao: 'Restos de embarcação amarrados no torso.' },
+    defesa: 4, peso: 3, descricao: 'Restos de embarcação amarrados no torso.' },
 
   /* ===== NASCIDO DE OURO ===== */
   { id: 'arma_traje_guizos', nome: 'Traje de guizos reforçado', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte',
-    defesa: 2, peso: 0, descricao: 'Ridículo por fora, acolchoado por dentro.' },
+    defesa: 2, peso: 1, descricao: 'Ridículo por fora, acolchoado por dentro.' },
   { id: 'arma_colete_bordado', nome: 'Colete bordado', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte',
-    defesa: 3, peso: 1, descricao: 'Fios de ouro entrelaçados fazem mais que decorar.' },
+    defesa: 3, peso: 2, descricao: 'Fios de ouro entrelaçados fazem mais que decorar.' },
   { id: 'arma_armadura_gala', nome: 'Armadura de gala', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
-    defesa: 5, peso: 3, descricao: 'Dourada, polida, feita para ser vista de longe. Concede +2 em testes de Autoridade.' },
+    defesa: 5, peso: 4, descricao: 'Dourada, polida, feita para ser vista de longe. Concede +2 em testes de Autoridade.' },
   { id: 'arma_manto_real', nome: 'Manto real', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
-    defesa: 3, peso: 2, descricao: 'Pesado, longo, imponente.' },
+    defesa: 3, peso: 3, descricao: 'Pesado, longo, imponente.' },
   { id: 'arma_armadura_sem_brasao', nome: 'Armadura completa sem brasão', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    defesa: 6, peso: 4, descricao: 'Proteção total, símbolo nenhum.' },
+    defesa: 6, peso: 5, descricao: 'Proteção total, símbolo nenhum.' },
   { id: 'arma_cota_malha_usada', nome: 'Cota de malha usada', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    defesa: 4, peso: 2, descricao: 'Já foi de outra pessoa, e ela não voltou.' },
+    defesa: 4, peso: 3, descricao: 'Já foi de outra pessoa, e ela não voltou.' },
 ];
 
 function armaduraDisponivel(a, char) {
@@ -717,79 +717,79 @@ function pesoArmadura(char, custons = []) {
 /* ---------- catálogo de itens de inventário ---------- */
 const ITENS_CATALOGO = [
   /* ===== DRUIDA ===== */
-  { id: 'ite_cantil_seiva', nome: 'Cantil de seiva', classe: 'druida', peso: 1,
+  { id: 'ite_cantil_seiva', nome: 'Cantil de seiva', classe: 'druida', peso: 2,
     descricao: 'Recupera 2d6 de vida. Enche sozinho a cada amanhecer.' },
-  { id: 'ite_osso_marcado', nome: 'Osso marcado', classe: 'druida', peso: 0,
+  { id: 'ite_osso_marcado', nome: 'Osso marcado', classe: 'druida', peso: 1,
     descricao: 'Enterrado num lugar, guarda uma mensagem sua que só outro druida consegue ouvir. Colocar este item com uma mensagem fincado no chão gasta o item.' },
-  { id: 'ite_casulo_adormecido', nome: 'Casulo adormecido', classe: 'druida', peso: 1,
+  { id: 'ite_casulo_adormecido', nome: 'Casulo adormecido', classe: 'druida', peso: 2,
     descricao: 'Guarda uma criatura pequena que eclode quando a mestra decidir. Você não escolhe qual, mas pode escolher tentar criar um laço ou não com este animal. Gasta ao se chocar.' },
-  { id: 'ite_coleira_sem_dono', nome: 'Coleira sem dono', classe: 'druida', animalTipo: 'natural', peso: 0,
+  { id: 'ite_coleira_sem_dono', nome: 'Coleira sem dono', classe: 'druida', animalTipo: 'natural', peso: 1,
     descricao: 'Concede +5 no teste de Ágape para criar um novo laço.' },
-  { id: 'ite_vertebra_primeiro_dono', nome: 'Vértebra do primeiro dono', classe: 'druida', animalTipo: 'mistico', peso: 1,
+  { id: 'ite_vertebra_primeiro_dono', nome: 'Vértebra do primeiro dono', classe: 'druida', animalTipo: 'mistico', peso: 2,
     descricao: 'Um osso do animal místico de outro druida, morto há tempos. Segurando-o durante a Catástrofe, você pode fazer o teste de Eletroquímica com Volição no lugar. Não gasta, mas o seu animal odeia quando você usa.' },
 
   /* ===== SEREIA / TRITÃO ===== */
-  { id: 'ite_frasco_agua_natal', nome: 'Frasco de água natal', classe: 'sereia', peso: 1,
+  { id: 'ite_frasco_agua_natal', nome: 'Frasco de água natal', classe: 'sereia', peso: 2,
     descricao: 'Água do seu reino. Bebida, recupera 3d6 de sanidade.' },
-  { id: 'ite_batom_escamas', nome: 'Batom de escamas', classe: 'sereia', subdivisaoId: 'sereia', peso: 1,
+  { id: 'ite_batom_escamas', nome: 'Batom de escamas', classe: 'sereia', subdivisaoId: 'sereia', peso: 2,
     descricao: 'Enquanto usado, +5 em testes de Drama e Autoridade. Não gasta.' },
-  { id: 'ite_escama_arrancada', nome: 'Escama arrancada', classe: 'sereia', subdivisaoId: 'triton', peso: 0,
+  { id: 'ite_escama_arrancada', nome: 'Escama arrancada', classe: 'sereia', subdivisaoId: 'triton', peso: 1,
     descricao: 'Você arranca uma escama própria e entrega a alguém. Enquanto essa pessoa a carregar, você sabe se ela está viva e se está com medo. Não gasta.' },
 
   /* ===== MAGO ===== */
-  { id: 'ite_pagina_em_branco', nome: 'Página em branco', classe: 'mago', peso: 1,
+  { id: 'ite_pagina_em_branco', nome: 'Página em branco', classe: 'mago', peso: 2,
     descricao: 'Copia um feitiço que você viu ser conjurado nesta cena e permite usá-lo uma vez, pelo dobro do custo. Não pode ser um feitiço de nível maior do que você poderia conjurar normalmente.' },
-  { id: 'ite_lupa_leitura', nome: 'Lupa de leitura profunda', classe: 'mago', peso: 1,
+  { id: 'ite_lupa_leitura', nome: 'Lupa de leitura profunda', classe: 'mago', peso: 2,
     descricao: 'Revela se um texto tem mensagem oculta, código ou magia. Não gasta.' },
-  { id: 'ite_vela_estudo', nome: 'Vela de estudo', classe: 'mago', peso: 0,
+  { id: 'ite_vela_estudo', nome: 'Vela de estudo', classe: 'mago', peso: 1,
     descricao: 'Queima por uma noite; enquanto acesa, você não sente sono nem fome.' },
-  { id: 'ite_frasco_tinta_emprestada', nome: 'Frasco de tinta emprestada', classe: 'mago', peso: 1,
+  { id: 'ite_frasco_tinta_emprestada', nome: 'Frasco de tinta emprestada', classe: 'mago', peso: 2,
     descricao: 'Guarda 10 da sua mana e pode ser dado para outro mago para uso posterior. Enche uma vez por sessão. Você perde 10 de mana para enchê-lo e o item só é gasto ao ser entregue a outro mago.' },
-  { id: 'ite_pena_asa_negra', nome: 'Pena de asa negra', classe: 'mago', nivelMin: 'negro', peso: 1,
+  { id: 'ite_pena_asa_negra', nome: 'Pena de asa negra', classe: 'mago', nivelMin: 'negro', peso: 2,
     descricao: 'Uma vez por sessão, conjure um feitiço sem gastar sanidade.' },
 
   /* ===== GUERREIRO ===== */
-  { id: 'ite_pedra_amolar', nome: 'Pedra de amolar', classe: 'guerreiro', peso: 1,
+  { id: 'ite_pedra_amolar', nome: 'Pedra de amolar', classe: 'guerreiro', peso: 2,
     descricao: 'Uma vez por cena, sua arma causa +1d6 até o final da cena.' },
-  { id: 'ite_corrente_prender', nome: 'Corrente curta de prender', classe: 'guerreiro', peso: 1,
+  { id: 'ite_corrente_prender', nome: 'Corrente curta de prender', classe: 'guerreiro', peso: 2,
     descricao: 'Imobiliza um alvo derrubado até ele passar num teste de Instrumento físico com DT variável. Não gasta.' },
-  { id: 'ite_cantil_aguardente', nome: 'Cantil de aguardente', classe: 'guerreiro', peso: 1,
+  { id: 'ite_cantil_aguardente', nome: 'Cantil de aguardente', classe: 'guerreiro', peso: 2,
     descricao: 'Recupera 2d6 de sanidade, mas você fica com −5 em testes de Intelecto por 1 cena.' },
-  { id: 'ite_corda_puxar', nome: 'Corda de puxar', classe: 'guerreiro', subdivisaoId: 'brutus', peso: 1,
+  { id: 'ite_corda_puxar', nome: 'Corda de puxar', classe: 'guerreiro', subdivisaoId: 'brutus', peso: 2,
     descricao: 'Amarrada na cintura, permite arrastar algo (ou alguém) muito mais pesado que você. Não gasta.' },
-  { id: 'ite_po_cegueira', nome: 'Pó de cegueira', classe: 'guerreiro', subdivisaoId: 'pritzk', peso: 0,
+  { id: 'ite_po_cegueira', nome: 'Pó de cegueira', classe: 'guerreiro', subdivisaoId: 'pritzk', peso: 1,
     descricao: 'Cega um alvo por 1 rodada; ele resiste com Velocidade de reação.' },
-  { id: 'ite_giz_mira', nome: 'Giz de mira', classe: 'guerreiro', subdivisaoId: 'nerena', peso: 0,
+  { id: 'ite_giz_mira', nome: 'Giz de mira', classe: 'guerreiro', subdivisaoId: 'nerena', peso: 1,
     descricao: 'Marca um alvo à distância. Enquanto a marca durar (2 rodadas), seus ataques contra ele ganham +5. Gasta ao usar.' },
 
   /* ===== PIRATA ===== */
-  { id: 'ite_garrafa_folego', nome: 'Garrafa de fôlego', classe: 'pirata', peso: 1,
+  { id: 'ite_garrafa_folego', nome: 'Garrafa de fôlego', classe: 'pirata', peso: 2,
     descricao: 'Bebida, permite respirar debaixo d\u2019água por uma cena.' },
-  { id: 'ite_mapa_incompleto', nome: 'Mapa incompleto', classe: 'pirata', peso: 1,
+  { id: 'ite_mapa_incompleto', nome: 'Mapa incompleto', classe: 'pirata', peso: 2,
     descricao: 'Uma vez por sessão, revela um detalhe do lugar onde você está. Não gasta.' },
-  { id: 'ite_chave_sem_fechadura', nome: 'Chave sem fechadura', classe: 'pirata', peso: 1,
+  { id: 'ite_chave_sem_fechadura', nome: 'Chave sem fechadura', classe: 'pirata', peso: 2,
     descricao: 'Você não sabe o que ela abre. A mestra sabe.' },
-  { id: 'ite_barril_polvora', nome: 'Barril pequeno de pólvora', classe: 'pirata', subdivisaoId: 'predileto_mares', peso: 2,
+  { id: 'ite_barril_polvora', nome: 'Barril pequeno de pólvora', classe: 'pirata', subdivisaoId: 'predileto_mares', peso: 3,
     descricao: 'Causa 6d10 numa área ao explodir. Carregar isso em combate é escolha sua, e a mestra decide quando (ou se vai) explodir.' },
-  { id: 'ite_anel_sinete_falso', nome: 'Anel de sinete falso', classe: 'pirata', subdivisaoId: 'trapaceiro', peso: 1,
+  { id: 'ite_anel_sinete_falso', nome: 'Anel de sinete falso', classe: 'pirata', subdivisaoId: 'trapaceiro', peso: 2,
     descricao: 'Falsifica selos e assinaturas. +5 em testes de Drama envolvendo documentos. Não gasta, mas só pode ser usado uma vez por cena.' },
-  { id: 'ite_baralho_marcado', nome: 'Baralho marcado', classe: 'pirata', subdivisaoId: 'trapaceiro', peso: 1,
+  { id: 'ite_baralho_marcado', nome: 'Baralho marcado', classe: 'pirata', subdivisaoId: 'trapaceiro', peso: 2,
     descricao: 'Você vence qualquer jogo de azar. Se pegarem, o problema é outro. Não gasta.' },
-  { id: 'ite_caixa_pecas_soltas', nome: 'Caixa de peças soltas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos', peso: 2,
+  { id: 'ite_caixa_pecas_soltas', nome: 'Caixa de peças soltas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos', peso: 3,
     descricao: 'Sempre tem a peça que falta. +5 em testes de C\u2019est la vie para improvisar. Não gasta.' },
 
   /* ===== NASCIDO DE OURO ===== */
-  { id: 'ite_perfume_corte', nome: 'Frasco de perfume da corte', classe: 'nascido_ouro', peso: 0,
+  { id: 'ite_perfume_corte', nome: 'Frasco de perfume da corte', classe: 'nascido_ouro', peso: 1,
     descricao: 'Cheiro reconhecível a distância. +5 em testes sociais com nobres, −5 para se esconder. Dura a sessão inteira.' },
-  { id: 'ite_bolsa_moedas', nome: 'Bolsa de moedas de ouro', classe: 'nascido_ouro', peso: 1,
+  { id: 'ite_bolsa_moedas', nome: 'Bolsa de moedas de ouro', classe: 'nascido_ouro', peso: 2,
     descricao: 'Dinheiro suficiente pra comprar quase qualquer coisa em uma cidade pequena.' },
-  { id: 'ite_chave_aposentos', nome: 'Chave dos aposentos', classe: 'nascido_ouro', peso: 0,
+  { id: 'ite_chave_aposentos', nome: 'Chave dos aposentos', classe: 'nascido_ouro', peso: 1,
     descricao: 'Abre qualquer porta de propriedade da coroa, em qualquer cidade. Não gasta.' },
-  { id: 'ite_caixa_bobo', nome: 'Caixa do Bobo', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte', peso: 0,
+  { id: 'ite_caixa_bobo', nome: 'Caixa do Bobo', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte', peso: 1,
     descricao: 'Role 1d20 e a mestra decide o que sai: pode ser balões, pode ser uma arma devastadora. Pode ser usada uma vez por sessão e não gasta.' },
-  { id: 'ite_coroa_menor', nome: 'Coroa menor', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa', peso: 1,
+  { id: 'ite_coroa_menor', nome: 'Coroa menor', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa', peso: 2,
     descricao: 'Usada em público, +5 em testes de Autoridade. Também te torna alvo prioritário se o inimigo falhar em um teste de Volição de DT variável. Não gasta.' },
-  { id: 'ite_bandagem_manto', nome: 'Bandagem do próprio manto', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado', peso: 0,
+  { id: 'ite_bandagem_manto', nome: 'Bandagem do próprio manto', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado', peso: 1,
     descricao: 'Você rasga a roupa real pra estancar o sangue de outra pessoa. Recupera 3d6 de vida em um aliado. Gasta ao usar.' },
 ];
 
@@ -835,6 +835,10 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Uma vez por cena, você chama a água — chuva, maré, um cano estourado, o que houver — e ela vem. A mestra decide o que a água consegue fazer no ambiente. Gasta 12 de sanidade.' },
   { id: 'hab_canto_afogamento', nome: 'Canto do afogamento', classe: 'sereia', subdivisaoId: 'sereia',
     descricao: 'Todos que te ouvem resistem com Volição (DT da mestra) ou caminham na sua direção por 1 rodada, esquecendo o que estavam fazendo. Gasta 15 de sanidade.' },
+  { id: 'hab_cancao_afogar', nome: 'Canção de Afogar', classe: 'sereia', subdivisaoId: 'sereia',
+    descricao: 'O alvo sente água enchendo os pulmões, embora esteja em terra firme. 6d12, e ele perde a próxima ação tossindo. Resiste com Resistência. Gasta 6 de sanidade.' },
+  { id: 'hab_dois_contra_um', nome: 'Dois Contra Um', classe: 'sereia', subdivisaoId: 'triton',
+    descricao: 'Quando ele está cercado por dois ou mais inimigos, cada ataque dele acerta dois alvos de uma vez, não reduzindo dano, mas perde a ação de movimento. Gasta 5 de sanidade.' },
   { id: 'hab_voz_acalma', nome: 'A voz que acalma', classe: 'sereia', subdivisaoId: 'sereia',
     descricao: 'Você remove medo, pânico ou controle mental de um aliado. Gasta 9 de sanidade.' },
   { id: 'hab_nada_disso_real', nome: 'Nada disso é real', classe: 'sereia', subdivisaoId: 'sereia',
@@ -949,49 +953,121 @@ function escopoHabilidade(hab) {
    nivelMin = nível mágico exigido. 'negro' = exclusivo de magos negros (nível 100). */
 const FEITICOS_CATALOGO = [
   { id: 'fei_espirito_incandescente', nome: 'Espírito incandescente', nivelMin: 5,
-    descricao: 'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 2 de mana para acender um dedo de fogo, e cinco para acender uma mão cheia.' },
+    descricao: 'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques. Sustentar gasta 1 de mana por rodada.',
+    evolucoes: [
+      'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques. Sustentar gasta 1 de mana por rodada.',
+      'Agora você pode acender uma mão inteira de fogo por 3 de mana. Causa 3d4 a mais em ataques. Sustentar gasta 2 de mana por rodada.',
+      'Agora você pode acender um braço inteiro de fogo por 5 de mana. Causa 5d4 a mais em ataques. Sustentar gasta 3 de mana por rodada.',
+    ] },
   { id: 'fei_frenesi', nome: 'Frênesi', nivelMin: 5,
-    descricao: 'Você ainda não teve que sobreviver a muitas coisas, então o desespero da batalha te dá 10 de mana em troca de 15 pontos de sanidade.' },
+    descricao: 'Você ainda não teve que sobreviver a muitas coisas, então o desespero da batalha te dá 10 de mana em troca de 15 pontos de sanidade.',
+    evolucoes: [
+      'Você ainda não teve que sobreviver a muitas coisas, então o desespero da batalha te dá 10 de mana em troca de 15 pontos de sanidade.',
+      'Agora você pode trocar 20 de sanidade por 15 de mana.',
+      'Agora você troca 30 de mana por miseráveis 8 de mana. Essa evolução do feitiço tem uso limitado em 3 vezes por sessão.',
+    ] },
   { id: 'fei_deixe_me_vencer', nome: 'Deixe-me vencer desta vez', nivelMin: 10,
     descricao: 'Você pode refazer um teste à sua escolha, jogando novamente seus dados sem nenhuma punição. Gasta 4 de mana.' },
-  { id: 'fei_tradicao_recintos', nome: 'Tradição dos recintos amaldiçoados', nivelMin: 10,
-    descricao: 'Você conversa com os objetos e as estruturas do lugar em que você está — e elas te contam o que viram e ouviram nas últimas horas. Gasta 3 de mana. Elas não mentem, mas também não entendem muito bem o que viram.' },
+  { id: 'fei_tradicao_recintos', nome: 'Tradição dos recintos amaldiçoados', nivelMin: 15,
+    descricao: 'Você conversa com os objetos e as estruturas do lugar em que você está — e elas te contam o que viram e ouviram nas últimas horas. Gasta 3 de mana. Elas não mentem, mas também não entendem muito bem o que viram.',
+    evolucoes: [
+      'Você conversa com os objetos e as estruturas do lugar em que você está — e elas te contam o que viram e ouviram nas últimas horas. Gasta 3 de mana. Elas não mentem, mas também não entendem muito bem o que viram.',
+      'Agora animais pequenos como baratas, ratos e até mesmo formigas falam sua versão da história, à suas maneiras, por 4 de mana.',
+      'Objetos, estruturas e animais agora possuem a lucidez de um gênio. Eles te contam as últimas cenas acontecidas à sua frente com clareza, até mesmo sabendo informações como nomes e sentimentos por 10 de mana.',
+    ] },
   { id: 'fei_rachadura', nome: 'Rachadura', nivelMin: 20,
-    descricao: 'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Coordenação motora (DT igual a 20% do seu nível mágico) ou cai e sofre 4d10 de dano. Gasta 4 de mana.' },
+    descricao: 'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Coordenação motora ou cai e sofre 4d10 de dano. Gasta 4 de mana.',
+    evolucoes: [
+      'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Coordenação motora ou cai e sofre 4d10 de dano. Gasta 4 de mana.',
+      'Você abre uma fenda mais grossa agora. Causa 5d12 de dano e gasta 6 de mana.',
+      'Você abre uma cratera, pegando todos os alvos em um raio grande. Aliados também podem ser afetados e a cratera nunca se desfaz. Causa 8d12 de dano e gasta 9 de mana.',
+    ] },
   { id: 'fei_costureiro_morte', nome: 'Costureiro da morte', nivelMin: 30,
-    descricao: 'Você fecha ferimentos com fios de luz, devolvendo 5d10 de vida a um alvo. Gasta 5 de mana. Não funciona duas vezes na mesma ferida.' },
+    descricao: 'Você fecha ferimentos com fios de luz, devolvendo 3d10 de vida a um alvo. Gasta 5 de mana. Não funciona duas vezes na mesma ferida.',
+    evolucoes: [
+      'Você fecha ferimentos com fios de luz, devolvendo 3d10 de vida a um alvo. Gasta 5 de mana. Não funciona duas vezes na mesma ferida.',
+      'Você devolve 5d10 de vida por 7 de mana.',
+      'Você devolve 7d12 de vida por 10 de mana.',
+    ] },
   { id: 'fei_herdeiro_chamas', nome: 'Herdeiro de chamas', nivelMin: 35,
-    descricao: 'Evolução natural de Espírito incandescente: agora o fogo obedece forma. Você molda uma parede, um caminho ou uma corrente de fogo. Gasta 8 de mana e causa 3d20 de dano. Quem for atingido resiste com Velocidade de reação (DT igual a 25% do seu nível mágico) e recebe metade do dano.' },
+    descricao: 'Evolução natural de Espírito incandescente: agora o fogo obedece forma. Você molda uma parede, um caminho ou uma corrente de fogo. Gasta 6 de mana e causa 3d12 + 10 de dano.',
+    evolucoes: [
+      'Evolução natural de Espírito incandescente: agora o fogo obedece forma. Você molda uma parede, um caminho ou uma corrente de fogo. Gasta 6 de mana e causa 3d12 + 10 de dano.',
+      'O fogo te protege. Essa evolução pode ser usada como reação a algum ataque por 8 de mana, colocando fogo no alvo por uma rodada, que recebe 4d10 de dano como reação, mas não te impede de tomar o ataque dele.',
+      'Você pode usar essa evolução para pegar fogo em seu corpo inteiro, virando um fogaréu ambulante que bota fogo em tudo que toca. O simples ato de encostar em algo causa 3d20 de dano e gasta 10 de mana.',
+    ] },
   { id: 'fei_escudo_totemico', nome: 'Escudo Totêmico', nivelMin: 40,
     descricao: 'Um totem se acende em algum lugar do ambiente e, enquanto ninguém quebrá-lo, você recebe metade de todos os danos. Você gasta 6 de mana e pode usar este escudo em um aliado, sacrificando sua proteção.' },
+  { id: 'fei_lorde_metal', nome: 'Lorde Metal', nivelMin: 45,
+    descricao: 'Mova todos os objetos de metal no recinto. Você pode usar como arma ou simplesmente mudá-lo de lugar. Você não pode mover objetos maiores do que o tamanho de sua mão, e só pode mover um por vez. Objetos dão 2d10 de dano. Gasta 4 de mana por objeto.',
+    evolucoes: [
+      'Mova todos os objetos de metal no recinto. Você pode usar como arma ou simplesmente mudá-lo de lugar. Você não pode mover objetos maiores do que o tamanho de sua mão, e só pode mover um por vez. Objetos dão 2d10 de dano. Gasta 4 de mana por objeto.',
+      'Você agora move todos os objetos pequenos e médios do recinto, podendo usar todos como arma. A cada 2 objetos, o dano é de 3d12. Cada 1, 2d10. Gasta 6 de mana.',
+      'Você agora pode mover todos os objetos do recinto, ignorando seu tamanho, desde que seja feito de metal. Gasta 10 de mana e o dano de objetos considerados grandes ou enormes é de 5d12 de dano.',
+    ] },
   { id: 'fei_homunculo', nome: 'Invocando o Homúnculo', nivelMin: 50,
-    descricao: 'Você cria três aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você.' },
+    descricao: 'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d12 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
+    evolucoes: [
+      'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d12 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
+      'Você cria 3 aliados agora, um pouco maiores por 7 de mana. Eles causam 2d10 de dano por ataque. Cada um tem 15 de vida e te obedecem cegamente.',
+      'Você cria um monstro de carne, sangue e raiva. Ela é quase um brutamonte, causando 4d12 + 10 por ataque por 10 de mana. Ela tem 30 de vida, mas não te obedece muito bem.',
+    ] },
   { id: 'fei_erratum', nome: 'Erratum', nivelMin: 55,
     descricao: 'Você declara uma condenação curta contra um alvo. Ele sofre 6d12 de dano, e o dobro disso se já estiver ferido. Gasta 6 de mana.' },
   { id: 'fei_pulso_arcano', nome: 'Pulso Arcano', nivelMin: 60,
-    descricao: 'Você leva ondas de choque do chão até seu alvo, que, se falhar em um teste de Volição (DT igual a 25% do seu nível mágico), fica imóvel por 1 rodada. Você gasta 6 de mana.' },
+    descricao: 'Você leva ondas de choque do chão até seu alvo, que, se falhar em um teste de Volição, fica imóvel por 1 rodada. Você gasta 6 de mana.',
+    evolucoes: [
+      'Você leva ondas de choque do chão até seu alvo, que, se falhar em um teste de Volição, fica imóvel por 1 rodada. Você gasta 6 de mana.',
+      'Esse pulso vira um raio agora, deixando marcas de eletricidade em seu corpo. Esse pulso agora dá 3d10 de dano, mas não deixa o alvo imóvel. Gasta 5 de mana.',
+      'Você deixa todos os alvos a uma distância média de você imóveis por uma rodada. Gasta 8 de mana.',
+    ] },
   { id: 'fei_forjador_mortifero', nome: 'Forjador Mortífero', nivelMin: 65,
-    descricao: 'Você amaldiçoa a arma de um aliado seu à sua escolha para conceder 3d10 a mais de dano em todos os ataques com ela. Você gasta 5 de mana por arma amaldiçoada.' },
+    descricao: 'Você amaldiçoa a arma de um aliado seu à sua escolha para conceder 3d10 a mais de dano em todos os ataques com ela. Você gasta 5 de mana por arma amaldiçoada.',
+    evolucoes: [
+      'Você amaldiçoa a arma de um aliado seu à sua escolha para conceder 3d10 a mais de dano em todos os ataques com ela. Você gasta 5 de mana por arma amaldiçoada.',
+      'Você agora pode amaldiçoar armaduras também, podendo tankar 1d12 de dano até o final da cena. Você gasta 6 de mana por armadura amaldiçoada.',
+      'Você tira a proteção de uma armadura inimiga, quebrando-a uma vez por cena. Gasta 10 de mana.',
+    ] },
   { id: 'fei_equilibrio_sanguineo', nome: 'Equilíbrio sanguíneo', nivelMin: 70,
-    descricao: 'Escolha dois alvos e faça com que seus níveis de vida fiquem equilibrados, somando seus pontos e dividindo entre os dois. Você gasta 5 de mana e ambos os alvos podem tentar resistir com um teste de Resistência (DT igual a 30% do seu nível mágico).' },
+    descricao: 'Escolha dois alvos e faça com que seus níveis de vida fiquem equilibrados, somando seus pontos e dividindo entre os dois. Você gasta 5 de mana e ambos os alvos podem tentar resistir com um teste de Resistência.' },
   { id: 'fei_fome_karzaron', nome: 'Fome de Karzaron', nivelMin: 75,
-    descricao: 'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 8d12 de dano, e você recupera metade desse valor em mana. Gasta 9 de mana e 15 de sanidade — alimentar isso deixa marcas. Você só usa esse golpe uma vez por cena.' },
+    descricao: 'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 6d12 de dano, e você recupera metade desse valor em mana. Gasta 15 de mana e 12 de sanidade.',
+    evolucoes: [
+      'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 6d12 de dano, e você recupera metade desse valor em mana. Gasta 15 de mana e 12 de sanidade.',
+      'Um braço demoníaco inteiro é chamado por você, e ele te protege da metade dos danos tomados por 3 rodadas, também podendo dar ataques que causam 2d12 de dano. Gasta 10 de mana.',
+      'Olhos demoníacos surgem no nada — alguns dizem que do inferno — e tira 6d12 de sanidade do alvo. Gasta 6 de mana.',
+    ] },
   { id: 'fei_brincando_morcego', nome: 'Brincando de morcego', nivelMin: 80,
-    descricao: 'Você arranca os próprios olhos da equação — eles continuam lá, abertos, inúteis, e é isso que assusta quem te vê. Por 3 rodadas o mundo chega até você em ondas de som: paredes viram silhuetas, corpos viram batimentos, e você escuta o coração de todo mundo num raio definido pela mestra, inclusive o de quem estava escondido. Gasta 7 de mana. Nenhuma ilusão te alcança, mas cores, rostos e palavras escritas somem.' },
+    descricao: 'Você fica de cabeça para baixo no ponto mais alto do recinto por 3 rodadas, atacando de cima e recuperando metade do dano causado em vida. Seus ataques são sombras indetectáveis (não podem ser esquivados) que causam 2d10 de dano. Gasta 5 de mana.',
+    evolucoes: [
+      'Você fica de cabeça para baixo no ponto mais alto do recinto por 3 rodadas, atacando de cima e recuperando metade do dano causado em vida. Seus ataques são sombras indetectáveis (não podem ser esquivados) que causam 2d10 de dano. Gasta 5 de mana.',
+      'Agora você está indetectável, mas não seus ataques. Alvos podem desviar, mas os ataques causam 3d12 de dano, e metade do dano volta para você em vida ou sanidade.',
+      'Tanto você quanto seus ataques estão indetectáveis por 2 rodadas. Ataques causam 3d10 de dano e não podem ser desviados. Você gasta 12 de mana.',
+    ] },
   { id: 'fei_mestre_marionetes', nome: 'Mestre das Marionetes', nivelMin: 85,
-    descricao: 'Você se transforma em alguém por 1d20 de minutos, imitando-o perfeitamente (desde sua voz até seus trejeitos), mas não sabe tudo que há dentro da mente daquele que você está copiando. Você gasta mana equivalente aos minutos que permanece sob efeito do feitiço. A pessoa precisa estar viva para você imitá-la.' },
-  { id: 'fei_permita_me_deus', nome: 'Permita-me ser um deus', nivelMin: 90,
-    descricao: 'Um aliado à sua escolha recebe +15 em todos os testes e não pode ser derrubado por 3 rodadas. Gasta 16 de mana e 30 de sanidade. Se ele usar isso pra matar alguém, você faz um teste de Limiar da Dor com DT 20. Se falhar, você também morre.' },
+    descricao: 'Você se transforma em alguém por 1d20 de minutos, imitando-o perfeitamente (desde sua voz até seus trejeitos), mas não sabe tudo que há dentro da mente daquele que você está copiando. Você gasta mana equivalente aos minutos que permanece sob efeito do feitiço dividido por 2, ou seja, metade dos minutos. A pessoa precisa estar viva para você imitá-la.',
+    evolucoes: [
+      'Você se transforma em alguém por 1d20 de minutos, imitando-o perfeitamente (desde sua voz até seus trejeitos), mas não sabe tudo que há dentro da mente daquele que você está copiando. Você gasta mana equivalente aos minutos que permanece sob efeito do feitiço dividido por 2, ou seja, metade dos minutos. A pessoa precisa estar viva para você imitá-la.',
+      'Você se transforma em uma pessoa viva por 1d20 de horas ao invés de minutos, imitando-a perfeitamente. Você gasta mana equivalente a unidade de horas que você permanece sob efeito do feitiço. A pessoa precisa estar viva para você imitá-la e memórias da pessoa vão surgindo aos poucos, mas não são verossímeis a todo momento. Elas podem te enganar.',
+      'As pessoas não precisam estar vivas para você imitá-las, mas você precisa ter visto seu corpo em algum momento da sua vida (o corpo morto, ou a pessoa antes dela morrer). Você determina se quer ficar com o corpo por 1d20 de minutos ou 1d20 de horas, sendo o cálculo de mana gasta equivalente as outras evoluções. Memórias ainda surgem do receptáculo, e elas são verdadeiras, mas só surgem com o uso de horas da marionete, não funciona em minutos.',
+    ] },
+  { id: 'fei_permita_me_deus', nome: 'Permissão de Mago', nivelMin: 90,
+    descricao: 'Um aliado à sua escolha recebe +15 em todos os testes e não pode ser morto ou derrubado por 3 rodadas. Gasta 15 de mana. Se ele usar isso pra matar alguém, você faz um teste de Resistência com DT 20. Se falhar, você também morre.' },
+  { id: 'fei_ultimas_palavras', nome: 'Faço disso minhas últimas palavras', nivelMin: 90,
+    descricao: 'Você troca a sua vida pela de outra pessoa, em qualquer lugar do mundo, morta ou quase-morta. Custa tudo: sua mana, sua sanidade, seus pontos de vida, e sua marca some da pele. O restante dos personagens nunca saberá seu paradeiro, nem lembrará do seu rosto, apenas a primeira letra do seu nome. O seu personagem sai da história — mas alguém da sua escolha volta.' },
   { id: 'fei_reescrevendo_mapa', nome: 'Reescrevendo o mapa', nivelMin: 95,
-    descricao: 'Você move uma coisa grande: um rio, uma montanha, uma cidade inteira alguns quilômetros. Gasta 30 de mana e 60 de sanidade, e leva uma noite inteira. Quando amanhecer, o mundo é diferente e ninguém sabe explicar por quê.' },
+    descricao: 'Você move uma coisa grande: um rio, uma montanha, uma rua alguns quilômetros. Gasta 40 de mana e leva uma noite inteira sem ações. Quando amanhecer, o mundo é diferente e ninguém sabe explicar por quê.',
+    evolucoes: [
+      'Você move uma coisa grande: um rio, uma montanha, uma rua alguns quilômetros. Gasta 40 de mana e leva uma noite inteira sem ações. Quando amanhecer, o mundo é diferente e ninguém sabe explicar por quê.',
+      'Você agora move uma cidade inteira por 60 de mana. Você leva um dia e uma noite inteira.',
+      'Você move um país inteiro, mudando o mapa mundi à sua mercê. Demora uma semana e gasta 80 de mana.',
+    ] },
   { id: 'fei_senhor_quatro_mundos', nome: 'Senhor dos quatro mundos', nivelMin: 'negro',
     descricao: 'Você se teleporta livremente para todos os lugares em que já esteve ou conhece, independente do reino. Cada viagem custa 5 de mana.' },
   { id: 'fei_mestre_ampulheta', nome: 'Mestre da Ampulheta', nivelMin: 'negro',
     descricao: 'Uma vez por cena, você pode parar o tempo e mexer no cenário da luta à sua mercê, trocando pessoas, estruturas e animais de lugar. Você gasta 8 de mana e não há como resistir.' },
   { id: 'fei_tinta_fim', nome: 'Com essa tinta escrevo seu fim', nivelMin: 'negro',
     descricao: 'Você escreve o fim de alguém. O alvo sofre dano igual ao seu nível mágico inteiro, sem resistência possível. Gasta 20 de mana e 45 de sanidade, e você não pode conjurar nenhum outro feitiço nesta cena. Uma vez por sessão.' },
-  { id: 'fei_ultimas_palavras', nome: 'Faço disso minhas últimas palavras', nivelMin: 'negro',
-    descricao: 'Você troca a sua vida pela de outra pessoa, em qualquer lugar do mundo, morta ou quase-morta. Custa tudo: sua mana, sua sanidade, seus pontos de vida, e sua marca some da pele. O restante dos personagens nunca saberá seu paradeiro, nem lembrará do seu rosto, apenas a primeira letra do seu nome. O seu personagem sai da história — mas alguém da sua escolha volta.' },
 ];
 
 /* Um feitiço está liberado se o mago tem nível suficiente. */
@@ -1232,6 +1308,24 @@ const detalhesDeFeiticos = (lista) =>
     return mapa;
   }, {});
 
+/* Nem todo feitiço evolui. Quem não evolui não mostra seletor, vale sempre uma
+   vaga e ganha um aviso no fim da descrição. */
+const AVISO_SEM_EVOLUCAO = 'Esse feitiço não tem evoluções disponíveis.';
+const temEvolucoes = (f) => Array.isArray(f?.evolucoes) && f.evolucoes.length === 3;
+
+/* Na ficha, o feitiço é descrito pela evolução que o mago escolheu. */
+function descricoesDeFeiticos(lista, catalogo) {
+  return (lista || []).reduce((mapa, f) => {
+    const id = feiticoId(f);
+    const item = (catalogo || []).find((x) => x.id === id);
+    if (!id || !item) return mapa;
+    mapa[id] = temEvolucoes(item)
+      ? item.evolucoes[feiticoEvolucao(f) - 1]
+      : `${item.descricao} ${AVISO_SEM_EVOLUCAO}`;
+    return mapa;
+  }, {});
+}
+
 /* Armazenamento no servidor. Personagens e conteúdos vivem numa tabela
    chave/valor no Postgres; a sessão é um cookie httpOnly, então toda
    requisição precisa de credentials: 'include'. Quem manda no que cada
@@ -1319,10 +1413,43 @@ async function carregarConteudo(escopo) {
   return index;
 }
 
-/* Catálogo de exibição: precisa resolver tudo que a ficha referencia, inclusive
-   os itens antigos sem escopo. */
-function catalogoDe(contentIndex, campo, base = []) {
-  return [...base, ...(contentIndex?.[campo] || []), ...(contentIndex?.legado?.[campo] || [])];
+/* ---------- conteúdo próprio da ficha ----------
+   Armas, armaduras e habilidades criadas de dentro de uma ficha ficam guardadas
+   nela mesma, em char.custom, e não em lugar nenhum compartilhado. É o que
+   permite o jogador inventar as próprias sem que isso apareça para os outros.
+   Feitiço não entra aqui: continua vindo do catálogo da mestra. */
+const customDaFicha = (char, campo) => char?.custom?.[campo] || [];
+const CAMPO_CUSTOM = { arma: 'armas', armadura: 'armaduras', habilidade: 'habilidades' };
+
+function montarConteudo(data, escopo) {
+  const id = uid();
+  return {
+    id,
+    item: {
+      id, nome: data.nome, descricao: data.descricao, dano: data.dano, teste: data.teste,
+      defesa: data.defesa, peso: data.peso || 0, escopo, createdAt: Date.now(),
+    },
+  };
+}
+
+/* Guarda o item dentro da própria ficha e já o deixa equipado: armadura é uma
+   só, então vai para armaduraId; as outras entram na lista correspondente. */
+function guardarCustom(ficha, campo, item, campoLista) {
+  const custom = { ...(ficha.custom || {}), [campo]: [...(ficha.custom?.[campo] || []), item] };
+  if (!campoLista) return { ...ficha, custom, armaduraId: item.id };
+  return { ...ficha, custom, [campoLista]: [...(ficha[campoLista] || []), item.id] };
+}
+
+/* Catálogo de exibição: precisa resolver tudo que a ficha referencia — o
+   catálogo do jogo, o conteúdo da mestra, os itens antigos sem escopo e o que
+   a própria ficha criou. */
+function catalogoDe(contentIndex, campo, base = [], char = null) {
+  return [
+    ...base,
+    ...(contentIndex?.[campo] || []),
+    ...(contentIndex?.legado?.[campo] || []),
+    ...customDaFicha(char, campo),
+  ];
 }
 
 /* Lista dos seletores: o conteúdo do escopo da ficha, mais os itens antigos.
@@ -1331,10 +1458,10 @@ function catalogoDe(contentIndex, campo, base = []) {
    A mestra continua enxergando todos eles (senão perderia o que já criou antes
    desta separação); para o jogador só aparecem os que já estão presos na ficha
    dele, para que ele consiga vê-los e a mestra consiga removê-los. */
-function customsDe(contentIndex, campo, idsPresos = [], ehMestra = false) {
+function customsDe(contentIndex, campo, idsPresos = [], ehMestra = false, char = null) {
   const antigos = contentIndex?.legado?.[campo] || [];
   const visiveis = ehMestra ? antigos : antigos.filter((x) => idsPresos.includes(x.id));
-  return [...(contentIndex?.[campo] || []), ...visiveis];
+  return [...(contentIndex?.[campo] || []), ...visiveis, ...customDaFicha(char, campo)];
 }
 
 function resizeImage(file, maxDim = 360, quality = 0.82) {
@@ -1852,7 +1979,7 @@ function SubdivisaoCard({ item, active, onClick, color }) {
             <React.Fragment key={n}>
               {i > 0 && ' e '}<strong>{n}</strong>
             </React.Fragment>
-          ))} (+5 nos testes)</span>
+          ))} (+{TIERS[1].bonus} nos testes)</span>
         </p>
       )}
     </button>
@@ -1882,7 +2009,7 @@ function StepNarrativa({ draft, origin }) {
           <Star size={11} className="shrink-0 mt-0.5" />
           <span>Todo {origin.nome.toLowerCase()} nasce treinado em {nomesPericias(PERICIAS_POR_CLASSE[origin.id]).map((n, i) => (
             <React.Fragment key={n}>{i > 0 && ' e '}<strong>{n}</strong></React.Fragment>
-          ))} (+5 nos testes).</span>
+          ))} (+{TIERS[1].bonus} nos testes).</span>
         </p>
       )}
     </div>
@@ -2419,7 +2546,7 @@ function SeletorArmas({ char, selecionadas, onToggle, color, customs, canCreate,
           <button onClick={() => setAberta(expandida ? null : a.id)} className="min-w-0 flex-1 text-left">
             <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{a.nome}</p>
             <p className="text-xs mt-0.5" style={{ fontFamily: F.mono, color: V.muted }}>
-              {a.dano || '—'} · {a.peso > 0 ? `peso ${a.peso}` : 'sem peso'}{custom ? ' · da mestra' : ''}
+              {a.dano || '—'} · {a.peso > 0 ? `peso ${a.peso}` : 'sem peso'}{custom ? ' · desta ficha' : ''}
             </p>
           </button>
         </div>
@@ -2642,7 +2769,7 @@ function SeletorArmadura({ char, equipada, onSelect, color, customs, canCreate, 
         </div>
         {a.descricao && <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{a.descricao}</p>}
         <p className="text-xs mt-1" style={{ fontFamily: F.mono, color: '#6f6291' }}>
-          {a.peso > 0 ? `peso ${a.peso}` : 'sem peso'}{custom ? ' · da mestra' : ''}{ativa ? ' · equipada' : ''}
+          {a.peso > 0 ? `peso ${a.peso}` : 'sem peso'}{custom ? ' · desta ficha' : ''}{ativa ? ' · equipada' : ''}
         </p>
       </button>
     );
@@ -2723,7 +2850,7 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
           <button onClick={() => setAberta(expandida ? null : h.id)} className="min-w-0 flex-1 text-left">
             <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{h.nome}</p>
             <p className="text-xs mt-0.5" style={{ fontFamily: F.body, color: V.muted }}>
-              {custom ? 'criada pela mestra' : escopoHabilidade(h)} · toque para ler
+              {custom ? 'criada nesta ficha' : escopoHabilidade(h)} · toque para ler
             </p>
           </button>
         </div>
@@ -2813,8 +2940,9 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vaga
         </div>
 
         {/* A evolução escolhida define quanto o feitiço custa em vagas: a I
-            ocupa uma, a II duas e a III três. */}
-        {ativo && !bloqueado && onEvolucao && (
+            ocupa uma, a II duas e a III três. Feitiço sem evoluções não mostra
+            o seletor e vale sempre uma vaga. */}
+        {ativo && !bloqueado && onEvolucao && temEvolucoes(f) && (
           <div className="flex items-center gap-1.5 px-2.5 pb-2.5 flex-wrap">
             <span className="text-xs mr-1" style={{ fontFamily: F.body, color: V.muted }}>Evolução</span>
             {[1, 2, 3].map((n) => {
@@ -2835,7 +2963,23 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vaga
           </div>
         )}
         {expandido && !bloqueado && (
-          <p className="text-xs leading-relaxed px-2.5 pb-2.5" style={{ fontFamily: F.body, color: V.muted }}>{f.descricao}</p>
+          <div className="px-2.5 pb-2.5">
+            {temEvolucoes(f) ? (
+              f.evolucoes.map((texto, i) => (
+                <div key={i} className={i > 0 ? 'mt-2' : ''}>
+                  <p className="text-xs" style={{ fontFamily: F.mono, color: evolucao === i + 1 ? color : '#6f6291' }}>
+                    Evolução {'I'.repeat(i + 1)}{evolucao === i + 1 ? ' · escolhida' : ''}
+                  </p>
+                  <p className="text-xs leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{texto}</p>
+                </div>
+              ))
+            ) : (
+              <>
+                <p className="text-xs leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{f.descricao}</p>
+                <p className="text-xs leading-relaxed mt-1.5" style={{ fontFamily: F.body, color: '#6f6291' }}>{AVISO_SEM_EVOLUCAO}</p>
+              </>
+            )}
+          </div>
         )}
       </div>
     );
@@ -2929,20 +3073,20 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
   return (
     <div>
       <SeletorArmas char={draft} selecionadas={draft.armas} onToggle={toggleArma} color={color}
-        customs={customsDe(content, 'armas', draft.armas, account?.isMaster)} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
-        canCreate={account?.isMaster} onCreate={(d) => createContent('arma', d)} />
+        customs={customsDe(content, 'armas', draft.armas, account?.isMaster, draft)} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
+        canCreate onCreate={(d) => createContent('arma', d)} />
       <SeletorArmadura char={draft} equipada={draft.armaduraId}
         onSelect={(id) => setDraft({ ...draft, armaduraId: id })} color={color}
-        customs={customsDe(content, 'armaduras', draft.armaduraId ? [draft.armaduraId] : [], account?.isMaster)} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
-        canCreate={account?.isMaster} onCreate={(d) => createContent('armadura', d)} />
+        customs={customsDe(content, 'armaduras', draft.armaduraId ? [draft.armaduraId] : [], account?.isMaster, draft)} vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
+        canCreate onCreate={(d) => createContent('armadura', d)} />
 
       <SeletorHabilidades char={draft} selecionadas={draft.habilidades || []}
         onToggle={(id) => setDraft({ ...draft, habilidades: (draft.habilidades || []).includes(id) ? draft.habilidades.filter((x) => x !== id) : [...(draft.habilidades || []), id] })}
-        color={color} customs={customsDe(content, 'habilidades', draft.habilidades, account?.isMaster)}
+        color={color} customs={customsDe(content, 'habilidades', draft.habilidades, account?.isMaster, draft)}
         titulo={unificado ? 'Poderes Divinos' : 'Habilidades'}
         rotuloCriar={unificado ? 'Criar poder divino' : 'Criar habilidade própria'}
         vazio={tipo ? 'Nada criado ainda — use o botão abaixo.' : undefined}
-        canCreate={account?.isMaster} onCreate={(d) => createContent('habilidade', d)} />
+        canCreate onCreate={(d) => createContent('habilidade', d)} />
 
       {origin?.id === 'mago' && (
         <SeletorFeiticos nivelMagico={draft.subdivisaoNivel || NIVEL_MIN} selecionados={draft.feiticos}
@@ -3072,13 +3216,13 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
           {char.armas?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Swords size={12} /> Armas</p>
-              {namesFrom(char.armas, catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
+              {namesFrom(char.armas, catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO, char)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
           {char.habilidades?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Flame size={12} /> Habilidades</p>
-              {namesFrom(char.habilidades, catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
+              {namesFrom(char.habilidades, catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
           {char.feiticos?.length > 0 && (
@@ -3121,6 +3265,7 @@ function blankDraft(owner, tipoFicha = null) {
     fotoUrl: '', historia: '', animal: null,
     attributes: { intelecto: base, psique: base, fisico: base, motoras: base },
     recursosLivres: { vidaMax: 0, sanidadeMax: 0, manaMax: 0 },
+    custom: { armas: [], armaduras: [], habilidades: [] },
     pericias: {}, periciasOutros: {}, recursos: { vidaBonusLore: 0, sanidadeBonusLore: 0 },
     atual: { vida: null, sanidade: null, mana: null },
     defesas: { equipamento: 0, defesaOutros: 0, bloqueioOutros: 0, esquivaOutros: 0 },
@@ -3146,16 +3291,17 @@ function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
   useEffect(() => { loadContent(); }, [loadContent]);
 
   const createContent = async (type, data) => {
-    const id = uid();
-    const item = { id, nome: data.nome, descricao: data.descricao, dano: data.dano, teste: data.teste, defesa: data.defesa, peso: data.peso || 0, escopo, createdAt: Date.now() };
-    await sSet(`content:${escopo}:${type}:${id}`, JSON.stringify(item));
-    await loadContent();
-    // já vincula ao personagem que está sendo criado, senão o item some da ficha
-    if (type === 'armadura') { setDraft((d) => ({ ...d, armaduraId: id })); return; }
-    const campo = { arma: 'armas', feitico: 'feiticos', habilidade: 'habilidades' }[type];
-    // O feitico guarda tambem a evolucao escolhida; os outros sao so o id.
-    const entrada = type === 'feitico' ? { id, evolucao: 1 } : id;
-    setDraft((d) => ({ ...d, [campo]: [...(d[campo] || []), entrada] }));
+    const { id, item } = montarConteudo(data, escopo);
+    if (type === 'feitico') {
+      /* Feitiço continua saindo do catálogo da mestra, compartilhado no escopo. */
+      await sSet(`content:${escopo}:${type}:${id}`, JSON.stringify(item));
+      await loadContent();
+      setDraft((d) => ({ ...d, feiticos: [...(d.feiticos || []), { id, evolucao: 1 }] }));
+      return;
+    }
+    /* Arma, armadura e habilidade ficam presas a esta ficha e a mais nenhuma. */
+    const campo = CAMPO_CUSTOM[type];
+    setDraft((d) => guardarCustom(d, campo, item, type === 'armadura' ? null : campo));
   };
 
   const steps = stepsDaFicha(draft);
@@ -3475,7 +3621,7 @@ function FichaAnimal({ char, color, podeEditar, onSalvar }) {
 
 /* `detalhes` é um mapa id → texto curto, usado para mostrar a evolução do
    feitiço ao lado do nome sem mexer no catálogo. */
-function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes }) {
+function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes }) {
   const itens = (ids || []).map((id) => catalogo.find((x) => x.id === id)).filter(Boolean);
   return (
     <div className="mb-5">
@@ -3494,7 +3640,11 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes }) 
                   <span className="text-xs shrink-0" style={{ fontFamily: F.mono, color }}>{detalhes[it.id]}</span>
                 )}
               </div>
-              {it.descricao && <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.descricao}</p>}
+              {(descricoes?.[it.id] || it.descricao) && (
+                <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>
+                  {descricoes?.[it.id] || it.descricao}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -3537,15 +3687,15 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
   useEffect(() => { reloadContent(); }, [reloadContent, char.id]);
 
   const createAndAttach = async (type, data) => {
-    const id = uid();
-    const item = { id, nome: data.nome, descricao: data.descricao, dano: data.dano, teste: data.teste, defesa: data.defesa, peso: data.peso || 0, escopo, createdAt: Date.now() };
-    await sSet(`content:${escopo}:${type}:${id}`, JSON.stringify(item));
-    await reloadContent();
-    if (type === 'armadura') { setEditDraft((d) => ({ ...d, armaduraId: id })); return; }
-    const campo = { arma: 'armas', feitico: 'feiticos', habilidade: 'habilidades' }[type];
-    // O feitico guarda tambem a evolucao escolhida; os outros sao so o id.
-    const entrada = type === 'feitico' ? { id, evolucao: 1 } : id;
-    setEditDraft((d) => ({ ...d, [campo]: [...(d[campo] || []), entrada] }));
+    const { id, item } = montarConteudo(data, escopo);
+    if (type === 'feitico') {
+      await sSet(`content:${escopo}:${type}:${id}`, JSON.stringify(item));
+      await reloadContent();
+      setEditDraft((d) => ({ ...d, feiticos: [...(d.feiticos || []), { id, evolucao: 1 }] }));
+      return;
+    }
+    const campo = CAMPO_CUSTOM[type];
+    setEditDraft((d) => guardarCustom(d, campo, item, type === 'armadura' ? null : campo));
   };
 
   /* Alterar as barras salva na hora — não precisa entrar no modo de edição. */
@@ -3677,7 +3827,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               </div>
               <div className="rounded-lg p-3 mb-2" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
                 {(() => {
-                  const d = computeDefesas(editDraft, catalogoDe(contentIndex, 'armaduras'));
+                  const d = computeDefesas(editDraft, catalogoDe(contentIndex, 'armaduras', [], editDraft));
                   return (
                     <p className="text-xs" style={{ fontFamily: F.mono, color: V.muted }}>
                       Defesa <span style={{ color: origin.cor }}>{d.defesa}</span> ·
@@ -3700,22 +3850,22 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               <p className="text-xs uppercase tracking-widest mb-3 mt-3" style={{ color: V.muted, fontFamily: F.body }}>Equipamento</p>
               <SeletorArmas char={editDraft} selecionadas={editDraft.armas || []}
                 onToggle={(id) => setEditDraft({ ...editDraft, armas: (editDraft.armas || []).includes(id) ? editDraft.armas.filter((x) => x !== id) : [...(editDraft.armas || []), id] })}
-                color={origin.cor} customs={customsDe(contentIndex, 'armas', editDraft.armas, account.isMaster)}
+                color={origin.cor} customs={customsDe(contentIndex, 'armas', editDraft.armas, account.isMaster, editDraft)}
                 vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
-                canCreate={account.isMaster} onCreate={(d) => createAndAttach('arma', d)} />
+                canCreate onCreate={(d) => createAndAttach('arma', d)} />
               <SeletorArmadura char={editDraft} equipada={editDraft.armaduraId}
                 onSelect={(id) => setEditDraft({ ...editDraft, armaduraId: id })} color={origin.cor}
-                customs={customsDe(contentIndex, 'armaduras', editDraft.armaduraId ? [editDraft.armaduraId] : [], account.isMaster)}
+                customs={customsDe(contentIndex, 'armaduras', editDraft.armaduraId ? [editDraft.armaduraId] : [], account.isMaster, editDraft)}
                 vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
-                canCreate={account.isMaster} onCreate={(d) => createAndAttach('armadura', d)} />
+                canCreate onCreate={(d) => createAndAttach('armadura', d)} />
 
               <SeletorHabilidades char={editDraft} selecionadas={editDraft.habilidades || []}
                 onToggle={(id) => setEditDraft({ ...editDraft, habilidades: (editDraft.habilidades || []).includes(id) ? editDraft.habilidades.filter((x) => x !== id) : [...(editDraft.habilidades || []), id] })}
-                color={origin.cor} customs={customsDe(contentIndex, 'habilidades', editDraft.habilidades, account.isMaster)}
+                color={origin.cor} customs={customsDe(contentIndex, 'habilidades', editDraft.habilidades, account.isMaster, editDraft)}
                 titulo={tipoMestre(editDraft)?.poderesUnificados ? 'Poderes Divinos' : 'Habilidades'}
                 rotuloCriar={tipoMestre(editDraft)?.poderesUnificados ? 'Criar poder divino' : 'Criar habilidade própria'}
                 vazio={fichaLivre(editDraft) ? 'Nada criado ainda — use o botão abaixo.' : undefined}
-                canCreate={account.isMaster} onCreate={(d) => createAndAttach('habilidade', d)} />
+                canCreate onCreate={(d) => createAndAttach('habilidade', d)} />
 
               {editDraft.originId === 'mago' && (
                 <SeletorFeiticos nivelMagico={editDraft.subdivisaoNivel || NIVEL_MIN} selecionados={editDraft.feiticos || []}
@@ -3792,13 +3942,13 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
           )}
           {tab === 'combate' && (
             <div>
-              <PainelDefesas char={char} color={origin.cor} armadurasCustom={catalogoDe(contentIndex, 'armaduras')} />
-              <ListaArmas char={char} catalogo={catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO)} color={origin.cor} />
+              <PainelDefesas char={char} color={origin.cor} armadurasCustom={catalogoDe(contentIndex, 'armaduras', [], char)} />
+              <ListaArmas char={char} catalogo={catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO, char)} color={origin.cor} />
             </div>
           )}
           {tab === 'habilidades' && (
             <ListaConteudo titulo="Habilidades" Icon={Flame} ids={char.habilidades}
-              catalogo={catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO)}
+              catalogo={catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char)}
               color={origin.cor} vazio="Nenhuma habilidade escolhida." />
           )}
           {tab === 'poderes' && (
@@ -3806,7 +3956,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                e como feitiço, para não dividir o poder divino em duas abas. */
             <ListaConteudo titulo="Poderes Divinos" Icon={Flame}
               ids={[...(char.habilidades || []), ...idsDeFeiticos(char.feiticos)]}
-              catalogo={[...catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO), ...catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)]}
+              catalogo={[...catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char), ...catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)]}
               color={origin.cor} vazio="Nenhum poder divino criado ainda." />
           )}
           {tab === 'feiticos' && (
@@ -3825,7 +3975,10 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                   A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>.
                 </p>
               </div>
-              <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={idsDeFeiticos(char.feiticos)} detalhes={detalhesDeFeiticos(char.feiticos)} catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido." />
+              <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={idsDeFeiticos(char.feiticos)}
+                detalhes={detalhesDeFeiticos(char.feiticos)}
+                descricoes={descricoesDeFeiticos(char.feiticos, catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO))}
+                catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido." />
             </div>
           )}
           {tab === 'animal' && (
