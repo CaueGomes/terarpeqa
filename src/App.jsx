@@ -953,11 +953,11 @@ function escopoHabilidade(hab) {
    nivelMin = nível mágico exigido. 'negro' = exclusivo de magos negros (nível 100). */
 const FEITICOS_CATALOGO = [
   { id: 'fei_espirito_incandescente', resistencia: 'Resiste com Resistência, recebendo metade do dano.', nota: 'Para sustentar esse efeito você gasta 4 de mana por rodada e se você receber um ataque enquanto mantém a magia sustentada a DT é de Dicionário mental igual a metade do dano tomado.', nome: 'Espírito incandescente', nivelMin: 5,
-    descricao: 'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques. Sustentar gasta 1 de mana por rodada.',
+    descricao: 'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques.',
     evolucoes: [
-      'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques. Sustentar gasta 1 de mana por rodada.',
-      'Agora você pode acender uma mão inteira de fogo por 3 de mana. Causa 3d4 a mais em ataques. Sustentar gasta 2 de mana por rodada.',
-      'Agora você pode acender um braço inteiro de fogo por 5 de mana. Causa 5d4 a mais em ataques. Sustentar gasta 3 de mana por rodada.',
+      'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques.',
+      'Agora você pode acender uma mão inteira de fogo por 3 de mana. Causa 3d4 a mais em ataques.',
+      'Agora você pode acender um braço inteiro de fogo por 5 de mana. Causa 5d4 a mais em ataques.',
     ] },
   { id: 'fei_frenesi', nome: 'Frênesi', nivelMin: 5,
     descricao: 'Você ainda não teve que sobreviver a muitas coisas, então o desespero da batalha te dá 10 de mana em troca de 15 pontos de sanidade.',
