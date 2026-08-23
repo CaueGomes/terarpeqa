@@ -157,7 +157,7 @@ const CORTE_NASCIDO_OURO = [
 /* Perícias concedidas pela classe, independente de subdivisão */
 const PERICIAS_POR_CLASSE = {
   druida: ['agape'],
-  mago: ['savoir_faire', 'logica'],
+  mago: ['savoir_faire', 'dicionario_mental'],
 };
 /* ---------- níveis de classe ----------
    Todo personagem tem um nível de 1 a 10, independente da classe. Ele governa
@@ -2065,7 +2065,7 @@ function StepHeranca({ draft, setDraft, origin }) {
             <span className="w-10 text-right text-sm" style={{ fontFamily: F.mono, color: V.text }}>{draft.subdivisaoNivel}</span>
           </div>
           <p className="text-xs" style={{ color: '#6f6291', fontFamily: F.body }}>
-            Todo mago nasce com um pouco de magia (mínimo 5). A marca escurece conforme o nível sobe, até ficar negra no 100. O nível mágico também enche a mana e define quantas vagas de feitiço você tem. A mana só é gasta ao conjurar rituais.
+            Todo mago nasce com um pouco de magia (mínimo 5). A marca escurece conforme o nível sobe, até ficar negra no 100. O nível mágico também enche a mana e define quantas vagas de feitiço você tem. A mana só é gasta ao conjurar rituais, e todo feitiço é lançado com um teste de Dicionário mental — por isso o mago já nasce treinado nela.
           </p>
         </div>
       )}
@@ -3018,7 +3018,8 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vaga
             </p>
             <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: '#6f6291' }}>
               São 2 vagas de início e mais 1 a cada 10 níveis mágicos. Um feitiço na evolução II
-              ocupa 2 vagas e na evolução III ocupa 3.
+              ocupa 2 vagas e na evolução III ocupa 3. Todo feitiço é lançado com um teste de
+              Dicionário mental.
             </p>
           </div>
         );
@@ -3996,6 +3997,11 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               </div>
               <div className="rounded-lg p-3 mb-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
                 <p className="text-xs leading-relaxed" style={{ color: V.muted, fontFamily: F.body }}>
+                  Todo feitiço é lançado com um teste de <strong style={{ color: origin.cor }}>Dicionário mental</strong>,
+                  qualquer que seja o feitiço ou a evolução. A perícia de resistência mostrada em cada
+                  um é a do alvo, não a sua.
+                </p>
+                <p className="text-xs leading-relaxed mt-1.5" style={{ color: V.muted, fontFamily: F.body }}>
                   A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>.
                 </p>
               </div>
