@@ -833,10 +833,10 @@ const HABILIDADES_CATALOGO = [
   /* ===== SEREIA / TRITÃO ===== */
   { id: 'hab_chamado_profundezas', nome: 'Chamado das profundezas', classe: 'sereia',
     descricao: 'Uma vez por cena, você chama a água — chuva, maré, um cano estourado, o que houver — e ela vem. A mestra decide o que a água consegue fazer no ambiente. Gasta 12 de sanidade.' },
-  { id: 'hab_canto_afogamento', nome: 'Canto do afogamento', classe: 'sereia', subdivisaoId: 'sereia',
+  { id: 'hab_canto_afogamento', resistencia: 'Resiste com Volição.', nome: 'Canto do afogamento', classe: 'sereia', subdivisaoId: 'sereia',
     descricao: 'Todos que te ouvem resistem com Volição (DT da mestra) ou caminham na sua direção por 1 rodada, esquecendo o que estavam fazendo. Gasta 15 de sanidade.' },
-  { id: 'hab_cancao_afogar', nome: 'Canção de Afogar', classe: 'sereia', subdivisaoId: 'sereia',
-    descricao: 'O alvo sente água enchendo os pulmões, embora esteja em terra firme. 6d12, e ele perde a próxima ação tossindo. Resiste com Resistência. Gasta 6 de sanidade.' },
+  { id: 'hab_cancao_afogar', resistencia: 'Resiste com Resistência.', nome: 'Canção de Afogar', classe: 'sereia', subdivisaoId: 'sereia',
+    descricao: 'O alvo sente água enchendo os pulmões, embora esteja em terra firme. 6d12, e ele perde a próxima ação tossindo. Gasta 6 de sanidade.' },
   { id: 'hab_dois_contra_um', nome: 'Dois Contra Um', classe: 'sereia', subdivisaoId: 'triton',
     descricao: 'Quando ele está cercado por dois ou mais inimigos, cada ataque dele acerta dois alvos de uma vez, não reduzindo dano, mas perde a ação de movimento. Gasta 5 de sanidade.' },
   { id: 'hab_voz_acalma', nome: 'A voz que acalma', classe: 'sereia', subdivisaoId: 'sereia',
@@ -845,7 +845,7 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Uma vez por cena, você faz alguém acreditar numa coisa pequena e falsa (que você é outra pessoa, que a porta está trancada). Gasta 12 de sanidade.' },
   { id: 'hab_mare_nao_recua', nome: 'A maré não recua', classe: 'sereia', subdivisaoId: 'triton',
     descricao: 'Enquanto estiver com menos da metade da vida, você recebe +5 em todos os testes de Físico. Passivo, sem custo.' },
-  { id: 'hab_puxao_correnteza', nome: 'Puxão de correnteza', classe: 'sereia', subdivisaoId: 'triton',
+  { id: 'hab_puxao_correnteza', resistencia: 'Resiste com Instrumento físico.', nome: 'Puxão de correnteza', classe: 'sereia', subdivisaoId: 'triton',
     descricao: 'Você arrasta um inimigo para perto de você, mesmo a distância. Ele resiste com Instrumento físico (DT da mestra). Gasta 9 de sanidade.' },
   { id: 'hab_folego_emprestado', nome: 'Fôlego emprestado', classe: 'sereia', subdivisaoId: 'triton',
     descricao: 'Você e seus aliados respiram debaixo d\u2019água e se movem nela como em terra firme por uma cena inteira. Gasta 12 de sanidade.' },
@@ -917,11 +917,11 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Você passa despercebido em qualquer ambiente social, mesmo hostil. Gasta 6 de sanidade.' },
   { id: 'hab_sou_um_de_voces', nome: 'Sou um de vocês', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte',
     descricao: 'Um aliado recupera 3d10 de sanidade porque você conseguiu fazê-lo rir num momento impossível. Uma vez por cena. Gasta 12 da sua própria sanidade.' },
-  { id: 'hab_ajoelhe_se', nome: 'Ajoelhe-se', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
+  { id: 'hab_ajoelhe_se', resistencia: 'Resiste com Volição.', nome: 'Ajoelhe-se', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
     descricao: 'Todos que te ouvem resistem com Volição (DT da mestra) ou perdem sua próxima ação. Gasta 18 de sanidade.' },
   { id: 'hab_minha_palavra_lei', nome: 'Minha palavra é lei', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
     descricao: 'Você dá uma ordem direta a um aliado e ele recebe +10 no teste para cumpri-la. Gasta 9 de sanidade.' },
-  { id: 'hab_impera_em_pessoa', nome: 'Împera em pessoa', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
+  { id: 'hab_impera_em_pessoa', resistencia: 'Resiste com Volição.', nome: 'Împera em pessoa', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
     descricao: 'Uma vez por cena, alguém te confunde com Împera e obedece uma única ordem sem questionar. O alvo pode tentar resistir com um teste de Volição, mas a DT é a soma da sua Autoridade com a da ficha de Împera. Gasta 24 de sanidade — sustentar essa imagem custa.' },
   { id: 'hab_pais_protege_corpo', nome: 'Um país se protege com o corpo', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
     descricao: 'Enquanto houver aliados feridos na cena, você recebe +5 em todos os testes de combate. Passivo, sem custo.' },
@@ -952,7 +952,7 @@ function escopoHabilidade(hab) {
 /* ---------- catálogo de feitiços dos magos ----------
    nivelMin = nível mágico exigido. 'negro' = exclusivo de magos negros (nível 100). */
 const FEITICOS_CATALOGO = [
-  { id: 'fei_espirito_incandescente', nome: 'Espírito incandescente', nivelMin: 5,
+  { id: 'fei_espirito_incandescente', resistencia: 'Resiste com Resistência, recebendo metade do dano.', nota: 'Para sustentar esse efeito você gasta 4 de mana por rodada e se você receber um ataque enquanto mantém a magia sustentada a DT é de Dicionário mental igual a metade do dano tomado.', nome: 'Espírito incandescente', nivelMin: 5,
     descricao: 'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques. Sustentar gasta 1 de mana por rodada.',
     evolucoes: [
       'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques. Sustentar gasta 1 de mana por rodada.',
@@ -975,7 +975,7 @@ const FEITICOS_CATALOGO = [
       'Agora animais pequenos como baratas, ratos e até mesmo formigas falam sua versão da história, à suas maneiras, por 4 de mana.',
       'Objetos, estruturas e animais agora possuem a lucidez de um gênio. Eles te contam as últimas cenas acontecidas à sua frente com clareza, até mesmo sabendo informações como nomes e sentimentos por 10 de mana.',
     ] },
-  { id: 'fei_rachadura', nome: 'Rachadura', nivelMin: 20,
+  { id: 'fei_rachadura', resistencia: 'Resiste com Velocidade de reação, recebendo metade do dano.', nome: 'Rachadura', nivelMin: 20,
     descricao: 'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Coordenação motora ou cai e sofre 4d10 de dano. Gasta 4 de mana.',
     evolucoes: [
       'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Coordenação motora ou cai e sofre 4d10 de dano. Gasta 4 de mana.',
@@ -989,7 +989,7 @@ const FEITICOS_CATALOGO = [
       'Você devolve 5d10 de vida por 7 de mana.',
       'Você devolve 7d12 de vida por 10 de mana.',
     ] },
-  { id: 'fei_herdeiro_chamas', nome: 'Herdeiro de chamas', nivelMin: 35,
+  { id: 'fei_herdeiro_chamas', resistencia: 'Resiste com Instrumento físico, recebendo metade do dano.', nota: 'Para sustentar esse efeito você gasta 4 de mana por rodada e se você receber um ataque enquanto mantém a magia sustentada a DT é de Dicionário mental igual a metade do dano tomado.', nome: 'Herdeiro de chamas', nivelMin: 35,
     descricao: 'Evolução natural de Espírito incandescente: agora o fogo obedece forma. Você molda uma parede, um caminho ou uma corrente de fogo. Gasta 6 de mana e causa 3d12 + 10 de dano.',
     evolucoes: [
       'Evolução natural de Espírito incandescente: agora o fogo obedece forma. Você molda uma parede, um caminho ou uma corrente de fogo. Gasta 6 de mana e causa 3d12 + 10 de dano.',
@@ -998,7 +998,7 @@ const FEITICOS_CATALOGO = [
     ] },
   { id: 'fei_escudo_totemico', nome: 'Escudo Totêmico', nivelMin: 40,
     descricao: 'Um totem se acende em algum lugar do ambiente e, enquanto ninguém quebrá-lo, você recebe metade de todos os danos. Você gasta 6 de mana e pode usar este escudo em um aliado, sacrificando sua proteção.' },
-  { id: 'fei_lorde_metal', nome: 'Lorde Metal', nivelMin: 45,
+  { id: 'fei_lorde_metal', resistencia: 'Resiste com Coordenação motora, tomando metade do dano.', nome: 'Lorde Metal', nivelMin: 45,
     descricao: 'Mova todos os objetos de metal no recinto. Você pode usar como arma ou simplesmente mudá-lo de lugar. Você não pode mover objetos maiores do que o tamanho de sua mão, e só pode mover um por vez. Objetos dão 2d10 de dano. Gasta 4 de mana por objeto.',
     evolucoes: [
       'Mova todos os objetos de metal no recinto. Você pode usar como arma ou simplesmente mudá-lo de lugar. Você não pode mover objetos maiores do que o tamanho de sua mão, e só pode mover um por vez. Objetos dão 2d10 de dano. Gasta 4 de mana por objeto.',
@@ -1012,12 +1012,12 @@ const FEITICOS_CATALOGO = [
       'Você cria 3 aliados agora, um pouco maiores por 7 de mana. Eles causam 2d10 de dano por ataque. Cada um tem 15 de vida e te obedecem cegamente.',
       'Você cria um monstro de carne, sangue e raiva. Ela é quase um brutamonte, causando 4d12 + 10 por ataque por 10 de mana. Ela tem 30 de vida, mas não te obedece muito bem.',
     ] },
-  { id: 'fei_erratum', nome: 'Erratum', nivelMin: 55,
+  { id: 'fei_erratum', resistencia: 'Resiste com Volição, tomando metade do dano.', nome: 'Erratum', nivelMin: 55,
     descricao: 'Você declara uma condenação curta contra um alvo. Ele sofre 6d12 de dano, e o dobro disso se já estiver ferido. Gasta 6 de mana.' },
-  { id: 'fei_pulso_arcano', nome: 'Pulso Arcano', nivelMin: 60,
-    descricao: 'Você leva ondas de choque do chão até seu alvo, que, se falhar em um teste de Volição, fica imóvel por 1 rodada. Você gasta 6 de mana.',
+  { id: 'fei_pulso_arcano', resistencia: 'Resiste com Resistência, recebendo metade do dano.', nome: 'Pulso Arcano', nivelMin: 60,
+    descricao: 'Você leva ondas de choque do chão até seu alvo, que fica imóvel por 1 rodada. Você gasta 6 de mana.',
     evolucoes: [
-      'Você leva ondas de choque do chão até seu alvo, que, se falhar em um teste de Volição, fica imóvel por 1 rodada. Você gasta 6 de mana.',
+      'Você leva ondas de choque do chão até seu alvo, que fica imóvel por 1 rodada. Você gasta 6 de mana.',
       'Esse pulso vira um raio agora, deixando marcas de eletricidade em seu corpo. Esse pulso agora dá 3d10 de dano, mas não deixa o alvo imóvel. Gasta 5 de mana.',
       'Você deixa todos os alvos a uma distância média de você imóveis por uma rodada. Gasta 8 de mana.',
     ] },
@@ -1030,7 +1030,7 @@ const FEITICOS_CATALOGO = [
     ] },
   { id: 'fei_equilibrio_sanguineo', nome: 'Equilíbrio sanguíneo', nivelMin: 70,
     descricao: 'Escolha dois alvos e faça com que seus níveis de vida fiquem equilibrados, somando seus pontos e dividindo entre os dois. Você gasta 5 de mana e ambos os alvos podem tentar resistir com um teste de Resistência.' },
-  { id: 'fei_fome_karzaron', nome: 'Fome de Karzaron', nivelMin: 75,
+  { id: 'fei_fome_karzaron', resistencia: 'Resiste com Velocidade de reação, tomando metade do dano.', nome: 'Fome de Karzaron', nivelMin: 75,
     descricao: 'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 6d12 de dano, e você recupera metade desse valor em mana. Gasta 15 de mana e 12 de sanidade.',
     evolucoes: [
       'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 6d12 de dano, e você recupera metade desse valor em mana. Gasta 15 de mana e 12 de sanidade.',
@@ -2854,7 +2854,12 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
             </p>
           </button>
         </div>
-        {expandida && <p className="text-xs leading-relaxed px-2.5 pb-2.5" style={{ fontFamily: F.body, color: V.muted }}>{h.descricao}</p>}
+        {expandida && (
+          <div className="px-2.5 pb-2.5">
+            <p className="text-xs leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{h.descricao}</p>
+            {h.resistencia && <LinhaResistencia texto={h.resistencia} color={color} />}
+          </div>
+        )}
       </div>
     );
   };
@@ -2979,6 +2984,10 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vaga
                 <p className="text-xs leading-relaxed mt-1.5" style={{ fontFamily: F.body, color: '#6f6291' }}>{AVISO_SEM_EVOLUCAO}</p>
               </>
             )}
+            {f.nota && (
+              <p className="text-xs leading-relaxed mt-2" style={{ fontFamily: F.body, color: V.muted }}>{f.nota}</p>
+            )}
+            {f.resistencia && <LinhaResistencia texto={f.resistencia} color={color} />}
           </div>
         )}
       </div>
@@ -3619,6 +3628,17 @@ function FichaAnimal({ char, color, podeEditar, onSalvar }) {
   );
 }
 
+/* Perícia com que o alvo resiste. Fica destacada abaixo da descrição porque é
+   o que a mesa mais procura no meio de um combate. */
+function LinhaResistencia({ texto, color }) {
+  return (
+    <p className="text-xs mt-1.5 flex items-start gap-1.5" style={{ fontFamily: F.body, color }}>
+      <Shield size={11} className="shrink-0 mt-0.5" />
+      <span>{texto}</span>
+    </p>
+  );
+}
+
 /* `detalhes` é um mapa id → texto curto, usado para mostrar a evolução do
    feitiço ao lado do nome sem mexer no catálogo. */
 function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes }) {
@@ -3645,6 +3665,10 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
                   {descricoes?.[it.id] || it.descricao}
                 </p>
               )}
+              {it.nota && (
+                <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.nota}</p>
+              )}
+              {it.resistencia && <LinhaResistencia texto={it.resistencia} color={color} />}
             </div>
           ))}
         </div>
