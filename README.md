@@ -85,9 +85,47 @@ O `render.yaml` usa o plano gratuito nos dois serviços. Duas consequências:
 - O **Postgres gratuito é apagado pelo Render após 30 dias**. Quando isso
   acontecer, as contas e fichas vão junto.
 
-Antes do prazo acabar, faça backup ou migre para um plano pago:
+Antes do prazo acabar, faça backup ou migre para um plano pago.
+
+## Backup e restauração
+
+Não precisa de `pg_dump` nem de nada instalado: os scripts usam o mesmo driver
+do servidor e gravam um JSON com as contas (senha em hash) e todas as fichas.
+
+Pegue a **External Database URL** no painel do Render, na página do banco. A
+*Internal* só funciona de dentro da rede do Render e não serve aqui.
+
+No PowerShell:
+
+```powershell
+$env:DATABASE_URL="postgresql://...external..."; npm run backup
+```
+
+No Bash:
 
 ```bash
-pg_dump "$DATABASE_URL" > backup.sql
+DATABASE_URL="postgresql://...external..." npm run backup
 ```
+
+O arquivo cai em `backups/`, com data e hora no nome. O script imprime para qual
+banco se conectou e quantas contas e fichas salvou — confira esses números antes
+de considerar o backup feito.
+
+Para restaurar em um banco novo, aponte a URL para ele e passe o arquivo:
+
+```powershell
+$env:DATABASE_URL="postgresql://...novo..."; npm run restore -- backups/terarpeqa-....json
+```
+
+A restauração cria as tabelas se não existirem e sobrescreve o que colidir,
+preservando o que só existir no destino. Ou seja, restaurar nunca apaga nada por
+conta própria.
+
+Dois cuidados:
+
+- **`backups/` está no `.gitignore`.** O arquivo tem hash de senha e todas as
+  fichas; nunca versione nem mande por canal aberto.
+- Os scripts **não** carregam o `.env` de propósito. Se carregassem, apontariam
+  para o banco local e você acharia que salvou a produção tendo salvo um banco
+  vazio. A URL sempre vem explícita na linha de comando.
 
