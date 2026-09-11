@@ -1224,11 +1224,14 @@ function nomesPericias(ids) {
 
 /* ---------- defesa, bloqueio e esquiva (estrutura do CRIS) ----------
    Defesa  = 10 + Motoras + equipamento + outros  (valor passivo)
-   Bloqueio = bônus de Resistência + equipamento + outros
+   Bloqueio = bônus de Resistência × 2 + equipamento + outros
    Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros
 
-   O Bloqueio é o único sem base 10 e sem atributo: ele vale exatamente o que a
-   perícia Resistência somar. Quem tem +5 de Resistência bloqueia 5. */
+   A Defesa sai reduzida em 25% no fim da conta, para o valor passivo não
+   competir com as reações. O Bloqueio é o único sem base 10 e sem atributo:
+   ele vale o dobro do que a perícia Resistência somar. */
+const REDUCAO_DEFESA = 0.75;
+const MULTIPLICADOR_BLOQUEIO = 2;
 const PERICIA_BLOQUEIO = 'resistencia';
 const PERICIA_ESQUIVA = 'velocidade_reacao';
 
@@ -1241,12 +1244,18 @@ function computeDefesas(char, armadurasCustom = []) {
   const bonusResistencia = periciaResistencia ? bonusDaPericia(char, periciaResistencia).total : 0;
   const treinoEsquiva = TIERS[grauDaPericia(char, PERICIA_ESQUIVA)].bonus;
 
+  /* A redução de 25% cai sobre a soma inteira da Defesa, arredondada. O
+     Bloqueio dobra só a parte da Resistência: equipamento e outros são ajustes
+     que a mestra digita na mão e entram pelo valor cheio. */
+  const defesaCheia = 10 + motoras + equip + (d.defesaOutros || 0);
+  const resistenciaDobrada = bonusResistencia * MULTIPLICADOR_BLOQUEIO;
+
   return {
     equipamento: equip,
-    defesa: 10 + motoras + equip + (d.defesaOutros || 0),
-    defesaPartes: { base: 10, atributo: motoras, equip, outros: d.defesaOutros || 0 },
-    bloqueio: bonusResistencia + equip + (d.bloqueioOutros || 0),
-    bloqueioPartes: { base: 0, atributo: 0, resistencia: bonusResistencia, equip, outros: d.bloqueioOutros || 0 },
+    defesa: Math.round(defesaCheia * REDUCAO_DEFESA),
+    defesaPartes: { base: 10, atributo: motoras, equip, outros: d.defesaOutros || 0, cheia: defesaCheia },
+    bloqueio: resistenciaDobrada + equip + (d.bloqueioOutros || 0),
+    bloqueioPartes: { base: 0, atributo: 0, resistencia: resistenciaDobrada, equip, outros: d.bloqueioOutros || 0 },
     esquiva: 10 + motoras + treinoEsquiva + equip + (d.esquivaOutros || 0),
     esquivaPartes: { base: 10, atributo: motoras, treino: treinoEsquiva, equip, outros: d.esquivaOutros || 0 },
   };
@@ -3626,9 +3635,9 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
       </p>
       <div className="grid grid-cols-3 gap-2">
         <Bloco titulo="Defesa" valor={d.defesa} destaque
-          formula={`10+${d.defesaPartes.atributo}${d.defesaPartes.equip ? `+${d.defesaPartes.equip}` : ''}${d.defesaPartes.outros ? `+${d.defesaPartes.outros}` : ''}`} />
+          formula={`(10+${d.defesaPartes.atributo}${d.defesaPartes.equip ? `+${d.defesaPartes.equip}` : ''}${d.defesaPartes.outros ? `+${d.defesaPartes.outros}` : ''}) −25%`} />
         <Bloco titulo="Bloqueio" valor={d.bloqueio}
-          formula={`${d.bloqueioPartes.resistencia}${d.bloqueioPartes.equip ? `+${d.bloqueioPartes.equip}` : ''}${d.bloqueioPartes.outros ? `+${d.bloqueioPartes.outros}` : ''}`} />
+          formula={`${d.bloqueioPartes.resistencia / 2}×2${d.bloqueioPartes.equip ? `+${d.bloqueioPartes.equip}` : ''}${d.bloqueioPartes.outros ? `+${d.bloqueioPartes.outros}` : ''}`} />
         <Bloco titulo="Esquiva" valor={d.esquiva}
           formula={`10+${d.esquivaPartes.atributo}+${d.esquivaPartes.treino}${d.esquivaPartes.equip ? `+${d.esquivaPartes.equip}` : ''}${d.esquivaPartes.outros ? `+${d.esquivaPartes.outros}` : ''}`} />
       </div>
@@ -3642,9 +3651,10 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
         </div>
       )}
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Defesa é o valor passivo (10 + Motoras + equipamento). Bloqueio e Esquiva são
-        reações — uma por rodada. O Bloqueio vale o bônus de <strong style={{ color }}>Resistência</strong>,
-        sem base 10 e sem atributo; a Esquiva soma 10 + Motoras + Velocidade de reação.
+        Defesa é o valor passivo (10 + Motoras + equipamento), reduzido em 25% no fim da
+        conta. Bloqueio e Esquiva são reações — uma por rodada. O Bloqueio vale o dobro do
+        bônus de <strong style={{ color }}>Resistência</strong>, sem base 10 e sem atributo;
+        a Esquiva soma 10 + Motoras + Velocidade de reação.
       </p>
     </div>
   );
