@@ -406,7 +406,7 @@ const DICIONARIOS = [
         titulo: 'Quem é seu Deus',
         paragrafos: [
           `Você é filho de Împera e, sinceramente, não sabe nada dessa deusa além de seu nome. Até porque os boatos nunca chegam até esse lugar imundo e pequeno que você vive. Eles se perdem no meio do caminho. Você acredita que ela não goste muito de vocês, guerreiros, por motivos que também nunca chegaram aos seus ouvidos.`,
-          `A única administração que você conhece é dentro da Arena: você nasceu aqui dentro, com vozes vindo de fora, comentando sobre qual guerreiro apostariam na luta do dia seguinte. Eles te colocaram muito novo em um lugar com vários de seus semelhantes e foi escolhido a dedo por pessoas de marcas prateadas, podres de ricas. Disseram que você teria potencial, e desde então, você luta.`,
+          `A única administração que você conhece é dentro da Arena: você vive aqui dentro, com vozes vindo de fora, comentando sobre qual guerreiro apostariam na luta do dia seguinte. Eles te colocaram em um lugar com vários de seus semelhantes e foi escolhido a dedo por pessoas de marcas prateadas, podres de ricas. Disseram que você teria potencial, e desde então, você luta.`,
           `Você luta na frente de todas essas pessoas porque sabe que é isso que te dá comida (a da menor qualidade), água (a mais suja de todas) e um espaço para dormir (junto a ratos, baratas e goteiras), o que é engraçado, porque você tem certeza que essa armadura que você usa ou essa arma que você carrega poderiam te alimentar pelo resto da sua vida se fossem vendidas.`,
           `No final, você luta porque sabe que é a única coisa que te restou a fazer.`,
         ],
@@ -436,9 +436,25 @@ const DICIONARIOS = [
           `Existe uma coisa engraçada nisso: enquanto você luta, você é a pessoa mais importante daquele lugar. Milhares de olhos, gritos, seu nome na boca de todo mundo. Aí a luta acaba e você volta a ser alguém que dorme perto de ratos.`,
         ],
       },
+      {
+        titulo: 'Mecânica de mudança de marcas',
+        paragrafos: [
+          `Alguns guerreiros não lembram de como chegaram até aquela arena, e geralmente a primeira lembrança que eles possuem é das suas marcas mudando. Um dia você acordou com marcas pratas em seu corpo, e em outro teve que lutar contra uma pessoa de marcas roxas.`,
+          `Então, quando a derrotou, suas marcas também ficaram roxas, e o público te aplaudiu até dizer chega.`,
+          `Guerreiros podem nascer guerreiros (com marcas roxas) se dois guerreiros tiverem um filho. Mas guerreiros podem também ser um cidadão de prata escolhido a dedo por uma família burguesa e apagada sua memória.`,
+          `Um cidadão de prata com a memória apagada é jogado dentro da arena e é instruído a matar o primeiro guerreiro que vê pela frente para sobreviver. Ao matar um guerreiro, suas marcas ficam roxas permanentemente, e ele agora é propriedade da família de prata que o escolheu.`,
+        ],
+      },
+      {
+        titulo: 'Mecânica de Ira',
+        paragrafos: [
+          `Quando se torna um guerreiro, você não pode fugir de sua essência, mesmo que um dia consiga sair dessa arena.`,
+          `Todo dia, você como guerreiro precisa desmaiar alguém ou ser desmaiado; você precisa matar ou ser morto por alguém. Você precisa ganhar uma batalha ou perder uma todo dia.`,
+          `Caso contrário, você entra em estado de Ira. O estado de Ira não permite que você use a lógica de seu cérebro para fazer decisões: uma fúria sem igual toma conta de seu corpo e destrói tudo que vem pela frente.`,
+        ],
+      },
     ],
   },
-
   {
     id: 'pirata',
     titulo: 'Dicionário dos Piratas',
