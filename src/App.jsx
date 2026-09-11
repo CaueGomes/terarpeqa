@@ -1418,16 +1418,26 @@ async function sList(prefix) {
 
 /* ---------- rolagens ----------
    O servidor é quem rola: o cliente manda a fórmula e recebe o resultado. */
-async function rolarNoServidor({ qtd, faces, modificador = 0, categoria, rotulo, detalhe, char }) {
+async function rolarNoServidor({ qtd, faces, modificador = 0, categoria, rotulo, detalhe, char, critico = false }) {
   return api('/rolls', {
     method: 'POST',
     body: JSON.stringify({
-      qtd, faces, modificador, categoria, rotulo, detalhe,
+      qtd, faces, modificador, categoria, rotulo, detalhe, critico,
       charId: char?.id || null,
       charName: char?.name || null,
     }),
   });
 }
+
+/* ---------- acerto crítico ----------
+   Vale para armas. O que conta é o dado bruto do ataque, sem o atributo nem o
+   bônus da perícia: 18, 19 ou 20 no d20 dobram o dano do golpe seguinte. */
+const CRITICO_MINIMO = 18;
+const foiCritico = (rolagem) => {
+  const valores = rolagem?.dados?.valores;
+  if (!Array.isArray(valores) || !valores.length) return false;
+  return valores[valores.length - 1] >= CRITICO_MINIMO;
+};
 
 async function lerRolagens() {
   try {
@@ -3589,7 +3599,7 @@ function ListaArmas({ char, catalogo, color }) {
               <p className="text-xs mt-1" style={{ fontFamily: F.body, color: '#6f6291' }}>
                 {a.teste ? `Teste de ${a.teste}` : ''}{a.teste && a.peso !== undefined ? ' · ' : ''}{a.peso > 0 ? `peso ${a.peso}` : 'sem peso'}
               </p>
-              <BotoesDeRolagem char={char} color={color} nome={a.nome} dano={a.dano} pericia={a.teste} />
+              <BotoesDeRolagem char={char} color={color} nome={a.nome} dano={a.dano} pericia={a.teste} comCritico />
             </div>
           ))}
         </div>
@@ -3818,29 +3828,47 @@ function BotaoRolar({ onRolar, color, titulo, compacto, rotulo }) {
 /* Botões de uma arma, habilidade ou feitiço. São dois papéis diferentes e por
    isso dois botões: o teste diz se acertou, o dano diz o quanto doeu. Cada um
    só aparece quando faz sentido — sem notação de dado, não há o que rolar. */
-function BotoesDeRolagem({ char, color, nome, dano, pericia }) {
+function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico }) {
   const notacao = lerNotacao(dano);
   const p = pericia ? PERICIAS.find((x) => x.nome.toLowerCase() === String(pericia).toLowerCase()) : null;
   const m = p ? modificadorDoTeste(char, p) : null;
+  /* Guarda se o último ataque desta arma saiu crítico. O dano seguinte sai
+     dobrado e a marca se apaga, para o golpe depois dele voltar ao normal. */
+  const [critico, setCritico] = useState(false);
   if (!notacao && !m) return null;
 
   return (
     <div className="flex items-center gap-2 mt-2 flex-wrap">
       {m && (
         <BotaoRolar color={color} rotulo={`Teste · ${p.nome}`}
-          titulo={`1d20 ${m.total >= 0 ? '+' : ''}${m.total}`}
-          onRolar={() => rolarNoServidor({
-            qtd: 1, faces: 20, modificador: m.total, categoria: 'pericia',
-            rotulo: `${nome} — teste de ${p.nome}`, detalhe: detalheDoTeste(p, m), char,
-          })} />
+          titulo={`1d20 ${m.total >= 0 ? '+' : ''}${m.total}${comCritico ? ` · ${CRITICO_MINIMO}+ no dado bruto é crítico` : ''}`}
+          onRolar={async () => {
+            const r = await rolarNoServidor({
+              qtd: 1, faces: 20, modificador: m.total, categoria: 'pericia',
+              rotulo: `${nome} — teste de ${p.nome}`, detalhe: detalheDoTeste(p, m), char,
+            });
+            if (comCritico) setCritico(foiCritico(r));
+            return r;
+          }} />
       )}
       {notacao && (
-        <BotaoRolar color={color} rotulo={`Dano · ${notacao.texto}`} titulo={`Rolar ${notacao.texto}`}
-          onRolar={() => rolarNoServidor({
-            /* Sem detalhe: a notação já aparece no histórico, ao lado dos dados. */
-            qtd: notacao.qtd, faces: notacao.faces, modificador: notacao.modificador,
-            categoria: 'dano', rotulo: `${nome} — dano`, char,
-          })} />
+        <BotaoRolar color={critico ? '#e0577a' : color}
+          rotulo={critico ? `Dano crítico · ${notacao.texto} ×2` : `Dano · ${notacao.texto}`}
+          titulo={critico ? 'O último ataque foi crítico: este dano sai dobrado' : `Rolar ${notacao.texto}`}
+          onRolar={async () => {
+            const r = await rolarNoServidor({
+              /* Sem detalhe: a notação já aparece no histórico, ao lado dos dados. */
+              qtd: notacao.qtd, faces: notacao.faces, modificador: notacao.modificador,
+              categoria: 'dano', rotulo: `${nome} — dano`, char, critico,
+            });
+            setCritico(false);
+            return r;
+          }} />
+      )}
+      {critico && (
+        <span className="text-xs flex items-center gap-1" style={{ color: '#e0577a', fontFamily: F.body }}>
+          <Flame size={11} /> crítico armado
+        </span>
       )}
     </div>
   );
@@ -3901,7 +3929,7 @@ function HistoricoRolagens({ account, color, compacto, limite }) {
           {lista.map((r) => (
             <div key={r.id} className="rounded-lg px-2.5 py-1.5 flex items-center gap-2.5"
               style={{ background: '#171029', border: `1px solid ${V.border}` }}>
-              <span className="shrink-0 text-center" style={{ fontFamily: F.mono, color, fontSize: '1rem', fontWeight: 700, minWidth: '2.2rem' }}>
+              <span className="shrink-0 text-center" style={{ fontFamily: F.mono, color: r.critico ? '#e0577a' : color, fontSize: '1rem', fontWeight: 700, minWidth: '2.2rem' }}>
                 {r.total}
               </span>
               <div className="min-w-0 flex-1">
@@ -3913,6 +3941,7 @@ function HistoricoRolagens({ account, color, compacto, limite }) {
                   {r.dados ? `${r.dados.qtd}d${r.dados.faces}${r.dados.modificador ? ` ${r.dados.modificador > 0 ? '+' : '−'} ${Math.abs(r.dados.modificador)}` : ''}` : ''}
                   {r.dados?.valores?.length > 1 ? ` [${r.dados.valores.join(', ')}]` : ''}
                   {r.detalhe ? ` · ${r.detalhe}` : ''}
+                  {r.critico ? ` · crítico, ${r.dados?.bruto ?? '?'} dobrado` : ''}
                 </p>
               </div>
               <span className="shrink-0 text-xs" style={{ fontFamily: F.mono, color: '#6f6291' }}>{horaDe(r.criadoEm)}</span>

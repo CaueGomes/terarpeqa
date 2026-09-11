@@ -78,4 +78,9 @@ export async function initSchema() {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS rolls_criado_em_idx ON rolls (criado_em DESC);
   `);
+  /* A coluna de crítico nasceu depois da tabela, então entra por ALTER: o
+     CREATE TABLE IF NOT EXISTS acima não mexe em tabela que já existe. */
+  await pool.query(`
+    ALTER TABLE rolls ADD COLUMN IF NOT EXISTS critico boolean NOT NULL DEFAULT false;
+  `);
 }

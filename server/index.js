@@ -266,7 +266,11 @@ app.post(
     if (Math.abs(modificador) > 999) return res.status(400).json({ error: 'Modificador fora do intervalo.' });
 
     const valores = rolarDados(qtd, faces);
-    const total = valores.reduce((s, v) => s + v, 0) + modificador;
+    /* Acerto crítico dobra o dano. É o cliente que pede, mas só depois de ver
+       um ataque com dado bruto alto — e o dado bruto quem rolou fui eu. */
+    const critico = b.critico === true;
+    const bruto = valores.reduce((s, v) => s + v, 0) + modificador;
+    const total = critico ? bruto * 2 : bruto;
 
     const linha = {
       id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
@@ -276,15 +280,16 @@ app.post(
       categoria: String(b.categoria || 'outro').slice(0, 40),
       rotulo: String(b.rotulo || 'Rolagem').slice(0, 160),
       detalhe: String(b.detalhe || '').slice(0, 240) || null,
-      dados: JSON.stringify({ qtd, faces, modificador, valores }),
+      dados: JSON.stringify({ qtd, faces, modificador, valores, bruto }),
       total,
+      critico,
       criado_em: Date.now(),
     };
 
     await pool.query(
-      `INSERT INTO rolls (id, owner, char_id, char_name, categoria, rotulo, detalhe, dados, total, criado_em)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [linha.id, linha.owner, linha.char_id, linha.char_name, linha.categoria, linha.rotulo, linha.detalhe, linha.dados, linha.total, linha.criado_em]
+      `INSERT INTO rolls (id, owner, char_id, char_name, categoria, rotulo, detalhe, dados, total, critico, criado_em)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [linha.id, linha.owner, linha.char_id, linha.char_name, linha.categoria, linha.rotulo, linha.detalhe, linha.dados, linha.total, linha.critico, linha.criado_em]
     );
 
     // Poda: o histórico é de sessão, não um arquivo.
@@ -313,7 +318,7 @@ app.get(
         id: r.id, owner: r.owner, charId: r.char_id, charName: r.char_name,
         categoria: r.categoria, rotulo: r.rotulo, detalhe: r.detalhe,
         dados: (() => { try { return JSON.parse(r.dados); } catch { return null; } })(),
-        total: r.total, criadoEm: Number(r.criado_em),
+        total: r.total, critico: !!r.critico, criadoEm: Number(r.criado_em),
       })),
     });
   })
