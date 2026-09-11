@@ -82,10 +82,20 @@ O `render.yaml` usa o plano gratuito nos dois serviços. Duas consequências:
 
 - O serviço **hiberna após 15 minutos** sem acesso. O primeiro acesso depois
   disso demora cerca de 1 minuto para responder.
-- O **Postgres gratuito é apagado pelo Render após 30 dias**. Quando isso
-  acontecer, as contas e fichas vão junto.
+- O **Postgres gratuito expira**. Quando isso acontece, ele para de aceitar
+  conexão e o site abre mas ninguém consegue entrar.
 
-Antes do prazo acabar, faça backup ou migre para um plano pago.
+> **Já aconteceu uma vez.** O banco criado em 20/08/2026 expirou em 10/09/2026,
+> antes dos 30 dias que eu havia estimado, e as contas e fichas daquele período
+> se perderam porque não havia backup. Não confie na conta de 30 dias: o prazo
+> real aparece na página do banco, no painel do Render.
+
+Como reconhecer: o site responde, mas o login devolve 503 e
+`/api/health` mostra `"db":"iniciando"`. A página do banco no Render mostra
+*Free database expired*.
+
+Faça backup com folga, ou migre para um Postgres que não expire — um plano pago
+no Render, ou um gratuito externo como Neon ou Supabase, que não têm prazo.
 
 ## Backup e restauração
 
