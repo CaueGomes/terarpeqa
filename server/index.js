@@ -238,6 +238,97 @@ app.delete(
   })
 );
 
+/* ---------------- rolagens ----------------
+   Os dados são rolados AQUI, não no navegador. Numa mesa em que a mestra
+   acompanha o histórico de todo mundo, um total enviado pelo cliente seria
+   apenas uma sugestão; rolando no servidor, o número é o que saiu de fato.
+   O dono da rolagem também vem da sessão, então ninguém rola em nome de outro. */
+const FACES_VALIDAS = [2, 3, 4, 6, 8, 10, 12, 20, 100];
+const MAX_ROLAGENS_GUARDADAS = 300;
+
+function rolarDados(qtd, faces) {
+  const out = [];
+  for (let i = 0; i < qtd; i++) out.push(1 + Math.floor(Math.random() * faces));
+  return out;
+}
+
+app.post(
+  '/api/rolls',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const b = req.body || {};
+    const qtd = Math.floor(Number(b.qtd) || 0);
+    const faces = Math.floor(Number(b.faces) || 0);
+    const modificador = Math.trunc(Number(b.modificador) || 0);
+
+    if (qtd < 1 || qtd > 50) return res.status(400).json({ error: 'Quantidade de dados fora do intervalo (1 a 50).' });
+    if (!FACES_VALIDAS.includes(faces)) return res.status(400).json({ error: 'Tipo de dado inválido.' });
+    if (Math.abs(modificador) > 999) return res.status(400).json({ error: 'Modificador fora do intervalo.' });
+
+    const valores = rolarDados(qtd, faces);
+    const total = valores.reduce((s, v) => s + v, 0) + modificador;
+
+    const linha = {
+      id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+      owner: req.account.username,
+      char_id: String(b.charId || '').slice(0, 80) || null,
+      char_name: String(b.charName || '').slice(0, 120) || null,
+      categoria: String(b.categoria || 'outro').slice(0, 40),
+      rotulo: String(b.rotulo || 'Rolagem').slice(0, 160),
+      detalhe: String(b.detalhe || '').slice(0, 240) || null,
+      dados: JSON.stringify({ qtd, faces, modificador, valores }),
+      total,
+      criado_em: Date.now(),
+    };
+
+    await pool.query(
+      `INSERT INTO rolls (id, owner, char_id, char_name, categoria, rotulo, detalhe, dados, total, criado_em)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [linha.id, linha.owner, linha.char_id, linha.char_name, linha.categoria, linha.rotulo, linha.detalhe, linha.dados, linha.total, linha.criado_em]
+    );
+
+    // Poda: o histórico é de sessão, não um arquivo.
+    await pool.query(
+      `DELETE FROM rolls WHERE id NOT IN (
+         SELECT id FROM rolls ORDER BY criado_em DESC LIMIT $1
+       )`,
+      [MAX_ROLAGENS_GUARDADAS]
+    );
+
+    res.json({ ...linha, dados: JSON.parse(linha.dados) });
+  })
+);
+
+app.get(
+  '/api/rolls',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    /* A mestra vê a mesa inteira; o jogador vê só o que ele mesmo rolou. */
+    const { rows } = req.account.isMaster
+      ? await pool.query('SELECT * FROM rolls ORDER BY criado_em DESC LIMIT 200')
+      : await pool.query('SELECT * FROM rolls WHERE owner = $1 ORDER BY criado_em DESC LIMIT 200', [req.account.username]);
+
+    res.json({
+      rolagens: rows.map((r) => ({
+        id: r.id, owner: r.owner, charId: r.char_id, charName: r.char_name,
+        categoria: r.categoria, rotulo: r.rotulo, detalhe: r.detalhe,
+        dados: (() => { try { return JSON.parse(r.dados); } catch { return null; } })(),
+        total: r.total, criadoEm: Number(r.criado_em),
+      })),
+    });
+  })
+);
+
+app.delete(
+  '/api/rolls',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    if (!req.account.isMaster) return res.status(403).json({ error: 'Só a mestra limpa o histórico.' });
+    await pool.query('DELETE FROM rolls');
+    res.json({ ok: true });
+  })
+);
+
 app.get('/api/health', (req, res) => res.json({ ok: true, db: schemaPronto ? 'pronto' : 'iniciando' }));
 
 /* ---------------- front ---------------- */

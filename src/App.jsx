@@ -3,7 +3,7 @@ import {
   Crown, Waves, Anchor, BookOpen, Leaf, LogOut, Plus, ChevronRight,
   ChevronLeft, Check, Skull, Trash2, ArrowLeft, Sparkles, Loader2,
   AlertCircle, Swords, Camera, ScrollText, Sliders, Star, Wand2,
-  Backpack, Settings, Pencil, Save, X, Info, PawPrint, ChevronDown, Shield, Lock, Flame,
+  Backpack, Settings, Pencil, Save, X, Info, PawPrint, ChevronDown, Shield, Lock, Flame, Dices,
 } from 'lucide-react';
 
 /* ============================================================
@@ -14,7 +14,7 @@ import {
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
-/* Tabela de perícias: no celular o nome ganha espaço e a coluna de dados some
+/* Tabela de perícias: no celular o nome ganha espaço e a coluna do atributo some
    (o atributo já aparece no cabeçalho de cada grupo). */
 .per-grid {
   display: grid;
@@ -22,9 +22,17 @@ const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght
   column-gap: 0.4rem;
   align-items: center;
 }
+/* Na ficha salva a última coluna vira o botão de rolar, em vez do campo Outros. */
+.per-grid-rolar {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 2.6rem 2.6rem 3rem 2.2rem;
+  column-gap: 0.4rem;
+  align-items: center;
+}
 .per-nome { line-height: 1.25; }
 @media (max-width: 520px) {
   .per-grid { grid-template-columns: minmax(0,1fr) 2.4rem 3.6rem 2.8rem; column-gap: 0.3rem; }
+  .per-grid-rolar { grid-template-columns: minmax(0,1fr) 2.6rem 2.8rem 2.2rem; column-gap: 0.3rem; }
   .per-dados { display: none; }
 }`;
 const F = { display: "'Cinzel', serif", body: "'Inter', sans-serif", mono: "'IBM Plex Mono', monospace" };
@@ -1167,13 +1175,31 @@ function grauDaPericia(char, periciaId) {
   return concedida ? Math.max(1, escolhido) : escolhido;
 }
 
-/* Como no CRIS: o atributo define quantos dados são rolados, não entra no bônus.
-   O bônus é treino + outros — perícia destreinada e sem extras fica em 0. */
+/* O bônus da perícia em si é treino + outros. Ele é usado no Bloqueio, que vale
+   exatamente o bônus de Resistência, por isso NÃO inclui o atributo aqui.
+   Para rolar um teste, some ainda o atributo — ver modificadorDoTeste. */
 function bonusDaPericia(char, pericia) {
   const grau = grauDaPericia(char, pericia.id);
   const attrVal = char.attributes?.[pericia.atributo] ?? 0;
   const outros = char.periciasOutros?.[pericia.id] ?? 0;
   return { grau, treino: TIERS[grau].bonus, atributo: attrVal, outros, total: TIERS[grau].bonus + outros };
+}
+
+/* ---------- rolagem de teste ----------
+   Um d20, somando o atributo da perícia e o bônus dela (treino + outros).
+   O total abaixo é exatamente o que o jogador adiciona ao dado. */
+function modificadorDoTeste(char, pericia) {
+  const b = bonusDaPericia(char, pericia);
+  const atributo = char.attributes?.[pericia.atributo] ?? 0;
+  return { atributo, treino: b.treino, outros: b.outros, total: atributo + b.total };
+}
+
+/* Texto curto que explica de onde saiu o modificador, para o histórico. */
+function detalheDoTeste(pericia, m) {
+  const partes = [`${abrevAttr(pericia.atributo)} ${m.atributo >= 0 ? '+' : ''}${m.atributo}`];
+  if (m.treino) partes.push(`treino +${m.treino}`);
+  if (m.outros) partes.push(`outros ${m.outros >= 0 ? '+' : ''}${m.outros}`);
+  return partes.join(' · ');
 }
 
 function nomesPericias(ids) {
@@ -1372,6 +1398,41 @@ async function sList(prefix) {
     const r = await api(`/kv?prefix=${encodeURIComponent(prefix || '')}`);
     return (r && r.keys) || [];
   } catch (e) { return []; }
+}
+
+/* ---------- rolagens ----------
+   O servidor é quem rola: o cliente manda a fórmula e recebe o resultado. */
+async function rolarNoServidor({ qtd, faces, modificador = 0, categoria, rotulo, detalhe, char }) {
+  return api('/rolls', {
+    method: 'POST',
+    body: JSON.stringify({
+      qtd, faces, modificador, categoria, rotulo, detalhe,
+      charId: char?.id || null,
+      charName: char?.name || null,
+    }),
+  });
+}
+
+async function lerRolagens() {
+  try {
+    const r = await api('/rolls');
+    return (r && r.rolagens) || [];
+  } catch (e) { return []; }
+}
+
+/* Lê a primeira notação NdM de um texto de dano, junto de um "+N" se houver.
+   Os catálogos escrevem coisas como "3d12 + 10", "6d12" ou
+   "3d6 (6d6 na água)" — nesse último caso fica a primeira, e a mestra decide
+   o resto. Devolve null quando não há dado nenhum para rolar. */
+function lerNotacao(texto) {
+  if (!texto) return null;
+  const m = String(texto).match(/(\d{1,2})\s*d\s*(\d{1,3})\s*(?:([+-])\s*(\d{1,3}))?/i);
+  if (!m) return null;
+  const qtd = Number(m[1]);
+  const faces = Number(m[2]);
+  if (!qtd || !faces) return null;
+  const modificador = m[3] ? (m[3] === '-' ? -Number(m[4]) : Number(m[4])) : 0;
+  return { qtd, faces, modificador, texto: `${qtd}d${faces}${modificador ? ` ${modificador > 0 ? '+' : '−'} ${Math.abs(modificador)}` : ''}` };
 }
 
 /* ---------- conteúdo criado pela mestra ----------
@@ -1888,6 +1949,12 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
             {visiveis.map((c) => <CharacterCard key={c.id} char={c} onOpen={onOpen} showOwner={account.isMaster} />)}
           </div>
         )}
+
+        {/* Histórico da sessão. O servidor já entrega filtrado: a mestra recebe
+            a mesa inteira, incluindo NPCs e inimigos; o jogador, só o dele. */}
+        <div className="rounded-2xl p-5 mt-8" style={{ background: G.surface, border: `1px solid ${G.border}` }}>
+          <HistoricoRolagens account={account} color={G.accent} />
+        </div>
       </div>
     </div>
   );
@@ -2138,22 +2205,55 @@ function DicionarioInline({ classeId, color }) {
   );
 }
 
-function StepPerfil({ draft, setDraft, origin, comNome }) {
-  const fileRef = useRef(null);
-  const [uploading, setUploading] = useState(false);
-  const color = origin?.cor || V.brand;
-  const livre = fichaLivre(draft);
+/* Envio de imagem reaproveitado pela foto do personagem e pela foto da marca.
+   A marca é quadrada de propósito: é uma tatuagem, não um retrato. */
+function EnviarImagem({ valor, onChange, color, rotulo, Icone, redondo, dica }) {
+  const inputRef = useRef(null);
+  const [enviando, setEnviando] = useState(false);
 
-  const handleFile = async (e) => {
+  const escolher = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
+    setEnviando(true);
     try {
-      const dataUrl = await resizeImage(file);
-      setDraft({ ...draft, fotoUrl: dataUrl });
-    } catch (err) { /* silently ignore */ }
-    setUploading(false);
+      onChange(await resizeImage(file));
+    } catch (err) { /* leitura falhou; mantém o que já estava */ }
+    setEnviando(false);
+    e.target.value = ''; // permite reenviar o mesmo arquivo
   };
+
+  const forma = redondo ? 'rounded-full' : 'rounded-xl';
+  return (
+    <div className="flex items-center gap-3">
+      <button onClick={() => inputRef.current?.click()}
+        className={`w-20 h-20 ${forma} flex items-center justify-center shrink-0 overflow-hidden transition-opacity hover:opacity-90`}
+        style={{ background: `${color}22`, border: `2px dashed ${color}88` }}>
+        {enviando ? <Loader2 size={20} className="animate-spin" style={{ color }} />
+          : valor ? <img src={valor} alt="" className="w-full h-full object-cover" />
+          : <Icone size={22} color={color} />}
+      </button>
+      <div className="min-w-0">
+        <button onClick={() => inputRef.current?.click()} className="text-sm rounded-lg px-3 py-2 transition-opacity hover:opacity-90"
+          style={{ background: `${color}22`, color, border: `1px solid ${color}88`, fontFamily: F.body }}>
+          {valor ? `Trocar ${rotulo}` : `Enviar ${rotulo}`}
+        </button>
+        <input ref={inputRef} type="file" accept="image/*" onChange={escolher} className="hidden" />
+        {valor && (
+          <button onClick={() => onChange('')} className="text-xs ml-2 hover:opacity-80" style={{ color: '#e0577a', fontFamily: F.body }}>
+            Remover
+          </button>
+        )}
+        <p className="text-xs mt-1.5 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+          {dica || 'Opcional — a imagem é redimensionada automaticamente.'}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function StepPerfil({ draft, setDraft, origin, comNome }) {
+  const color = origin?.cor || V.brand;
+  const livre = fichaLivre(draft);
 
   return (
     <div>
@@ -2164,20 +2264,12 @@ function StepPerfil({ draft, setDraft, origin, comNome }) {
             placeholder="Como esta ficha é chamada?" />
         </Field>
       )}
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={() => fileRef.current?.click()} className="w-20 h-20 rounded-full flex items-center justify-center shrink-0 overflow-hidden transition-opacity hover:opacity-90"
-          style={{ background: `${color}22`, border: `2px dashed ${color}88` }}>
-          {uploading ? <Loader2 size={20} className="animate-spin" style={{ color }} /> :
-            draft.fotoUrl ? <img src={draft.fotoUrl} alt="" className="w-full h-full object-cover" /> : <Camera size={22} color={color} />}
-        </button>
-        <div>
-          <button onClick={() => fileRef.current?.click()} className="text-sm rounded-lg px-3 py-2 transition-opacity hover:opacity-90"
-            style={{ background: `${color}22`, color, border: `1px solid ${color}88`, fontFamily: F.body }}>
-            {draft.fotoUrl ? 'Trocar foto' : 'Enviar foto'}
-          </button>
-          <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
-          <p className="text-xs mt-1.5" style={{ color: '#6f6291', fontFamily: F.body }}>Opcional — a imagem é redimensionada automaticamente.</p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <EnviarImagem valor={draft.fotoUrl} onChange={(v) => setDraft({ ...draft, fotoUrl: v })}
+          color={color} rotulo="foto" Icone={Camera} redondo />
+        <EnviarImagem valor={draft.marcaUrl} onChange={(v) => setDraft({ ...draft, marcaUrl: v })}
+          color={color} rotulo="marca" Icone={Sparkles}
+          dica="A marca que nasceu na sua pele." />
       </div>
 
       <Field label="História">
@@ -2346,18 +2438,19 @@ function StepAtributos({ draft, setDraft, origin }) {
 
 /* Tabela de perícias no estilo CRIS: atributo, treino e bônus total.
    Perícias concedidas pela classe/subdivisão ficam travadas no mínimo Treinado. */
-function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly }) {
+function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly, podeRolar }) {
   const concedidas = periciasConcedidas(char);
   const [aberta, setAberta] = useState(null);
+  const grade = podeRolar ? 'per-grid-rolar' : 'per-grid';
 
   return (
     <div>
-      <div className="per-grid px-2 pb-2 mb-1 border-b" style={{ borderColor: V.border }}>
+      <div className={`${grade} px-2 pb-2 mb-1 border-b`} style={{ borderColor: V.border }}>
         <span className="uppercase tracking-widest" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Perícia</span>
-        <span className="per-dados uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Dados</span>
-        <span className="uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Bônus</span>
+        <span className="per-dados uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Atrib</span>
+        <span className="uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Teste</span>
         <span className="uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Treino</span>
-        <span className="uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Outros</span>
+        <span className="uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>{podeRolar ? 'Rolar' : 'Outros'}</span>
       </div>
 
       {ATTRS.map((a) => (
@@ -2365,13 +2458,14 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly })
           <p className="text-xs font-semibold px-2 py-1.5" style={{ color, fontFamily: F.body }}>{a.nome}</p>
           {PERICIAS.filter((p) => p.atributo === a.key).map((p) => {
             const b = bonusDaPericia(char, p);
+            const m = modificadorDoTeste(char, p);
             const travada = concedidas.has(p.id);
             const treinada = b.grau > 0;
             const cor = treinada ? color : V.muted;
             const expandida = aberta === p.id;
             return (
               <React.Fragment key={p.id}>
-              <div className="per-grid px-2 py-1.5 rounded-md" style={{ background: treinada ? `${color}12` : 'transparent' }}>
+              <div className={`${grade} px-2 py-1.5 rounded-md`} style={{ background: treinada ? `${color}12` : 'transparent' }}>
                 <button onClick={() => setAberta(expandida ? null : p.id)} className="min-w-0 text-left">
                   <p className="per-nome text-sm flex items-center gap-1.5" style={{ fontFamily: F.body, color: treinada ? V.text : V.muted, fontWeight: treinada ? 600 : 400 }}>
                     {p.nome}
@@ -2379,8 +2473,11 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly })
                     <ChevronDown size={11} className="shrink-0 transition-transform" style={{ color: V.muted, transform: expandida ? 'rotate(180deg)' : 'none' }} />
                   </p>
                 </button>
-                <span className="per-dados text-xs text-center" style={{ fontFamily: F.mono, color: V.muted }}>({abrevAttr(p.atributo)})</span>
-                <span className="text-sm text-center" style={{ fontFamily: F.mono, color: treinada ? V.text : V.muted, fontWeight: 600 }}>({b.total})</span>
+                <span className="per-dados text-xs text-center" style={{ fontFamily: F.mono, color: V.muted }}>{abrevAttr(p.atributo)} {m.atributo}</span>
+                <span className="text-sm text-center" style={{ fontFamily: F.mono, color: treinada ? V.text : V.muted, fontWeight: 600 }}
+                  title="O que você soma ao d20: atributo + treino + outros">
+                  {m.total >= 0 ? '+' : ''}{m.total}
+                </span>
                 {readOnly ? (
                   <span className="text-xs text-center" style={{ fontFamily: F.mono, color: cor }}>{b.treino}</span>
                 ) : (
@@ -2392,7 +2489,15 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly })
                     ))}
                   </select>
                 )}
-                {readOnly ? (
+                {podeRolar ? (
+                  <div className="flex justify-center">
+                    <BotaoRolar color={color} compacto titulo={`Rolar ${p.nome}: 1d20 ${m.total >= 0 ? '+' : ''}${m.total}`}
+                      onRolar={() => rolarNoServidor({
+                        qtd: 1, faces: 20, modificador: m.total, categoria: 'pericia',
+                        rotulo: p.nome, detalhe: detalheDoTeste(p, m), char,
+                      })} />
+                  </div>
+                ) : readOnly ? (
                   <span className="text-xs text-center" style={{ fontFamily: F.mono, color: V.muted }}>{b.outros}</span>
                 ) : (
                   <input type="number" value={b.outros}
@@ -2408,7 +2513,7 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly })
                     <p className="text-xs leading-relaxed mt-1.5" style={{ fontFamily: F.body, color: '#8b7fae' }}>{p.detalhe}</p>
                   )}
                   <p className="text-xs mt-1.5" style={{ fontFamily: F.body, color: '#6f6291' }}>
-                    Rolagem por <strong style={{ color }}>{ATTRS.find((x) => x.key === p.atributo)?.nome}</strong>
+                    Teste: 1d20 {m.total >= 0 ? '+' : ''}{m.total} — <strong style={{ color }}>{ATTRS.find((x) => x.key === p.atributo)?.nome}</strong> {m.atributo}{m.treino ? ` + treino ${m.treino}` : ''}{m.outros ? ` + outros ${m.outros}` : ''}
                     {travada && ' · treino garantido pela sua classe ou subdivisão'}
                   </p>
                 </div>
@@ -2446,8 +2551,8 @@ function StepPericias({ draft, setDraft, origin }) {
         )}
       </div>
       <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Destreinado 0 · Treinado +2 · Veterano +4 · Expert +6. "Dados" mostra o atributo
-        usado na rolagem; ele não entra no bônus.{' '}
+        Destreinado 0 · Treinado +2 · Veterano +4 · Expert +6. O teste é 1d20 somando o
+        atributo da perícia mais o treino e os outros bônus — é o número da coluna Teste.{' '}
         {livre
           ? 'Nesta ficha as 23 estão livres: nenhuma vem travada por classe ou subdivisão.'
           : 'Cada grau que você sobe custa um degrau do seu nível. As perícias marcadas com estrela vêm da classe ou subdivisão, já entram no Treinado e não custam nada.'}
@@ -3121,6 +3226,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
   const origin = originDaFicha(char);
   const der = computeRecursos(char);
   const mColor = markColor(origin, char);
+  const [marcaAberta, setMarcaAberta] = useState(false);
 
   const subdivLabel = () => {
     if (origin.subdivisao === 'animal') return TIPOS_ANIMAL.find((t) => t.id === char.subdivisaoAnimalTipo)?.nome || null;
@@ -3140,6 +3246,14 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
         <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 overflow-hidden" style={{ background: `${origin.cor}22`, border: `2px solid ${mColor}` }}>
           {char.fotoUrl ? <img src={char.fotoUrl} alt="" className="w-full h-full object-cover" /> : (origin.Icon ? <origin.Icon size={26} color={origin.cor} /> : null)}
         </div>
+        {/* A marca fica ao lado do retrato, quadrada, para não ser confundida com ele. */}
+        {char.marcaUrl && (
+          <button onClick={() => setMarcaAberta(true)} title="Ver a marca de perto"
+            className="w-16 h-16 rounded-xl shrink-0 overflow-hidden transition-opacity hover:opacity-80"
+            style={{ border: `2px solid ${mColor}` }}>
+            <img src={char.marcaUrl} alt="Marca do personagem" className="w-full h-full object-cover" />
+          </button>
+        )}
         <div>
           <h3 style={{ fontFamily: F.display, color: V.text, fontWeight: 700, fontSize: '1.4rem' }}>{char.name || 'Personagem sem nome'}</h3>
           <p className="text-sm" style={{ color: origin.cor, fontFamily: F.body }}>
@@ -3157,6 +3271,21 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
           </p>
         </div>
       </div>
+
+      {/* Marca em tamanho grande, para quem quiser ver o desenho. */}
+      {marcaAberta && char.marcaUrl && (
+        <button onClick={() => setMarcaAberta(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ background: 'rgba(8,6,16,0.88)' }}>
+          <div className="max-w-md w-full">
+            <img src={char.marcaUrl} alt="Marca do personagem" className="w-full rounded-2xl"
+              style={{ border: `2px solid ${mColor}` }} />
+            <p className="text-xs text-center mt-3" style={{ color: V.muted, fontFamily: F.body }}>
+              A marca de {char.name || 'este personagem'} · toque para fechar
+            </p>
+          </div>
+        </button>
+      )}
 
       {char.editedByMaster && (
         <div className="flex items-center gap-1.5 text-xs rounded-lg px-2.5 py-1.5 mb-4 w-fit" style={{ background: '#332a52', color: '#d9c3f7', fontFamily: F.body }}>
@@ -3272,7 +3401,7 @@ function blankDraft(owner, tipoFicha = null) {
     id: null, owner, name: '', originId: null, tipoFicha,
     nivel: NIVEL_CLASSE_MIN,
     subdivisaoId: null, subdivisaoAnimalTipo: null, subdivisaoNivel: NIVEL_MIN,
-    fotoUrl: '', historia: '', animal: null,
+    fotoUrl: '', marcaUrl: '', historia: '', animal: null,
     attributes: { intelecto: base, psique: base, fisico: base, motoras: base },
     recursosLivres: { vidaMax: 0, sanidadeMax: 0, manaMax: 0 },
     custom: { armas: [], armaduras: [], habilidades: [] },
@@ -3444,6 +3573,7 @@ function ListaArmas({ char, catalogo, color }) {
               <p className="text-xs mt-1" style={{ fontFamily: F.body, color: '#6f6291' }}>
                 {a.teste ? `Teste de ${a.teste}` : ''}{a.teste && a.peso !== undefined ? ' · ' : ''}{a.peso > 0 ? `peso ${a.peso}` : 'sem peso'}
               </p>
+              <BotoesDeRolagem char={char} color={color} nome={a.nome} dano={a.dano} pericia={a.teste} />
             </div>
           ))}
         </div>
@@ -3629,6 +3759,155 @@ function FichaAnimal({ char, color, podeEditar, onSalvar }) {
   );
 }
 
+/* ---------- interface das rolagens ---------- */
+
+/* Botão de rolar. Mostra o último resultado no próprio botão por alguns
+   segundos, para quem rolou não precisar procurar no histórico. */
+function BotaoRolar({ onRolar, color, titulo, compacto, rotulo }) {
+  const [rolando, setRolando] = useState(false);
+  const [ultimo, setUltimo] = useState(null);
+
+  useEffect(() => {
+    if (ultimo === null) return undefined;
+    const t = setTimeout(() => setUltimo(null), 6000);
+    return () => clearTimeout(t);
+  }, [ultimo]);
+
+  const clicar = async (e) => {
+    e.stopPropagation();
+    setRolando(true);
+    try {
+      const r = await onRolar();
+      if (r && typeof r.total === 'number') setUltimo(r.total);
+    } catch (err) { /* o painel de histórico mostra o estado real */ }
+    setRolando(false);
+  };
+
+  return (
+    <button onClick={clicar} disabled={rolando} title={titulo}
+      className={`flex items-center justify-center gap-1 rounded-md transition-opacity hover:opacity-80 disabled:opacity-50 ${compacto ? 'w-8 h-7' : 'px-2.5 py-1'}`}
+      style={{
+        background: ultimo !== null ? color : 'transparent',
+        border: `1px solid ${color}${ultimo !== null ? '' : '88'}`,
+        color: ultimo !== null ? '#0d0a16' : color,
+        fontFamily: F.mono, fontSize: '11px', fontWeight: ultimo !== null ? 700 : 400,
+      }}>
+      {rolando ? <Loader2 size={12} className="animate-spin" />
+        : ultimo !== null ? ultimo
+        : <><Dices size={12} />{!compacto && rotulo ? <span style={{ fontFamily: F.body }}>{rotulo}</span> : null}</>}
+    </button>
+  );
+}
+
+/* Botões de uma arma, habilidade ou feitiço. São dois papéis diferentes e por
+   isso dois botões: o teste diz se acertou, o dano diz o quanto doeu. Cada um
+   só aparece quando faz sentido — sem notação de dado, não há o que rolar. */
+function BotoesDeRolagem({ char, color, nome, dano, pericia }) {
+  const notacao = lerNotacao(dano);
+  const p = pericia ? PERICIAS.find((x) => x.nome.toLowerCase() === String(pericia).toLowerCase()) : null;
+  const m = p ? modificadorDoTeste(char, p) : null;
+  if (!notacao && !m) return null;
+
+  return (
+    <div className="flex items-center gap-2 mt-2 flex-wrap">
+      {m && (
+        <BotaoRolar color={color} rotulo={`Teste · ${p.nome}`}
+          titulo={`1d20 ${m.total >= 0 ? '+' : ''}${m.total}`}
+          onRolar={() => rolarNoServidor({
+            qtd: 1, faces: 20, modificador: m.total, categoria: 'pericia',
+            rotulo: `${nome} — teste de ${p.nome}`, detalhe: detalheDoTeste(p, m), char,
+          })} />
+      )}
+      {notacao && (
+        <BotaoRolar color={color} rotulo={`Dano · ${notacao.texto}`} titulo={`Rolar ${notacao.texto}`}
+          onRolar={() => rolarNoServidor({
+            /* Sem detalhe: a notação já aparece no histórico, ao lado dos dados. */
+            qtd: notacao.qtd, faces: notacao.faces, modificador: notacao.modificador,
+            categoria: 'dano', rotulo: `${nome} — dano`, char,
+          })} />
+      )}
+    </div>
+  );
+}
+
+const horaDe = (ms) => new Date(ms).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+/* Histórico das rolagens. O que aparece aqui já vem filtrado pelo servidor:
+   a mestra recebe a mesa inteira, o jogador recebe só o que ele rolou. */
+function HistoricoRolagens({ account, color, compacto, limite }) {
+  const [rolagens, setRolagens] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [limpando, setLimpando] = useState(false);
+
+  const carregar = useCallback(async () => {
+    setRolagens(await lerRolagens());
+    setCarregando(false);
+  }, []);
+
+  /* Atualiza sozinho: a mestra precisa ver a rolagem do jogador aparecer. */
+  useEffect(() => {
+    carregar();
+    const t = setInterval(carregar, 5000);
+    return () => clearInterval(t);
+  }, [carregar]);
+
+  const limpar = async () => {
+    setLimpando(true);
+    try { await api('/rolls', { method: 'DELETE' }); } catch (e) { /* segue e recarrega */ }
+    await carregar();
+    setLimpando(false);
+  };
+
+  const lista = limite ? rolagens.slice(0, limite) : rolagens;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+          <Dices size={13} /> {account?.isMaster ? 'Rolagens da mesa' : 'Suas rolagens'}
+        </p>
+        {account?.isMaster && rolagens.length > 0 && (
+          <button onClick={limpar} disabled={limpando} className="text-xs hover:opacity-80 disabled:opacity-50"
+            style={{ color: '#e0577a', fontFamily: F.body }}>
+            {limpando ? 'Limpando…' : 'Limpar'}
+          </button>
+        )}
+      </div>
+
+      {carregando ? (
+        <p className="text-xs italic" style={{ color: '#6f6291', fontFamily: F.body }}>Carregando…</p>
+      ) : lista.length === 0 ? (
+        <p className="text-xs italic leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+          Nenhuma rolagem ainda. Os botões de dado ficam ao lado de cada perícia, arma, habilidade e feitiço.
+        </p>
+      ) : (
+        <div className={compacto ? 'space-y-1' : 'space-y-1.5'}>
+          {lista.map((r) => (
+            <div key={r.id} className="rounded-lg px-2.5 py-1.5 flex items-center gap-2.5"
+              style={{ background: '#171029', border: `1px solid ${V.border}` }}>
+              <span className="shrink-0 text-center" style={{ fontFamily: F.mono, color, fontSize: '1rem', fontWeight: 700, minWidth: '2.2rem' }}>
+                {r.total}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs truncate" style={{ fontFamily: F.body, color: V.text }}>
+                  {r.rotulo}
+                  {account?.isMaster && r.charName ? <span style={{ color: V.muted }}> · {r.charName}</span> : null}
+                </p>
+                <p className="text-xs truncate" style={{ fontFamily: F.mono, color: '#6f6291' }}>
+                  {r.dados ? `${r.dados.qtd}d${r.dados.faces}${r.dados.modificador ? ` ${r.dados.modificador > 0 ? '+' : '−'} ${Math.abs(r.dados.modificador)}` : ''}` : ''}
+                  {r.dados?.valores?.length > 1 ? ` [${r.dados.valores.join(', ')}]` : ''}
+                  {r.detalhe ? ` · ${r.detalhe}` : ''}
+                </p>
+              </div>
+              <span className="shrink-0 text-xs" style={{ fontFamily: F.mono, color: '#6f6291' }}>{horaDe(r.criadoEm)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* Perícia com que o alvo resiste. Fica destacada abaixo da descrição porque é
    o que a mesa mais procura no meio de um combate. */
 function LinhaResistencia({ texto, color }) {
@@ -3642,7 +3921,7 @@ function LinhaResistencia({ texto, color }) {
 
 /* `detalhes` é um mapa id → texto curto, usado para mostrar a evolução do
    feitiço ao lado do nome sem mexer no catálogo. */
-function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes }) {
+function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes, char, periciaDeLancamento }) {
   const itens = (ids || []).map((id) => catalogo.find((x) => x.id === id)).filter(Boolean);
   return (
     <div className="mb-5">
@@ -3670,6 +3949,11 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
                 <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.nota}</p>
               )}
               {it.resistencia && <LinhaResistencia texto={it.resistencia} color={color} />}
+              {char && (
+                <BotoesDeRolagem char={char} color={color} nome={it.nome}
+                  dano={descricoes?.[it.id] || it.descricao}
+                  pericia={periciaDeLancamento} />
+              )}
             </div>
           ))}
         </div>
@@ -3688,20 +3972,6 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
   const origin = originDaFicha(char);
   const isOwner = account.username === char.owner;
   const canEdit = account.isMaster || isOwner;
-
-  const [uploadingFoto, setUploadingFoto] = useState(false);
-  const editFileRef = useRef(null);
-
-  const handleEditFoto = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingFoto(true);
-    try {
-      const dataUrl = await resizeImage(file);
-      setEditDraft((d) => ({ ...d, fotoUrl: dataUrl }));
-    } catch (err) { /* ignora falha de leitura */ }
-    setUploadingFoto(false);
-  };
 
   const escopo = escopoDaFicha(char);
 
@@ -3756,26 +4026,11 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             </button>
           </div>
           <div className="rounded-2xl p-6" style={{ background: V.surface, border: `1px solid ${V.border}` }}>
-            <div className="flex items-center gap-4 mb-5">
-              <button onClick={() => editFileRef.current?.click()}
-                className="w-20 h-20 rounded-full flex items-center justify-center shrink-0 overflow-hidden transition-opacity hover:opacity-90"
-                style={{ background: `${origin.cor}22`, border: `2px dashed ${origin.cor}88` }}>
-                {uploadingFoto ? <Loader2 size={20} className="animate-spin" style={{ color: origin.cor }} />
-                  : editDraft.fotoUrl ? <img src={editDraft.fotoUrl} alt="" className="w-full h-full object-cover" />
-                  : <Camera size={22} color={origin.cor} />}
-              </button>
-              <div>
-                <button onClick={() => editFileRef.current?.click()} className="text-sm rounded-lg px-3 py-2 transition-opacity hover:opacity-90"
-                  style={{ background: `${origin.cor}22`, color: origin.cor, border: `1px solid ${origin.cor}88`, fontFamily: F.body }}>
-                  {editDraft.fotoUrl ? 'Trocar foto' : 'Enviar foto'}
-                </button>
-                <input ref={editFileRef} type="file" accept="image/*" onChange={handleEditFoto} className="hidden" />
-                {editDraft.fotoUrl && (
-                  <button onClick={() => setEditDraft({ ...editDraft, fotoUrl: '' })} className="text-xs ml-2 hover:opacity-80" style={{ color: '#e0577a', fontFamily: F.body }}>
-                    Remover
-                  </button>
-                )}
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+              <EnviarImagem valor={editDraft.fotoUrl} onChange={(v) => setEditDraft({ ...editDraft, fotoUrl: v })}
+                color={origin.cor} rotulo="foto" Icone={Camera} redondo />
+              <EnviarImagem valor={editDraft.marcaUrl} onChange={(v) => setEditDraft({ ...editDraft, marcaUrl: v })}
+                color={origin.cor} rotulo="marca" Icone={Sparkles} dica="A marca que nasceu na sua pele." />
             </div>
 
             <Field label="Nome">
@@ -3959,10 +4214,15 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
           {tab === 'pericias' && (
             <div>
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
-              <p className="text-xs mb-4" style={{ color: '#6f6291', fontFamily: F.body }}>
-                Destreinado +0 · Treinado +2 · Veterano +4 · Expert +6
+              <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+                Destreinado +0 · Treinado +2 · Veterano +4 · Expert +6. O botão de dado rola
+                <strong style={{ color: origin.cor }}> 1d20</strong> somando o número da coluna Teste,
+                que já inclui o atributo, o treino e os outros bônus.
               </p>
-              <TabelaPericias char={char} color={origin.cor} readOnly onChangeGrau={() => {}} />
+              <TabelaPericias char={char} color={origin.cor} readOnly podeRolar onChangeGrau={() => {}} />
+              <div className="mt-5 pt-4 border-t" style={{ borderColor: V.border }}>
+                <HistoricoRolagens account={account} color={origin.cor} compacto limite={6} />
+              </div>
             </div>
           )}
           {tab === 'combate' && (
@@ -3974,7 +4234,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
           {tab === 'habilidades' && (
             <ListaConteudo titulo="Habilidades" Icon={Flame} ids={char.habilidades}
               catalogo={catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char)}
-              color={origin.cor} vazio="Nenhuma habilidade escolhida." />
+              color={origin.cor} vazio="Nenhuma habilidade escolhida." char={char} />
           )}
           {tab === 'poderes' && (
             /* Deuses: uma lista só, juntando o que foi criado como habilidade
@@ -3982,7 +4242,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             <ListaConteudo titulo="Poderes Divinos" Icon={Flame}
               ids={[...(char.habilidades || []), ...idsDeFeiticos(char.feiticos)]}
               catalogo={[...catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char), ...catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)]}
-              color={origin.cor} vazio="Nenhum poder divino criado ainda." />
+              color={origin.cor} vazio="Nenhum poder divino criado ainda." char={char} />
           )}
           {tab === 'feiticos' && (
             <div>
@@ -4008,7 +4268,8 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={idsDeFeiticos(char.feiticos)}
                 detalhes={detalhesDeFeiticos(char.feiticos)}
                 descricoes={descricoesDeFeiticos(char.feiticos, catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO))}
-                catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido." />
+                catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido."
+                char={char} periciaDeLancamento="Dicionário mental" />
             </div>
           )}
           {tab === 'animal' && (

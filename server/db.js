@@ -59,4 +59,23 @@ export async function initSchema() {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS kv_key_prefix_idx ON kv (lower(key) text_pattern_ops);
   `);
+  /* Histórico de rolagens. Não é permanente de propósito: serve para a mesa
+     lembrar do que rolou durante a sessão, e as linhas velhas são podadas. */
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS rolls (
+      id         text PRIMARY KEY,
+      owner      text NOT NULL,
+      char_id    text,
+      char_name  text,
+      categoria  text NOT NULL,
+      rotulo     text NOT NULL,
+      detalhe    text,
+      dados      text,
+      total      integer NOT NULL,
+      criado_em  bigint NOT NULL
+    );
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS rolls_criado_em_idx ON rolls (criado_em DESC);
+  `);
 }
