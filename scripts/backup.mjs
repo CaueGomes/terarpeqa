@@ -23,8 +23,28 @@ fs.mkdirSync(path.dirname(destino), { recursive: true });
    string para o arquivo ficar igual nos dois casos. */
 const texto = (v) => (v === null || v === undefined ? null : String(v));
 
-const { rows: accounts } = await pool.query('SELECT * FROM accounts ORDER BY created_at');
-const { rows: kv } = await pool.query('SELECT * FROM kv ORDER BY key');
+let accounts, kv;
+try {
+  ({ rows: accounts } = await pool.query('SELECT * FROM accounts ORDER BY created_at'));
+  ({ rows: kv } = await pool.query('SELECT * FROM kv ORDER BY key'));
+} catch (err) {
+  /* Sem isto, um erro de URL vira um stack trace do Postgres e ninguém
+     entende que o problema é o endereço. */
+  console.error('\n[backup] não deu para ler o banco.');
+  if (err.code === '42P01') {
+    console.error('         O banco respondeu, mas não tem as tabelas do Terarpeqá.');
+    console.error('         Confira se a URL aponta para o banco certo.');
+  } else if (['ENOTFOUND', 'ECONNREFUSED', 'ETIMEDOUT'].includes(err.code)) {
+    console.error(`         Não consegui chegar em ${alvo}. Use a External Database URL,`);
+    console.error('         não a Internal — esta última só funciona dentro do Render.');
+  } else if (err.code === '28P01' || /password/i.test(err.message)) {
+    console.error('         Usuário ou senha recusados. Copie a URL de novo, inteira.');
+  } else {
+    console.error(`         ${err.message}`);
+  }
+  console.error('\n         NADA foi gravado.\n');
+  process.exit(1);
+}
 
 const dump = {
   versao: 1,

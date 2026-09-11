@@ -98,14 +98,18 @@ Pegue a **External Database URL** no painel do Render, na página do banco. A
 No PowerShell:
 
 ```powershell
-$env:DATABASE_URL="postgresql://...external..."; npm run backup
+$env:DATABASE_URL="cole-aqui-a-External-Database-URL"
+node scripts/backup.mjs
 ```
 
 No Bash:
 
 ```bash
-DATABASE_URL="postgresql://...external..." npm run backup
+DATABASE_URL="cole-aqui-a-External-Database-URL" node scripts/backup.mjs
 ```
+
+> No Windows, o PowerShell costuma bloquear o `npm.ps1` por política de execução.
+> Por isso os comandos chamam `node` direto, que não passa por esse wrapper.
 
 O arquivo cai em `backups/`, com data e hora no nome. O script imprime para qual
 banco se conectou e quantas contas e fichas salvou — confira esses números antes
@@ -114,7 +118,8 @@ de considerar o backup feito.
 Para restaurar em um banco novo, aponte a URL para ele e passe o arquivo:
 
 ```powershell
-$env:DATABASE_URL="postgresql://...novo..."; npm run restore -- backups/terarpeqa-....json
+$env:DATABASE_URL="url-do-banco-novo"
+node scripts/restore.mjs backups/terarpeqa-....json
 ```
 
 A restauração cria as tabelas se não existirem e sobrescreve o que colidir,
