@@ -61,9 +61,11 @@ const dump = {
 
 fs.writeFileSync(destino, JSON.stringify(dump, null, 2));
 
-const tamanho = (fs.statSync(destino).size / 1024).toFixed(0);
+/* Em KB, um backup pequeno virava "0 KB" e parecia arquivo vazio. */
+const bytes = fs.statSync(destino).size;
+const tamanho = bytes < 10240 ? `${bytes} bytes` : `${(bytes / 1024).toFixed(0)} KB`;
 const fichas = dump.kv.filter((r) => r.key.startsWith('char:')).length;
 const conteudos = dump.kv.filter((r) => r.key.startsWith('content:')).length;
 console.log(`[backup] ${dump.accounts.length} contas, ${fichas} fichas, ${conteudos} conteúdos`);
-console.log(`[backup] gravado em ${destino} (${tamanho} KB)`);
+console.log(`[backup] gravado em ${destino} (${tamanho})`);
 process.exit(0);
