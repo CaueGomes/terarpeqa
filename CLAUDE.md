@@ -103,18 +103,37 @@ salvas); renomear é só trocar o `nome`. Ex.: "Percepção" ainda tem id `logic
 ### Vida, sanidade e mana
 ```
 vida     = classe.vidaBase + vidaPorNivel × (nível−1) + subdivisão + Físico×12 + ganho do nível mágico + bônus de lore
-sanidade = classe.sanBase  + sanPorNivel  × (nível−1) + subdivisão + Psique×12 + ganho do nível mágico + bônus de lore
+sanidade = classe.sanBase + reserva de habilidades + sanPorNivel × (nível−1) + subdivisão + Psique×12 + ganho do nível mágico + bônus de lore
 mana     = nível mágico + 2 × nível de classe   (só mago)
 ```
-As seis classes partem do mesmo total (58) e crescem 9 por nível, divididos
-diferente: guerreiro 34/24 … mago 24/34. Cada subdivisão distribui mais 6.
+Vida, sanidade e **Defesa base** saem do mesmo orçamento: **60 pontos por
+classe**, contando 1 por vida, 1 por sanidade e **2 por ponto de Defesa acima
+de 8**. Guerreiro 36/14/13, pirata 32/20/12, sereia 30/24/11, druida 30/26/10,
+nascido de ouro 26/28/11, mago 22/36/9. Cada subdivisão distribui mais 6 pontos
+na mesma moeda (ensanguentado, por exemplo, compra 2 de Defesa). Por nível,
+vida + sanidade continuam somando 9. `balancoConferido()` fecha essa conta e
+avisa no console em desenvolvimento se alguma linha sair do orçamento.
+
+A **reserva de habilidades** é a parte da sanidade que vem do que as
+habilidades custam: a mediana do custo das habilidades daquela classe +
+subdivisão, vezes 2 (duas ativações típicas por cena). Ela é **lida do texto
+das habilidades** por `custoSanidadeDaHabilidade` — quem escrever "Gasta 12 de
+sanidade" numa habilidade nova já muda a conta sozinho. O regex exige a palavra
+"gasta" antes do número, senão "recupera 3d10 de sanidade" viraria custo.
+
+Consequência a conhecer: druida místico e dono da coroa passam o mago em
+sanidade total, porque as habilidades deles são as mais caras da mesa. O mago
+lidera a parte da classe (36), não a reserva (12, ele gasta mana).
 
 ### Defesas
 ```
-Defesa   = (10 + Motoras + equipamento + outros) × 0,75, arredondado
+Defesa   = (base da classe + subdivisão + Motoras×2 + equipamento + outros) × 0,75, arredondado
 Bloqueio = bônus de Resistência × 2 + equipamento + outros
 Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros
 ```
+Motoras conta dobrado **só na Defesa**, que é o único dos três valores sem uma
+perícia para crescer junto. Ficha sem classe (deus, inimigo) usa a base 10 do
+`BALANCO_PADRAO`.
 
 ### Feitiços
 23 feitiços, 14 com **evoluções I, II e III**; os outros mostram "Esse feitiço
@@ -131,7 +150,10 @@ só uma sugestão. Botões ao lado de cada perícia, arma, habilidade e feitiço
 Armas têm dois botões: teste e dano.
 
 **Crítico** (só armas): dado bruto do ataque ≥ **18**, sem atributo nem bônus,
-dobra o dano do golpe seguinte. A marca se apaga depois do dano.
+faz o golpe seguinte sair no **dano máximo** — cada dado no valor mais alto, sem
+rolar (3d10 crítico = 30, mais o modificador). Quem monta esse valor é o
+servidor; o cliente só avisa que o golpe está crítico. A marca se apaga depois
+do dano.
 
 ### Fichas da mestra
 `tipoFicha` ∈ `deus`, `inimigo`, `especial`. Sem fórmula: vida, sanidade e mana
@@ -223,6 +245,7 @@ código**, não no banco. Expiração de banco não afeta nada disso.
 - Teste de perícia é **1d20 + atributo + bônus**, e não "N dados pelo atributo".
 - Custo de vaga do feitiço é pela **evolução** escolhida.
 - Nível de classe e nível mágico **coexistem**.
-- Dano crítico é **total × 2**, não dobrar a quantidade de dados.
+- Dano crítico é o **dano máximo** dos dados, não o dobro do total (mudou em
+  12/09/2026; antes era × 2).
 - No Bloqueio, só a **Resistência** dobra; equipamento e outros entram cheios.
 - Banco: recomeçar de graça em vez de pagar para resgatar os dados perdidos.

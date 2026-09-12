@@ -175,44 +175,87 @@ const PERICIAS_POR_CLASSE = {
 const NIVEL_CLASSE_MIN = 1, NIVEL_CLASSE_MAX = 10;
 const nivelDaFicha = (char) => clamp(Number(char?.nivel) || NIVEL_CLASSE_MIN, NIVEL_CLASSE_MIN, NIVEL_CLASSE_MAX);
 
-/* Vida e sanidade por classe. Todas partem do mesmo total (58 pontos) e crescem
-   o mesmo tanto por nível (9), só que divididos de formas diferentes: quem
-   aguenta pancada tem menos cabeça, e vice-versa. Inspirado nos dados de vida
-   do D&D, onde o guerreiro sobe d10 e o mago d6. */
-const BALANCO_CLASSE = {
-  guerreiro:    { vidaBase: 34, vidaPorNivel: 6, sanBase: 24, sanPorNivel: 3 },
-  pirata:       { vidaBase: 32, vidaPorNivel: 5, sanBase: 26, sanPorNivel: 4 },
-  sereia:       { vidaBase: 30, vidaPorNivel: 5, sanBase: 28, sanPorNivel: 4 },
-  druida:       { vidaBase: 28, vidaPorNivel: 4, sanBase: 30, sanPorNivel: 5 },
-  nascido_ouro: { vidaBase: 26, vidaPorNivel: 4, sanBase: 32, sanPorNivel: 5 },
-  mago:         { vidaBase: 24, vidaPorNivel: 3, sanBase: 34, sanPorNivel: 6 },
-};
-const BALANCO_PADRAO = { vidaBase: 30, vidaPorNivel: 4, sanBase: 28, sanPorNivel: 4 };
+/* Vida, sanidade e defesa por classe. As três saem do mesmo orçamento: cada
+   classe recebe 60 pontos e escolhe onde gastá-los, contando 1 ponto de vida,
+   1 de sanidade e 2 por ponto de Defesa base (defesa é cara porque vale a cada
+   golpe, e não uma vez só). Guerreiro compra corpo e guarda; mago compra
+   cabeça. A conta está conferida em balancoConferido(), logo abaixo.
 
-/* Subdivisões: cada uma soma 6 pontos, distribuídos conforme o foco. Quem foca
-   no corpo troca cabeça por casco; quem foca na mente faz o contrário. */
+   A sanidade da tabela é só o piso temático — quanto a classe aguenta antes de
+   qualquer habilidade. O que cada subdivisão realmente gasta entra depois, em
+   reservaDeSanidade(), lida do custo das habilidades.
+
+   Por nível, vida e sanidade continuam somando 9 pontos, divididos do mesmo
+   jeito: o guerreiro sobe corpo, o mago sobe cabeça. */
+const BALANCO_CLASSE = {
+  guerreiro:    { vidaBase: 36, vidaPorNivel: 6, sanBase: 14, sanPorNivel: 3, defesaBase: 13 },
+  pirata:       { vidaBase: 32, vidaPorNivel: 5, sanBase: 20, sanPorNivel: 4, defesaBase: 12 },
+  sereia:       { vidaBase: 30, vidaPorNivel: 5, sanBase: 24, sanPorNivel: 4, defesaBase: 11 },
+  druida:       { vidaBase: 30, vidaPorNivel: 4, sanBase: 26, sanPorNivel: 5, defesaBase: 10 },
+  nascido_ouro: { vidaBase: 26, vidaPorNivel: 4, sanBase: 28, sanPorNivel: 5, defesaBase: 11 },
+  mago:         { vidaBase: 22, vidaPorNivel: 3, sanBase: 36, sanPorNivel: 6, defesaBase: 9 },
+};
+/* Ficha sem classe (deus, inimigo) cai aqui: o meio-termo exato. */
+const BALANCO_PADRAO = { vidaBase: 30, vidaPorNivel: 4, sanBase: 26, sanPorNivel: 4, defesaBase: 10 };
+const balancoDaClasse = (char) => BALANCO_CLASSE[char?.originId] || BALANCO_PADRAO;
+
+/* Orçamento de uma classe, na mesma moeda: 1 por vida, 1 por sanidade e 2 por
+   ponto de Defesa acima de 8 (o piso de quem não treina guarda nenhuma). Serve
+   para conferir a tabela acima sem ter que somar na mão. */
+const ORCAMENTO_CLASSE = 60;
+const DEFESA_PISO = 8;
+const custoDoBalanco = (b) => b.vidaBase + b.sanBase + (b.defesaBase - DEFESA_PISO) * 2;
+
+/* Subdivisões: cada uma distribui 6 pontos do mesmo jeito — corpo, cabeça ou
+   guarda. Quem foca no corpo vira casco, quem foca na mente aguenta mais
+   pressão, quem protege os outros ganha Defesa. */
+const ORCAMENTO_SUBDIVISAO = 6;
 const BALANCO_SUBDIVISAO = {
   // druida — pelo tipo de animal-laço
-  mistico: { vida: 0, sanidade: 6 },
-  natural: { vida: 6, sanidade: 0 },
+  mistico: { vida: 0, sanidade: 6, defesa: 0 },
+  natural: { vida: 4, sanidade: 0, defesa: 1 },
   // sereia / tritão
-  sereia: { vida: 0, sanidade: 6 },
-  triton: { vida: 6, sanidade: 0 },
+  sereia: { vida: 0, sanidade: 6, defesa: 0 },
+  triton: { vida: 4, sanidade: 0, defesa: 1 },
   // guerreiro
-  brutus: { vida: 8, sanidade: -2 },
-  pritzk: { vida: 0, sanidade: 6 },
-  nerena: { vida: 4, sanidade: 2 },
+  brutus: { vida: 6, sanidade: 0, defesa: 0 },
+  pritzk: { vida: 0, sanidade: 6, defesa: 0 },
+  nerena: { vida: 2, sanidade: 2, defesa: 1 },
   // pirata
-  predileto_mares: { vida: 8, sanidade: -2 },
-  trapaceiro: { vida: 0, sanidade: 6 },
-  mestre_redemoinhos: { vida: 4, sanidade: 2 },
+  predileto_mares: { vida: 6, sanidade: 0, defesa: 0 },
+  trapaceiro: { vida: 0, sanidade: 6, defesa: 0 },
+  mestre_redemoinhos: { vida: 2, sanidade: 2, defesa: 1 },
   // nascido de ouro
-  bobo_corte: { vida: 0, sanidade: 6 },
-  dono_coroa: { vida: 2, sanidade: 4 },
-  ensanguentado: { vida: 8, sanidade: -2 },
+  bobo_corte: { vida: 0, sanidade: 6, defesa: 0 },
+  dono_coroa: { vida: 2, sanidade: 4, defesa: 0 },
+  ensanguentado: { vida: 2, sanidade: 0, defesa: 2 },
 };
+const SUB_ZERADA = { vida: 0, sanidade: 0, defesa: 0 };
 const balancoSubdivisao = (char) =>
-  BALANCO_SUBDIVISAO[char?.subdivisaoId] || BALANCO_SUBDIVISAO[char?.subdivisaoAnimalTipo] || { vida: 0, sanidade: 0 };
+  BALANCO_SUBDIVISAO[char?.subdivisaoId] || BALANCO_SUBDIVISAO[char?.subdivisaoAnimalTipo] || SUB_ZERADA;
+
+/* Confere as duas tabelas na mesma moeda. Devolve a lista do que não fecha —
+   vazia quando está tudo certo. Só o aviso de desenvolvimento abaixo a chama. */
+function balancoConferido() {
+  const erros = [];
+  for (const [id, b] of Object.entries(BALANCO_CLASSE)) {
+    const custo = custoDoBalanco(b);
+    if (custo !== ORCAMENTO_CLASSE) erros.push(`classe ${id}: ${custo} de ${ORCAMENTO_CLASSE}`);
+    if (b.vidaPorNivel + b.sanPorNivel !== 9) erros.push(`classe ${id}: ganho por nível diferente de 9`);
+  }
+  for (const [id, s] of Object.entries(BALANCO_SUBDIVISAO)) {
+    const custo = s.vida + s.sanidade + s.defesa * 2;
+    if (custo !== ORCAMENTO_SUBDIVISAO) erros.push(`subdivisão ${id}: ${custo} de ${ORCAMENTO_SUBDIVISAO}`);
+  }
+  return erros;
+}
+
+/* Em desenvolvimento, avisa no console quando alguma classe ou subdivisão sai
+   do orçamento. Número escrito na mão desatualiza calado; este não. */
+if (import.meta.env.DEV) {
+  const erros = balancoConferido();
+  if (erros.length) console.warn('Balanço fora do orçamento:', erros);
+}
 
 
 /* ---------- dicionários do universo e das classes ---------- */
@@ -963,6 +1006,44 @@ function habilidadeDisponivel(hab, char) {
   return true;
 }
 
+/* ---------- reserva de sanidade ----------
+   Sanidade é o que paga as habilidades, então quanto cada subdivisão precisa
+   ter sai do que ela gasta. O custo é lido do próprio texto das habilidades —
+   escrever o número aqui na mão desatualizaria na primeira vez que alguma
+   habilidade mudasse de preço.
+
+   Custo típico = a mediana do que as habilidades da pessoa cobram (a mediana,
+   e não a média, para um exagero solto como os 30 de "Não foi dessa vez" não
+   puxar a conta inteira). A reserva paga duas dessas por cena. */
+const USOS_DE_HABILIDADE_POR_CENA = 2;
+/* O custo vem sempre depois de um "gasta": exige a palavra para não confundir
+   com quem devolve sanidade ("recupera 3d10 de sanidade"). */
+const RE_CUSTO_SANIDADE = /gasta\s+(?:(\d{1,2})d(\d{1,3})|(\d{1,3}))\s*(?:pontos?\s+)?(?:d[ae]\s+)?(?:sua\s+pr[óo]pria\s+)?sanidade/gi;
+
+/* Quanto uma habilidade cobra de sanidade. Custo em dado ("1d12 de sanidade")
+   entra pela média do dado. Zero quando a habilidade é passiva ou gratuita. */
+function custoSanidadeDaHabilidade(hab) {
+  let maior = 0;
+  for (const m of String(hab?.descricao || '').matchAll(RE_CUSTO_SANIDADE)) {
+    const custo = m[1] ? (Number(m[1]) * (Number(m[2]) + 1)) / 2 : Number(m[3]);
+    if (custo > maior) maior = custo;
+  }
+  return maior;
+}
+
+function custoTipicoDeSanidade(char) {
+  const custos = HABILIDADES_CATALOGO
+    .filter((h) => habilidadeDisponivel(h, char))
+    .map(custoSanidadeDaHabilidade)
+    .filter((c) => c > 0)
+    .sort((a, b) => a - b);
+  if (!custos.length) return 0;
+  const meio = Math.floor(custos.length / 2);
+  return custos.length % 2 ? custos[meio] : (custos[meio - 1] + custos[meio]) / 2;
+}
+
+const reservaDeSanidade = (char) => Math.round(custoTipicoDeSanidade(char) * USOS_DE_HABILIDADE_POR_CENA);
+
 /* Rótulo curto de origem, para exibir no card */
 function escopoHabilidade(hab) {
   if (hab.animalTipo) return hab.animalTipo === 'mistico' ? 'animal místico' : 'animal natural';
@@ -1223,17 +1304,29 @@ function nomesPericias(ids) {
 }
 
 /* ---------- defesa, bloqueio e esquiva (estrutura do CRIS) ----------
-   Defesa  = 10 + Motoras + equipamento + outros  (valor passivo)
+   Defesa  = base da classe + Motoras × 2 + equipamento + outros  (valor passivo)
    Bloqueio = bônus de Resistência × 2 + equipamento + outros
    Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros
 
+   A base da Defesa vem da classe e da subdivisão (guerreiro 13, mago 9), e é a
+   única das três que muda de pessoa para pessoa antes de qualquer ponto gasto.
+   Motoras conta dobrado só aqui, porque a Defesa é o único dos três valores em
+   que o atributo é tudo o que a pessoa tem: o Bloqueio tem a Resistência e a
+   Esquiva tem a Velocidade de reação para crescer junto.
+
    A Defesa sai reduzida em 25% no fim da conta, para o valor passivo não
-   competir com as reações. O Bloqueio é o único sem base 10 e sem atributo:
-   ele vale o dobro do que a perícia Resistência somar. */
+   competir com as reações. O Bloqueio é o único sem base e sem atributo: ele
+   vale o dobro do que a perícia Resistência somar. */
 const REDUCAO_DEFESA = 0.75;
 const MULTIPLICADOR_BLOQUEIO = 2;
+const MULTIPLICADOR_MOTORAS_DEFESA = 2;
+const BASE_ESQUIVA = 10;
 const PERICIA_BLOQUEIO = 'resistencia';
 const PERICIA_ESQUIVA = 'velocidade_reacao';
+
+/* Defesa de partida: a da classe mais o que a subdivisão acrescenta. Ficha sem
+   classe (deus, inimigo) fica com o meio-termo do BALANCO_PADRAO. */
+const baseDeDefesa = (char) => balancoDaClasse(char).defesaBase + balancoSubdivisao(char).defesa;
 
 function computeDefesas(char, armadurasCustom = []) {
   const d = char.defesas || {};
@@ -1247,17 +1340,19 @@ function computeDefesas(char, armadurasCustom = []) {
   /* A redução de 25% cai sobre a soma inteira da Defesa, arredondada. O
      Bloqueio dobra só a parte da Resistência: equipamento e outros são ajustes
      que a mestra digita na mão e entram pelo valor cheio. */
-  const defesaCheia = 10 + motoras + equip + (d.defesaOutros || 0);
+  const base = baseDeDefesa(char);
+  const motorasNaDefesa = motoras * MULTIPLICADOR_MOTORAS_DEFESA;
+  const defesaCheia = base + motorasNaDefesa + equip + (d.defesaOutros || 0);
   const resistenciaDobrada = bonusResistencia * MULTIPLICADOR_BLOQUEIO;
 
   return {
     equipamento: equip,
     defesa: Math.round(defesaCheia * REDUCAO_DEFESA),
-    defesaPartes: { base: 10, atributo: motoras, equip, outros: d.defesaOutros || 0, cheia: defesaCheia },
+    defesaPartes: { base, atributo: motorasNaDefesa, equip, outros: d.defesaOutros || 0, cheia: defesaCheia },
     bloqueio: resistenciaDobrada + equip + (d.bloqueioOutros || 0),
     bloqueioPartes: { base: 0, atributo: 0, resistencia: resistenciaDobrada, equip, outros: d.bloqueioOutros || 0 },
-    esquiva: 10 + motoras + treinoEsquiva + equip + (d.esquivaOutros || 0),
-    esquivaPartes: { base: 10, atributo: motoras, treino: treinoEsquiva, equip, outros: d.esquivaOutros || 0 },
+    esquiva: BASE_ESQUIVA + motoras + treinoEsquiva + equip + (d.esquivaOutros || 0),
+    esquivaPartes: { base: BASE_ESQUIVA, atributo: motoras, treino: treinoEsquiva, equip, outros: d.esquivaOutros || 0 },
   };
 }
 
@@ -1287,6 +1382,12 @@ function markColor(origin, char) {
   }
   return origin.cor;
 }
+/* Cada ponto de Físico vira vida e cada ponto de Psique vira sanidade, no
+   mesmo peso — é o maior salto da ficha, e é de propósito: são 5 pontos no
+   máximo, disputados com Intelecto e Motoras. Motoras vira Defesa em
+   computeDefesas, na moeda da Defesa. */
+const GANHO_POR_ATRIBUTO = 12;
+
 function computeRecursos(char) {
   /* Ficha da mestra ignora as fórmulas: cada máximo nasce em 0 e é digitado
      na mão, sem teto. A mana existe sempre, mesmo sem classe de mago. */
@@ -1305,25 +1406,28 @@ function computeRecursos(char) {
   const sanidadeNivel = Math.floor(nivelMagico / 20) * 3;
 
   const nivel = nivelDaFicha(char);
-  const classe = BALANCO_CLASSE[char.originId] || BALANCO_PADRAO;
+  const classe = balancoDaClasse(char);
   const sub = balancoSubdivisao(char);
   /* Cada nível acima do primeiro soma o ganho da classe. */
   const degraus = nivel - NIVEL_CLASSE_MIN;
 
   const vidaClasse = classe.vidaBase + classe.vidaPorNivel * degraus;
   const vidaBonusLore = char.recursos?.vidaBonusLore || 0;
-  const vidaMax = vidaClasse + sub.vida + (char.attributes.fisico * 12) + vidaNivel + vidaBonusLore;
+  const vidaMax = vidaClasse + sub.vida + (char.attributes.fisico * GANHO_POR_ATRIBUTO) + vidaNivel + vidaBonusLore;
 
+  /* A reserva é o que as habilidades da subdivisão cobram; sem ela, quem tem
+     habilidade cara ficaria sem poder usá-la duas vezes na mesma cena. */
+  const reservaSan = reservaDeSanidade(char);
   const sanClasse = classe.sanBase + classe.sanPorNivel * degraus;
   const sanBonus = char.recursos?.sanidadeBonusLore || 0;
-  const sanidadeMax = sanClasse + sub.sanidade + (char.attributes.psique * 12) + sanidadeNivel + sanBonus;
+  const sanidadeMax = sanClasse + reservaSan + sub.sanidade + (char.attributes.psique * GANHO_POR_ATRIBUTO) + sanidadeNivel + sanBonus;
 
   /* Mana só existe para o mago: o nível mágico enche o reservatório e o nível
      de classe dá um reforço. Ela só é gasta ao conjurar rituais. */
   const manaMax = char.originId === 'mago' ? nivelMagico + 2 * nivel : null;
 
   return {
-    vidaMax, sanidadeMax, manaMax, vidaNivel, sanidadeNivel,
+    vidaMax, sanidadeMax, manaMax, vidaNivel, sanidadeNivel, reservaSan,
     nivel, vidaClasse, sanClasse, subVida: sub.vida, subSanidade: sub.sanidade,
   };
 }
@@ -1449,7 +1553,8 @@ async function rolarNoServidor({ qtd, faces, modificador = 0, categoria, rotulo,
 
 /* ---------- acerto crítico ----------
    Vale para armas. O que conta é o dado bruto do ataque, sem o atributo nem o
-   bônus da perícia: 18, 19 ou 20 no d20 dobram o dano do golpe seguinte. */
+   bônus da perícia: 18, 19 ou 20 no d20 fazem o golpe seguinte sair no dano
+   máximo — cada dado no valor mais alto, sem rolar. */
 const CRITICO_MINIMO = 18;
 const foiCritico = (rolagem) => {
   const valores = rolagem?.dados?.valores;
@@ -1478,6 +1583,10 @@ function lerNotacao(texto) {
   const modificador = m[3] ? (m[3] === '-' ? -Number(m[4]) : Number(m[4])) : 0;
   return { qtd, faces, modificador, texto: `${qtd}d${faces}${modificador ? ` ${modificador > 0 ? '+' : '−'} ${Math.abs(modificador)}` : ''}` };
 }
+
+/* O que sai de um crítico: todo dado no valor mais alto. 3d10 críticos são 30.
+   Quem faz a conta de verdade é o servidor; isto é só para o rótulo do botão. */
+const danoMaximo = (notacao) => (notacao ? notacao.qtd * notacao.faces + notacao.modificador : 0);
 
 /* ---------- conteúdo criado pela mestra ----------
    Cada item vive sob o escopo da ficha em que nasceu:
@@ -2455,13 +2564,13 @@ function StepAtributos({ draft, setDraft, origin }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
           <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>
-            Vida ({der.vidaClasse} da classe{der.subVida ? ` ${der.subVida > 0 ? '+' : '−'}${Math.abs(der.subVida)} subdivisão` : ''} +Físico×12{der.vidaNivel ? ` +${der.vidaNivel} mágico` : ''})
+            Vida ({der.vidaClasse} da classe{der.subVida ? ` ${der.subVida > 0 ? '+' : '−'}${Math.abs(der.subVida)} subdivisão` : ''} +Físico×{GANHO_POR_ATRIBUTO}{der.vidaNivel ? ` +${der.vidaNivel} mágico` : ''})
           </p>
           <p style={{ fontFamily: F.mono, color: '#e0577a', fontSize: '1.15rem' }}>{der.vidaMax}</p>
         </div>
         <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
           <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>
-            Sanidade ({der.sanClasse} da classe{der.subSanidade ? ` ${der.subSanidade > 0 ? '+' : '−'}${Math.abs(der.subSanidade)} subdivisão` : ''} +Psique×12{der.sanidadeNivel ? ` +${der.sanidadeNivel} mágico` : ''})
+            Sanidade ({der.sanClasse} da classe{der.reservaSan ? ` +${der.reservaSan} habilidades` : ''}{der.subSanidade ? ` ${der.subSanidade > 0 ? '+' : '−'}${Math.abs(der.subSanidade)} subdivisão` : ''} +Psique×{GANHO_POR_ATRIBUTO}{der.sanidadeNivel ? ` +${der.sanidadeNivel} mágico` : ''})
           </p>
           <p style={{ fontFamily: F.mono, color: '#caa24a', fontSize: '1.15rem' }}>{der.sanidadeMax}</p>
         </div>
@@ -2474,7 +2583,9 @@ function StepAtributos({ draft, setDraft, origin }) {
       </div>
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
         A classe e a subdivisão definem o ponto de partida, e cada nível soma o ganho da sua
-        classe. A mestra ainda pode ajustar com bônus de lore depois.
+        classe. Guerreiro parte com mais vida e Defesa, mago com mais sanidade. A parcela de
+        habilidades é o que as suas custam de sanidade: dá para usar duas das mais comuns por
+        cena. A mestra ainda pode ajustar com bônus de lore depois.
         {der.manaMax !== null && ' A mana só é gasta ao conjurar rituais.'}
       </p>
     </div>
@@ -3645,7 +3756,7 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
       </p>
       <div className="grid grid-cols-3 gap-2">
         <Bloco titulo="Defesa" valor={d.defesa} destaque
-          formula={`(10+${d.defesaPartes.atributo}${d.defesaPartes.equip ? `+${d.defesaPartes.equip}` : ''}${d.defesaPartes.outros ? `+${d.defesaPartes.outros}` : ''}) −25%`} />
+          formula={`(${d.defesaPartes.base}+${d.defesaPartes.atributo}${d.defesaPartes.equip ? `+${d.defesaPartes.equip}` : ''}${d.defesaPartes.outros ? `+${d.defesaPartes.outros}` : ''}) −25%`} />
         <Bloco titulo="Bloqueio" valor={d.bloqueio}
           formula={`${d.bloqueioPartes.resistencia / 2}×2${d.bloqueioPartes.equip ? `+${d.bloqueioPartes.equip}` : ''}${d.bloqueioPartes.outros ? `+${d.bloqueioPartes.outros}` : ''}`} />
         <Bloco titulo="Esquiva" valor={d.esquiva}
@@ -3661,10 +3772,10 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
         </div>
       )}
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Defesa é o valor passivo (10 + Motoras + equipamento), reduzido em 25% no fim da
-        conta. Bloqueio e Esquiva são reações — uma por rodada. O Bloqueio vale o dobro do
-        bônus de <strong style={{ color }}>Resistência</strong>, sem base 10 e sem atributo;
-        a Esquiva soma 10 + Motoras + Velocidade de reação.
+        Defesa é o valor passivo ({d.defesaPartes.base} {char.originId ? 'da sua classe' : 'de base'} + Motoras×2 + equipamento),
+        reduzido em 25% no fim da conta. Bloqueio e Esquiva são reações — uma por rodada. O
+        Bloqueio vale o dobro do bônus de <strong style={{ color }}>Resistência</strong>, sem
+        base e sem atributo; a Esquiva soma 10 + Motoras + Velocidade de reação.
       </p>
     </div>
   );
@@ -3852,8 +3963,8 @@ function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico }) {
   const notacao = lerNotacao(dano);
   const p = pericia ? PERICIAS.find((x) => x.nome.toLowerCase() === String(pericia).toLowerCase()) : null;
   const m = p ? modificadorDoTeste(char, p) : null;
-  /* Guarda se o último ataque desta arma saiu crítico. O dano seguinte sai
-     dobrado e a marca se apaga, para o golpe depois dele voltar ao normal. */
+  /* Guarda se o último ataque desta arma saiu crítico. O dano seguinte sai no
+     máximo e a marca se apaga, para o golpe depois dele voltar ao normal. */
   const [critico, setCritico] = useState(false);
   if (!notacao && !m) return null;
 
@@ -3873,8 +3984,8 @@ function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico }) {
       )}
       {notacao && (
         <BotaoRolar color={critico ? '#e0577a' : color}
-          rotulo={critico ? `Dano crítico · ${notacao.texto} ×2` : `Dano · ${notacao.texto}`}
-          titulo={critico ? 'O último ataque foi crítico: este dano sai dobrado' : `Rolar ${notacao.texto}`}
+          rotulo={critico ? `Dano crítico · ${danoMaximo(notacao)}` : `Dano · ${notacao.texto}`}
+          titulo={critico ? `O último ataque foi crítico: este dano sai no máximo (${danoMaximo(notacao)})` : `Rolar ${notacao.texto}`}
           onRolar={async () => {
             const r = await rolarNoServidor({
               /* Sem detalhe: a notação já aparece no histórico, ao lado dos dados. */
@@ -3961,7 +4072,7 @@ function HistoricoRolagens({ account, color, compacto, limite }) {
                   {r.dados ? `${r.dados.qtd}d${r.dados.faces}${r.dados.modificador ? ` ${r.dados.modificador > 0 ? '+' : '−'} ${Math.abs(r.dados.modificador)}` : ''}` : ''}
                   {r.dados?.valores?.length > 1 ? ` [${r.dados.valores.join(', ')}]` : ''}
                   {r.detalhe ? ` · ${r.detalhe}` : ''}
-                  {r.critico ? ` · crítico, ${r.dados?.bruto ?? '?'} dobrado` : ''}
+                  {r.critico ? ' · crítico, dano máximo' : ''}
                 </p>
               </div>
               <span className="shrink-0 text-xs" style={{ fontFamily: F.mono, color: '#6f6291' }}>{horaDe(r.criadoEm)}</span>

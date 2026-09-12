@@ -265,12 +265,13 @@ app.post(
     if (!FACES_VALIDAS.includes(faces)) return res.status(400).json({ error: 'Tipo de dado inválido.' });
     if (Math.abs(modificador) > 999) return res.status(400).json({ error: 'Modificador fora do intervalo.' });
 
-    const valores = rolarDados(qtd, faces);
-    /* Acerto crítico dobra o dano. É o cliente que pede, mas só depois de ver
-       um ataque com dado bruto alto — e o dado bruto quem rolou fui eu. */
+    /* Acerto crítico não rola: cada dado sai no valor máximo (3d10 crítico são
+       30). É o cliente que pede, mas só depois de ver um ataque com dado bruto
+       alto — e o dado bruto quem rolou fui eu. */
     const critico = b.critico === true;
+    const valores = critico ? Array.from({ length: qtd }, () => faces) : rolarDados(qtd, faces);
     const bruto = valores.reduce((s, v) => s + v, 0) + modificador;
-    const total = critico ? bruto * 2 : bruto;
+    const total = bruto;
 
     const linha = {
       id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
