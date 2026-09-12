@@ -1113,7 +1113,7 @@ const ATTRS = [
   { key: 'motoras', nome: 'Motoras', abrev: 'MOT', desc: 'Sentidos — o quão ágil você é.' },
 ];
 const abrevAttr = (key) => ATTRS.find((a) => a.key === key)?.abrev || '';
-const ATTR_BASE = 1, ATTR_MIN = 0, ATTR_MAX = 5, ATTR_POOL = 4;
+const ATTR_BASE = 0, ATTR_MIN = 0, ATTR_MAX = 5;
 
 /* ---------- perícias ---------- */
 const PERICIAS = [
@@ -1333,7 +1333,16 @@ function computeRecursos(char) {
    Perícias: 4 degraus no nível 1, +2 por nível (22 no nível 10). Um degrau é
    subir uma perícia um grau; as perícias dadas pela classe já vêm no Treinado
    e não consomem nada. */
-const pontosDeAtributo = (char) => 3 + nivelDaFicha(char);
+/* Pontos de atributo: 4 no nível 1 e ganhos avulsos depois. O nível 10 dá
+   dois de uma vez, então é tabela e não fórmula. Total de 10 no fim. */
+const GANHO_ATRIBUTO_POR_NIVEL = { 3: 1, 5: 1, 7: 1, 9: 1, 10: 2 };
+const PONTOS_ATRIBUTO_INICIAIS = 4;
+function pontosDeAtributo(char) {
+  const nivel = nivelDaFicha(char);
+  let pontos = PONTOS_ATRIBUTO_INICIAIS;
+  for (let n = NIVEL_CLASSE_MIN + 1; n <= nivel; n++) pontos += GANHO_ATRIBUTO_POR_NIVEL[n] || 0;
+  return pontos;
+}
 const degrausDePericia = (char) => 4 + 2 * (nivelDaFicha(char) - NIVEL_CLASSE_MIN);
 
 function degrausGastos(char) {
@@ -2346,7 +2355,8 @@ function SeletorNivel({ draft, setDraft, color }) {
         })}
       </div>
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Cada nível soma vida e sanidade conforme a classe, e libera mais pontos de atributo e de perícia.
+        Cada nível soma vida e sanidade conforme a classe e dá mais degraus de perícia.
+        Pontos de atributo vêm nos níveis 3, 5, 7 e 9, e dois de uma vez no 10.
       </p>
     </div>
   );
