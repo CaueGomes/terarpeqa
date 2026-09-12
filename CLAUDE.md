@@ -144,7 +144,7 @@ perícia para crescer junto. Ficha sem classe (deus, inimigo) usa a base 10 do
 `BALANCO_PADRAO`.
 
 ### Feitiços
-23 feitiços, 14 com **evoluções I, II e III**; os outros mostram "Esse feitiço
+24 feitiços, 15 com **evoluções I, II e III**; os outros mostram "Esse feitiço
 não tem evoluções disponíveis". A evolução escolhida é o custo em vagas
 (I=1, II=2, III=3). Vagas: `2 + ⌊nível mágico ÷ 10⌋`.
 Todo feitiço é lançado com **Dicionário mental**. Mana só é gasta em rituais.
@@ -242,6 +242,9 @@ código**, não no banco. Expiração de banco não afeta nada disso.
   lista dele.
 - **Frênesi, evolução 3** diz "troca 30 de mana por miseráveis 8 de mana" —
   provavelmente deveria ser sanidade. Mantido literal, aguardando confirmação.
+- **Botão de rolagem lê a primeira notação do texto.** Em Desossar e Mestre das
+  Marionetes isso é a duração ("1d100 de minutos"), e o botão chama de dano.
+  Rola certo, só o rótulo é que mente.
 - **Fichas antigas acima do orçamento** de atributos depois da mudança para base
   0. Ofereci escrever um script que lista quais precisam de revisão.
 - Dicionários das outras classes podem ser reescritos como o do guerreiro foi.
