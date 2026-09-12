@@ -1187,6 +1187,33 @@ function feiticoLiberado(feitico, nivelMagico) {
   if (feitico.nivelMin === 'negro') return nivelMagico >= NIVEL_MAX;
   return nivelMagico >= feitico.nivelMin;
 }
+/* Nível do feitiço como número. O feitiço de mago negro vale o nível máximo;
+   o que a mestra criou sem nível nenhum vale zero. */
+const nivelDoFeitico = (feitico) => (feitico?.nivelMin === 'negro' ? NIVEL_MAX : Number(feitico?.nivelMin) || 0);
+
+/* Rótulo curto do nível, o mesmo texto na lista de escolha e na ficha. */
+function rotuloNivelFeitico(feitico) {
+  if (feitico?.nivelMin === undefined || feitico?.nivelMin === null) return '';
+  return feitico.nivelMin === 'negro' ? 'exclusivo de magos negros' : `nível ${feitico.nivelMin}+`;
+}
+
+/* ---------- DT para resistir a um ritual ----------
+   10 de base, mais 1 a cada 10 níveis mágicos de quem lança e mais 1 a cada 10
+   níveis do próprio feitiço. Um mago de nível mágico 35 lançando um feitiço de
+   nível 20 exige DT 15 (10 + 3 + 2). Só faz sentido em feitiço que tem perícia
+   de resistência; os outros não mostram DT nenhuma. */
+const DT_BASE_RITUAL = 10;
+const DEGRAU_DT = 10;
+const nivelMagicoDaFicha = (char) =>
+  (char?.originId === 'mago' ? (char.subdivisaoNivel || NIVEL_MIN) : Number(char?.subdivisaoNivel) || 0);
+
+function dtParaResistir(char, feitico) {
+  if (!feitico?.resistencia) return null;
+  return DT_BASE_RITUAL
+    + Math.floor(nivelMagicoDaFicha(char) / DEGRAU_DT)
+    + Math.floor(nivelDoFeitico(feitico) / DEGRAU_DT);
+}
+
 function motivoBloqueio(feitico) {
   return feitico.nivelMin === 'negro'
     ? 'Você precisa ser um mago negro para utilizar esse feitiço.'
@@ -3236,7 +3263,7 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vaga
               <p className="text-xs mt-0.5" style={{ fontFamily: F.body, color: '#c9899f' }}>{motivoBloqueio(f)}</p>
             ) : (
               <p className="text-xs mt-0.5" style={{ fontFamily: F.body, color: V.muted }}>
-                {custom ? 'criado pela mestra' : f.nivelMin === 'negro' ? 'exclusivo de magos negros' : `nível ${f.nivelMin}+`}
+                {custom ? 'criado pela mestra' : rotuloNivelFeitico(f)}
                 {' · toque para ler'}
               </p>
             )}
@@ -4124,18 +4151,21 @@ function HistoricoRolagens({ account, color, compacto, limite }) {
 
 /* Perícia com que o alvo resiste. Fica destacada abaixo da descrição porque é
    o que a mesa mais procura no meio de um combate. */
-function LinhaResistencia({ texto, color }) {
+function LinhaResistencia({ texto, color, dt }) {
   return (
     <p className="text-xs mt-1.5 flex items-start gap-1.5" style={{ fontFamily: F.body, color }}>
       <Shield size={11} className="shrink-0 mt-0.5" />
-      <span>{texto}</span>
+      <span>
+        {texto}
+        {dt ? <strong style={{ fontFamily: F.mono }}> DT {dt}</strong> : null}
+      </span>
     </p>
   );
 }
 
 /* `detalhes` é um mapa id → texto curto, usado para mostrar a evolução do
    feitiço ao lado do nome sem mexer no catálogo. */
-function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes, char, periciaDeLancamento }) {
+function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes, char, periciaDeLancamento, dtDeResistencia }) {
   const itens = (ids || []).map((id) => catalogo.find((x) => x.id === id)).filter(Boolean);
   return (
     <div className="mb-5">
@@ -4150,9 +4180,9 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
             <div key={it.id} className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{it.nome}</p>
-                {detalhes?.[it.id] && (
-                  <span className="text-xs shrink-0" style={{ fontFamily: F.mono, color }}>{detalhes[it.id]}</span>
-                )}
+                <span className="text-xs shrink-0 text-right" style={{ fontFamily: F.mono, color }}>
+                  {[rotuloNivelFeitico(it), detalhes?.[it.id]].filter(Boolean).join(' · ')}
+                </span>
               </div>
               {(descricoes?.[it.id] || it.descricao) && (
                 <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>
@@ -4162,7 +4192,7 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
               {it.nota && (
                 <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.nota}</p>
               )}
-              {it.resistencia && <LinhaResistencia texto={it.resistencia} color={color} />}
+              {it.resistencia && <LinhaResistencia texto={it.resistencia} color={color} dt={dtDeResistencia?.(it)} />}
               {char && (
                 <BotoesDeRolagem char={char} color={color} nome={it.nome}
                   dano={descricoes?.[it.id] || it.descricao}
@@ -4473,7 +4503,9 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                 <p className="text-xs leading-relaxed" style={{ color: V.muted, fontFamily: F.body }}>
                   Todo feitiço é lançado com um teste de <strong style={{ color: origin.cor }}>Dicionário mental</strong>,
                   qualquer que seja o feitiço ou a evolução. A perícia de resistência mostrada em cada
-                  um é a do alvo, não a sua.
+                  um é a do alvo, não a sua, e a <strong style={{ color: origin.cor }}>DT</strong> ao lado dela
+                  já vem pronta: {DT_BASE_RITUAL} mais 1 a cada {DEGRAU_DT} níveis mágicos seus e mais 1 a cada
+                  {' '}{DEGRAU_DT} níveis do feitiço.
                 </p>
                 <p className="text-xs leading-relaxed mt-1.5" style={{ color: V.muted, fontFamily: F.body }}>
                   A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>.
@@ -4483,7 +4515,8 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                 detalhes={detalhesDeFeiticos(char.feiticos)}
                 descricoes={descricoesDeFeiticos(char.feiticos, catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO))}
                 catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido."
-                char={char} periciaDeLancamento="Dicionário mental" />
+                char={char} periciaDeLancamento="Dicionário mental"
+                dtDeResistencia={(f) => dtParaResistir(char, f)} />
             </div>
           )}
           {tab === 'animal' && (

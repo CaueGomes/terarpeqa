@@ -148,6 +148,12 @@ perícia para crescer junto. Ficha sem classe (deus, inimigo) usa a base 10 do
 não tem evoluções disponíveis". A evolução escolhida é o custo em vagas
 (I=1, II=2, III=3). Vagas: `2 + ⌊nível mágico ÷ 10⌋`.
 Todo feitiço é lançado com **Dicionário mental**. Mana só é gasta em rituais.
+
+**DT para resistir** = `10 + ⌊nível mágico do personagem ÷ 10⌋ + ⌊nível do feitiço ÷ 10⌋`.
+Mago de nível mágico 35 lançando um feitiço de nível 20 exige DT 15. Aparece já
+calculada na aba de feitiços da ficha, ao lado da perícia de resistência, e só
+nos feitiços que têm o campo `resistencia` — os outros não mostram DT nenhuma.
+O nível de cada feitiço também aparece nessa aba, não só na tela de edição.
 `char.feiticos` guarda `{ id, evolucao }`; ficha antiga guarda só a string do id
 e é lida como evolução I.
 
