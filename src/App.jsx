@@ -1254,6 +1254,29 @@ const TIERS = [
   { id: 3, nome: 'Expert', bonus: 6, abrev: 'EXP' },
 ];
 
+/* ---------- teto de treino por nível ----------
+   Ter degraus sobrando não basta: o nível é que abre cada grau. Do 1 ao 4 dá
+   para chegar no Treinado, do 5 ao 8 abre o Veterano e do 9 em diante o
+   Expert. O grau escolhido continua guardado na ficha mesmo acima do teto —
+   quem sobe de nível volta a contar o que já tinha, e quem é rebaixado pela
+   mestra não perde a escolha, só o bônus. */
+const FAIXAS_DE_TREINO = [
+  { grauMaximo: 1, doNivel: 1 },
+  { grauMaximo: 2, doNivel: 5 },
+  { grauMaximo: 3, doNivel: 9 },
+];
+const GRAU_MAXIMO = TIERS.length - 1;
+
+/* Ficha da mestra não tem teto: deus e inimigo já distribuem as 23 à vontade. */
+function grauMaximoDoNivel(char) {
+  if (fichaLivre(char)) return GRAU_MAXIMO;
+  const nivel = nivelDaFicha(char);
+  return FAIXAS_DE_TREINO.reduce((maior, f) => (nivel >= f.doNivel ? f.grauMaximo : maior), 0);
+}
+
+/* Em que nível um grau destrava — só para a interface explicar o cadeado. */
+const nivelQueLibera = (grau) => FAIXAS_DE_TREINO.find((f) => f.grauMaximo >= grau)?.doNivel || NIVEL_CLASSE_MIN;
+
 /* Junta todas as perícias que o personagem ganha de graça pela classe + subdivisão */
 function periciasConcedidas(char) {
   // Fichas da mestra não herdam perícia nenhuma: as 23 ficam livres.
@@ -1265,11 +1288,14 @@ function periciasConcedidas(char) {
   return out;
 }
 
-/* Grau efetivo: nunca abaixo de Treinado se a perícia foi concedida */
+/* Grau efetivo: nunca abaixo de Treinado se a perícia foi concedida, nunca
+   acima do que o nível libera. O Treinado das perícias de classe cabe no teto
+   mais baixo, então elas nunca são cortadas. */
 function grauDaPericia(char, periciaId) {
   const escolhido = char.pericias?.[periciaId] ?? 0;
   const concedida = periciasConcedidas(char).has(periciaId);
-  return concedida ? Math.max(1, escolhido) : escolhido;
+  const grau = concedida ? Math.max(1, escolhido) : escolhido;
+  return Math.min(grau, grauMaximoDoNivel(char));
 }
 
 /* O bônus da perícia em si é treino + outros. Ele é usado no Bloqueio, que vale
@@ -1422,9 +1448,9 @@ function computeRecursos(char) {
   const sanBonus = char.recursos?.sanidadeBonusLore || 0;
   const sanidadeMax = sanClasse + reservaSan + sub.sanidade + (char.attributes.psique * GANHO_POR_ATRIBUTO) + sanidadeNivel + sanBonus;
 
-  /* Mana só existe para o mago: o nível mágico enche o reservatório e o nível
-     de classe dá um reforço. Ela só é gasta ao conjurar rituais. */
-  const manaMax = char.originId === 'mago' ? nivelMagico + 2 * nivel : null;
+  /* Mana só existe para o mago, e vale exatamente o nível mágico: mago de
+     nível mágico 35 tem 35 de mana. Ela só é gasta ao conjurar rituais. */
+  const manaMax = char.originId === 'mago' ? nivelMagico : null;
 
   return {
     vidaMax, sanidadeMax, manaMax, vidaNivel, sanidadeNivel, reservaSan,
@@ -2464,7 +2490,8 @@ function SeletorNivel({ draft, setDraft, color }) {
         })}
       </div>
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Cada nível soma vida e sanidade conforme a classe e dá mais degraus de perícia.
+        Cada nível soma vida e sanidade conforme a classe, dá mais degraus de perícia e
+        libera graus mais altos de treino (Veterano no {nivelQueLibera(2)}, Expert no {nivelQueLibera(3)}).
         Pontos de atributo vêm nos níveis 3, 5, 7 e 9, e dois de uma vez no 10.
       </p>
     </div>
@@ -2576,7 +2603,7 @@ function StepAtributos({ draft, setDraft, origin }) {
         </div>
         {der.manaMax !== null && (
           <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
-            <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>Mana (nível mágico + 2 por nível)</p>
+            <p className="text-xs mb-1" style={{ color: V.muted, fontFamily: F.body }}>Mana (igual ao nível mágico)</p>
             <p style={{ fontFamily: F.mono, color: '#8FB4F5', fontSize: '1.15rem' }}>{der.manaMax}</p>
           </div>
         )}
@@ -2598,6 +2625,7 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly, p
   const concedidas = periciasConcedidas(char);
   const [aberta, setAberta] = useState(null);
   const grade = podeRolar ? 'per-grid-rolar' : 'per-grid';
+  const teto = grauMaximoDoNivel(char);
 
   return (
     <div>
@@ -2641,7 +2669,9 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly, p
                     className="text-xs rounded px-1 py-1 outline-none text-center"
                     style={{ fontFamily: F.mono, background: '#171029', border: `1px solid ${V.border}`, color: cor }}>
                     {TIERS.map((t) => (
-                      <option key={t.id} value={t.id} disabled={travada && t.id === 0}>{t.bonus}</option>
+                      <option key={t.id} value={t.id} disabled={(travada && t.id === 0) || t.id > teto}>
+                        {t.bonus}{t.id > teto ? ` (nível ${nivelQueLibera(t.id)})` : ''}
+                      </option>
                     ))}
                   </select>
                 )}
@@ -2709,6 +2739,7 @@ function StepPericias({ draft, setDraft, origin }) {
       <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
         Destreinado 0 · Treinado +2 · Veterano +4 · Expert +6. O teste é 1d20 somando o
         atributo da perícia mais o treino e os outros bônus — é o número da coluna Teste.{' '}
+        {!livre && `Do nível 1 ao 4 o máximo é o Treinado; o Veterano abre no nível ${nivelQueLibera(2)} e o Expert no ${nivelQueLibera(3)}. `}
         {livre
           ? 'Nesta ficha as 23 estão livres: nenhuma vem travada por classe ou subdivisão.'
           : 'Cada grau que você sobe custa um degrau do seu nível. As perícias marcadas com estrela vêm da classe ou subdivisão, já entram no Treinado e não custam nada.'}

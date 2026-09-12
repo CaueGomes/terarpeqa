@@ -91,6 +91,14 @@ Todas as classes têm nível **1 a 10** (`char.nivel`). O mago tem, além disso,
 Orçamento: `4 + 2 × (nível − 1)` degraus. Perícia dada pela classe já vem no
 Treinado e não custa degrau.
 
+**Teto por nível** (`FAIXAS_DE_TREINO`): do nível 1 ao 4 o máximo é o Treinado,
+do 5 ao 8 abre o Veterano, do 9 em diante o Expert. Ter degrau sobrando não
+basta. O teto é aplicado em `grauDaPericia`, então vale para teste, Bloqueio e
+Esquiva de uma vez; na interface os graus acima do teto aparecem travados com o
+nível que os libera. O grau escolhido **continua guardado** na ficha acima do
+teto: quem sobe de nível recupera o bônus, quem é rebaixado pela mestra perde o
+bônus mas não a escolha. Ficha de mestra não tem teto.
+
 **Teste = 1d20 + atributo + bônus da perícia** (treino + outros).
 O bônus da perícia em si **não** inclui o atributo, porque é ele que define o
 Bloqueio — mexer nisso quebra o Bloqueio.
@@ -104,7 +112,7 @@ salvas); renomear é só trocar o `nome`. Ex.: "Percepção" ainda tem id `logic
 ```
 vida     = classe.vidaBase + vidaPorNivel × (nível−1) + subdivisão + Físico×12 + ganho do nível mágico + bônus de lore
 sanidade = classe.sanBase + reserva de habilidades + sanPorNivel × (nível−1) + subdivisão + Psique×12 + ganho do nível mágico + bônus de lore
-mana     = nível mágico + 2 × nível de classe   (só mago)
+mana     = nível mágico   (só mago; nível mágico 35 = 35 de mana)
 ```
 Vida, sanidade e **Defesa base** saem do mesmo orçamento: **60 pontos por
 classe**, contando 1 por vida, 1 por sanidade e **2 por ponto de Defesa acima
