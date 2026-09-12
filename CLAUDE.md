@@ -135,10 +135,13 @@ lidera a parte da classe (36), não a reserva (12, ele gasta mana).
 
 ### Defesas
 ```
-Defesa   = (base da classe + subdivisão + Motoras×2 + equipamento + outros) × 0,75, arredondado
+Defesa   = base da classe + subdivisão + Motoras×2 + equipamento + outros
 Bloqueio = bônus de Resistência × 2 + equipamento + outros
 Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros
 ```
+A Defesa já foi cortada em 25% no fim da conta; o usuário pediu o valor cheio
+de volta em 12/09/2026, e hoje ela vale a soma inteira.
+
 Motoras conta dobrado **só na Defesa**, que é o único dos três valores sem uma
 perícia para crescer junto. Ficha sem classe (deus, inimigo) usa a base 10 do
 `BALANCO_PADRAO`.
