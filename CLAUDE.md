@@ -189,8 +189,10 @@ do catálogo da mestra.
   personagem**; laço místico escolhe **um só**. A ficha guarda só os ids em
   `char.animais`; a vida atual de cada animal fica em
   `char.atual['animal:<id>']`, então o Restaurar enche os animais junto.
-  Golpes e habilidades do animal rolam com a ficha transformada
-  (`fichaTransformada`): os atributos somam o que o animal concede. Dano,
+  Na forma animal **a ficha do druida é ignorada** (decisão do usuário em
+  13/09/2026): golpes e habilidades rolam com `fichaDaFormaAnimal`, que tem só
+  o que o animal concede nos atributos, sem classe, treino nem bônus de perícia.
+  Rharo em Instrumento físico rola 1d20 +3; em Ágape, 1d20 puro. Dano,
   perícia do teste e custo são lidos do texto; "teste de X para não cair" é
   teste do alvo e não ganha botão. Se o nível baixar, os animais a mais ficam e
   a aba avisa. A ficha antiga feita à mão (`char.animal`) só aparece se tiver

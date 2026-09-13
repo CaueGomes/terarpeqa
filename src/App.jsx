@@ -1229,14 +1229,17 @@ const animaisEscolhidos = (char) =>
   (char?.animais || []).map((id) => ANIMAIS_CATALOGO.find((a) => a.id === id))
     .filter((a) => a && a.tipo === char.subdivisaoAnimalTipo);
 
-/* A ficha como fica enquanto o druida usa aquele animal: os atributos somam o
-   que ele concede. É com ela que os golpes e habilidades do animal rolam. */
-function fichaTransformada(char, animal) {
-  const attributes = { ...(char.attributes || {}) };
-  for (const [attr, delta] of Object.entries(animal.concede || {})) {
-    attributes[attr] = (attributes[attr] ?? 0) + delta;
-  }
-  return { ...char, attributes };
+/* A ficha com que o animal rola. Na forma animal a ficha do druida é ignorada:
+   nem os atributos dele, nem o treino, nem os bônus de perícia contam. Sobra o
+   dado mais o que o animal concede no atributo da perícia (Rharo dá +3 em
+   Físico, então Instrumento físico rola 1d20 +3; Ágape rola 1d20 puro).
+
+   Ela passa pelo mesmo cálculo das outras fichas. Por isso não leva classe:
+   sem classe, nenhuma perícia vem treinada de graça. Só o id e o nome vêm do
+   druida, para a rolagem aparecer no histórico em nome dele. */
+function fichaDaFormaAnimal(char, animal) {
+  const attributes = { intelecto: 0, psique: 0, fisico: 0, motoras: 0, ...(animal.concede || {}) };
+  return { id: char.id, name: char.name, owner: char.owner, attributes, pericias: {}, periciasOutros: {} };
 }
 
 /* Perícia de um "teste de X" escrito no texto. Quando o teste é do alvo
@@ -4199,7 +4202,7 @@ function FichaAnimalAntiga({ animal, color }) {
 }
 
 /* Uma linha de golpe ou habilidade. Os botões só aparecem no animal escolhido
-   e rolam com a ficha transformada, já somando o que o animal concede. */
+   e rolam com a ficha da forma animal: o dado e o bônus do animal, mais nada. */
 function AcaoAnimal({ acao, animal, fichaAnimal, color }) {
   return (
     <div className="rounded-md px-2.5 py-2" style={{ background: '#120d20', border: `1px solid ${V.border}` }}>
@@ -4216,7 +4219,7 @@ function AcaoAnimal({ acao, animal, fichaAnimal, color }) {
 function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, onAlternar, onChangeAtual }) {
   const [aberto, setAberto] = useState(false);
   const expandido = escolhido || aberto;
-  const fichaAnimal = escolhido ? fichaTransformada(char, animal) : null;
+  const fichaAnimal = escolhido ? fichaDaFormaAnimal(char, animal) : null;
   const vidaAtual = valorAtual(char, chaveVidaAnimal(animal), animal.vida);
 
   return (
@@ -4329,7 +4332,8 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
             {char.subdivisaoAnimalTipo === 'natural'
               ? `Laço natural: um animal por nível de personagem. No nível ${nivelDaFicha(char)}, cabem ${limite}.`
               : 'Laço místico: um animal só.'}
-            {' '}Golpes e habilidades rolam já somando aos seus atributos o que o animal concede.
+            {' '}Na forma animal a sua ficha não conta: golpes e habilidades rolam o dado mais o
+            que o animal concede no atributo da perícia, sem o seu atributo nem o seu treino.
           </p>
 
           {passou && (
