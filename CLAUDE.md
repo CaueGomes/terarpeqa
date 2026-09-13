@@ -256,6 +256,13 @@ código**, não no banco. Expiração de banco não afeta nada disso.
   o script num arquivo no scratchpad.
 - O `--watch` do Node vigiava o `.pgdata` e corrompia o banco ao reiniciar; por
   isso `dev:api` **não** usa `--watch`.
+- **`pkill` não derruba o Node nesta máquina** (Git Bash no Windows). A API velha
+  continua na porta 3001, a nova não sobe, e o teste roda contra o banco antigo
+  sem avisar — o sinal é o cadastro dizer que o nome já existe logo depois de
+  apagar o `.pgdata`. Para encerrar: `netstat -ano | grep LISTENING` para achar
+  o PID nas portas 3001 e 517x, conferir com `tasklist` que é `node.exe`, e
+  `taskkill //PID <pid> //F`. Matar a API no meio de uma gravação corrompe o
+  `.pgdata`; por isso ele é apagado antes de cada subida.
 - Botão de rolagem troca o texto para mostrar o resultado: em teste automatizado
   selecionar pelo `title`, não pelo texto.
 
