@@ -40,7 +40,7 @@ npx vite --port 5173 &
 
 ## Arquitetura
 
-- **Front**: React + Vite, num arquivo só: `src/App.jsx` (~4.400 linhas).
+- **Front**: React + Vite, num arquivo só: `src/App.jsx` (~5.000 linhas).
   Estilo inline + Tailwind. Sem router: a navegação é estado (`screen`).
 - **API**: Express em `server/index.js`, Postgres em `server/db.js`.
   Um único serviço serve a API e os arquivos estáticos de `dist/`.
@@ -184,7 +184,22 @@ Armas, armaduras e habilidades criadas de dentro de uma ficha ficam **nela**
 do catálogo da mestra.
 
 ### Outros
-- Druida tem aba **Animal** com ficha própria do animal-laço, tudo em branco.
+- Druida tem aba **Animal** com os animais prontos do `ANIMAIS_CATALOGO`
+  (10 naturais, 5 místicos). Laço natural escolhe **um animal por nível de
+  personagem**; laço místico escolhe **um só**. A ficha guarda só os ids em
+  `char.animais`; a vida atual de cada animal fica em
+  `char.atual['animal:<id>']`, então o Restaurar enche os animais junto.
+  Golpes e habilidades do animal rolam com a ficha transformada
+  (`fichaTransformada`): os atributos somam o que o animal concede. Dano,
+  perícia do teste e custo são lidos do texto; "teste de X para não cair" é
+  teste do alvo e não ganha botão. Se o nível baixar, os animais a mais ficam e
+  a aba avisa. A ficha antiga feita à mão (`char.animal`) só aparece se tiver
+  conteúdo, como leitura.
+- **Condições** (`CONDICOES`): aba em toda ficha e botão no painel. São as
+  condições que o conteúdo cita em maiúsculas: Cego, Desnorteado, Doente, Em
+  chamas, Em ira, Imóvel, Sangrando. "Aparece em" sai de uma busca nos
+  catálogos. A busca de Doente é só em maiúsculas, porque "plantas doentes"
+  aparece numa habilidade.
 - Personagem tem **foto** e **foto da marca** (a marca é quadrada, o retrato é
   redondo).
 - Todo peso de catálogo já foi somado em 1 (não existe mais "sem peso").
@@ -246,6 +261,12 @@ código**, não no banco. Expiração de banco não afeta nada disso.
 
 - **Textos das evoluções dos feitiços** que ainda não evoluem — o usuário disse
   que manda depois.
+- **Efeito das condições**: o usuário mandou só os nomes (dentro dos textos dos
+  animais). Os efeitos — penalidades de −2/−3/−5, dano de 1d6/1d8, DT 12 de
+  Apotheca — são proposta minha, esperando a revisão da mestra.
+- **Animal místico não trava**: o jogador pode trocar o animal escolhido. Pela
+  lore o laço é para a vida toda; se a mestra quiser, dá para deixar a troca só
+  com ela.
 - **Linha de resistência nas habilidades**: só 5 das 53 estão preenchidas (as
   que já diziam no texto que o alvo resiste). O mecanismo está pronto, falta a
   lista dele.

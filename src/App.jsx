@@ -3,7 +3,7 @@ import {
   Crown, Waves, Anchor, BookOpen, Leaf, LogOut, Plus, ChevronRight,
   ChevronLeft, Check, Skull, Trash2, ArrowLeft, Sparkles, Loader2,
   AlertCircle, Swords, Camera, ScrollText, Sliders, Star, Wand2,
-  Backpack, Settings, Pencil, Save, X, Info, PawPrint, ChevronDown, Shield, Lock, Flame, Dices,
+  Backpack, Settings, Pencil, Save, X, Info, PawPrint, ChevronDown, Shield, Lock, Flame, Dices, HeartPulse,
 } from 'lucide-react';
 
 /* ============================================================
@@ -138,7 +138,7 @@ const TIPOS_ANIMAL = [
   { id: 'mistico', nome: 'Animal místico', desc: 'Seu uso é muito restrito, e seu laço é complexo, assim como seu ser.' },
   { id: 'natural', nome: 'Animal natural', desc: 'Você não possui restrições quanto ao seu uso, e pode escolher mais de um. Animais naturais exigem menos de seu corpo e mente.' },
 ];
-const NOTA_ANIMAL = 'Escolha seu tipo de animal, e depois diga um animal em específico (em caso de místico) para a mestra, ou, em caso de animal natural, diga quantos e quais animais você quer ter laço. Os bônus deverão ser discutidos e balanceados com base na escolha de seu animal-laço e com base no que a mestra definir.';
+const NOTA_ANIMAL = 'Escolha o tipo do seu laço. Os animais vêm prontos na aba Animal da ficha: com laço natural você escolhe um animal por nível de personagem, com laço místico escolhe um só.';
 
 const TIPOS_AGUA = [
   { id: 'sereia', nome: 'Sereia', desc: 'Seu canto é como de um deus, pode pegar os desprevenidos no pulo.', pericias: ['compostura', 'volicao'] },
@@ -1054,6 +1054,206 @@ function escopoHabilidade(hab) {
   return 'toda a classe';
 }
 
+/* ---------- animais-laço do druida ----------
+   Fichas prontas: o druida só escolhe. Quem tem laço natural escolhe um animal
+   por nível de personagem; quem tem laço místico escolhe um só.
+
+   concede = o que o druida ganha nos atributos enquanto usa aquele animal
+   (valor negativo é o que ele perde). Golpes e habilidades guardam só o texto:
+   dano, perícia do teste e custo de sanidade são lidos dele na hora, para o
+   número nunca existir em dois lugares. */
+const ANIMAIS_CATALOGO = [
+  /* ===== NATURAIS ===== */
+  { id: 'ani_rharo', tipo: 'natural', nome: 'Rharo', especie: 'Lobo-cinzento', vida: 40,
+    concede: { fisico: 3, motoras: 2 }, custoPorTurno: 4,
+    golpes: [
+      { nome: 'Mordida na jugular', descricao: '3d10 de dano, teste de Instrumento físico. Gasta 6 de sanidade.' },
+      { nome: 'Derrubada', descricao: '2d10 de dano e o alvo cai, teste de Coordenação motora para não cair. Gasta 4 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Chamado da matilha', descricao: 'Atrai lobos selvagens da região. Teste de Ágape DT 15. Gasta 8 de sanidade.' },
+      { nome: 'Faro de sangue', descricao: 'Rastreia qualquer criatura ferida num raio amplo. Teste de Esprit de Corps DT 13. Gasta 6 de sanidade.' },
+    ] },
+  { id: 'ani_vhera', tipo: 'natural', nome: 'Vhera', especie: 'Corvo-grande', vida: 30,
+    concede: { intelecto: 4, motoras: 2 }, custoPorTurno: 3,
+    golpes: [
+      { nome: 'Bicada nos olhos', descricao: '2d10 de dano e aplica CEGO por 1 rodada, teste de Coordenação motora. Gasta 7 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Voo de reconhecimento', descricao: 'Sobrevoa e mapeia a área inteira. Teste de Compostura DT 12. Gasta 6 de sanidade.' },
+      { nome: 'Coisas brilhantes', descricao: 'Rouba um objeto pequeno de alguém sem ser notado. Teste de Silêncio DT 18. Gasta 8 de sanidade.' },
+    ] },
+  { id: 'ani_bhorn', tipo: 'natural', nome: 'Bhorn', especie: 'Urso-pardo', vida: 85,
+    concede: { fisico: 5, motoras: -2 }, custoPorTurno: 4,
+    golpes: [
+      { nome: 'Patada', descricao: '5d12 de dano, teste de Instrumento físico. Gasta 10 de sanidade.' },
+      { nome: 'Abraço de urso', descricao: '3d12 de dano e o alvo fica IMÓVEL, teste de Instrumento físico. Gasta 8 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Couro grosso', descricao: 'Reduz todo dano recebido pela metade por 2 rodadas. Sem teste. Gasta 10 de sanidade.' },
+      { nome: 'Rugido', descricao: 'Todos os inimigos testam Volição DT 16 ou recuam uma rodada. Gasta 10 de sanidade.' },
+    ] },
+  { id: 'ani_silqua', tipo: 'natural', nome: 'Silqua', especie: 'Serpente-real', vida: 25,
+    concede: { motoras: 3, intelecto: 2 }, custoPorTurno: 3,
+    golpes: [
+      { nome: 'Presa peçonhenta', descricao: '3d10 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 12 de sanidade.' },
+      { nome: 'Constrição', descricao: 'Prende o alvo e causa 2d12 de dano por rodada enquanto mantiver preso, teste de Coordenação motora. Gasta 9 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Rastejo silencioso', descricao: 'Move-se sem ser detectado por ninguém. Teste de Silêncio DT 15. Gasta 6 de sanidade.' },
+      { nome: 'Troca de pele', descricao: 'Remove uma condição negativa de si mesmo, tanto da forma animal quanto da forma druida. Teste de Resistência DT 18. Gasta 12 de sanidade.' },
+    ] },
+  { id: 'ani_ysbel', tipo: 'natural', nome: 'Ysbel', especie: 'Falcão-peregrino', vida: 30,
+    concede: { motoras: 5 }, custoPorTurno: 2,
+    golpes: [
+      { nome: 'Mergulho', descricao: '4d10 de dano, teste de Velocidade de reação. Só funciona vindo de cima. Gasta 5 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Visão de altura', descricao: 'Enxerga detalhes a quilômetros de distância. Teste de Compostura DT 10. Gasta 3 de sanidade.' },
+      { nome: 'Velocidade cortante', descricao: 'Age duas vezes na próxima rodada. Teste de Savoir-faire DT 18. Gasta 10 de sanidade.' },
+    ] },
+  { id: 'ani_truque', tipo: 'natural', nome: 'Truque', especie: 'Raposa-vermelha', vida: 25,
+    concede: { psique: 3, motoras: 3 }, custoPorTurno: 3,
+    golpes: [
+      { nome: 'Bote rápido', descricao: '3d10 de dano, teste de Coordenação motora. Gasta 5 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Rastro falso', descricao: 'Quem te perseguir precisa passar em Esprit de Corps DT 20 ou te perde completamente. Gasta 7 de sanidade.' },
+      { nome: 'Onde ninguém procura', descricao: 'Encontra um esconderijo em qualquer terreno, para você e mais um. Teste de Silêncio DT 15. Gasta 10 de sanidade.' },
+    ] },
+  { id: 'ani_nhora', tipo: 'natural', nome: 'Nhora', especie: 'Coruja-das-torres', vida: 20,
+    concede: { intelecto: 4, psique: 2 }, custoPorTurno: 3,
+    golpes: [
+      { nome: 'Garras silenciosas', descricao: '3d10 de dano, sempre conta como ataque surpresa se o alvo não te viu, teste de Silêncio. Gasta 6 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Olhos da noite', descricao: 'Enxerga perfeitamente no escuro absoluto por uma cena. Sem teste. Gasta 6 de sanidade.' },
+      { nome: 'Voo sem som', descricao: 'Não pode ser ouvido por nada, de forma alguma. Teste de Silêncio DT 12. Gasta 8 de sanidade.' },
+    ] },
+  { id: 'ani_cassiel', tipo: 'natural', nome: 'Cassiel', especie: 'Cervo-galheiro', vida: 40,
+    concede: { fisico: 3, psique: 3 }, custoPorTurno: 4,
+    golpes: [
+      { nome: 'Chifrada', descricao: '4d12 de dano e empurra o alvo, teste de Instrumento físico. Gasta 6 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Presença serena', descricao: 'Todos os aliados recuperam 2d10 de sanidade. Teste de Ágape DT 16. Gasta 14 de sanidade.' },
+      { nome: 'Passo de floresta', descricao: 'Você e o grupo atravessam mato fechado sem deixar rastro. Teste de Savoir-faire DT 14. Gasta 9 de sanidade.' },
+    ] },
+  { id: 'ani_krak', tipo: 'natural', nome: 'Krak', especie: 'Javali-do-norte', vida: 50,
+    concede: { fisico: 4 }, concedeExtra: '+2 de resistência a condições', custoPorTurno: 5,
+    golpes: [
+      { nome: 'Investida cega', descricao: '5d12 de dano, mas você não pode mudar de direção, teste de Instrumento físico. Gasta 10 de sanidade.' },
+      { nome: 'Presas curvas', descricao: '3d12 de dano e aplica SANGRANDO, teste de Instrumento físico. Gasta 7 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Teimosia', descricao: 'Não pode ser derrubado nem ficar IMÓVEL por 2 rodadas. Sem teste. Gasta 9 de sanidade.' },
+    ] },
+  { id: 'ani_mhira', tipo: 'natural', nome: 'Mhira', especie: 'Gato-do-mato', vida: 25,
+    concede: { motoras: 4, psique: 2 }, custoPorTurno: 2,
+    golpes: [
+      { nome: 'Arranhão triplo', descricao: '2d8 de dano três vezes, mas precisa ser no mesmo alvo, teste de Coordenação motora. Gasta 9 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Queda de pé', descricao: 'Ignora completamente dano de queda e sempre cai em segurança. Sem teste. Gasta 4 de sanidade.' },
+      { nome: 'Passo sobre telhado', descricao: 'Escala e equilibra-se em qualquer superfície. Teste de Savoir-faire DT 12. Gasta 5 de sanidade.' },
+    ] },
+
+  /* ===== MÍSTICOS ===== */
+  { id: 'ani_ashvara', tipo: 'mistico', nome: 'Ashvara', especie: 'Fênix', vida: 90,
+    concede: { psique: 5, intelecto: 4 }, custoPorTurno: 8,
+    golpes: [
+      { nome: 'Pluma incandescente', descricao: '5d12 de dano e aplica EM CHAMAS, teste de Coordenação motora. Gasta 15 de sanidade.' },
+      { nome: 'Voo em brasa', descricao: '4d20 de dano em todos numa linha reta, teste de Savoir-faire. Gasta 18 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Renascer', descricao: 'Uma vez por sessão, ao cair a 0 de vida, você volta com metade dela. Gasta 10 de sanidade.' },
+      { nome: 'Calor que cura', descricao: 'Cura 3d20 de vida em todos os aliados próximos. Teste de Ágape DT 18. Gasta 20 de sanidade.' },
+      { nome: 'Dessa vez não', descricao: 'Garante um acerto em qualquer teste. Gasta 13 de sanidade.' },
+    ] },
+  { id: 'ani_verthaz', tipo: 'mistico', nome: 'Verthaz', especie: 'Dragão', vida: 140,
+    concede: { fisico: 6, intelecto: 4, motoras: -2 }, custoPorTurno: 10,
+    golpes: [
+      { nome: 'Sopro', descricao: '8d20 de dano num cone amplo, teste de Volição. Gasta 25 de sanidade.' },
+      { nome: 'Garra e cauda', descricao: '8d12 de dano em dois alvos diferentes, teste de Instrumento físico. Gasta 27 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Escamas antigas', descricao: 'Reduz todo dano recebido pela metade, permanentemente enquanto transformado. Ativar essa habilidade custa 6 de sanidade.' },
+      { nome: 'Presença de dragão', descricao: 'Todos os inimigos testam Volição DT 20 ou ficam DESNORTEADOS por 2 rodadas. Gasta 18 de sanidade.' },
+      { nome: 'Ganância', descricao: 'Você sabe onde está o objeto mais valioso num raio enorme. Teste de Esprit de Corps DT 16. Gasta 10 de sanidade.' },
+    ] },
+  { id: 'ani_isilme', tipo: 'mistico', nome: 'Isilme', especie: 'Unicórnio', vida: 80,
+    concede: { psique: 6, motoras: 4 }, custoPorTurno: 9,
+    golpes: [
+      { nome: 'Chifre verdadeiro', descricao: '4d12 de dano, e o dobro contra quem já mentiu para você nesta cena, teste de Império interior. Gasta 18 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Purificação', descricao: 'Remove veneno, DOENTE e qualquer efeito mágico hostil de um aliado. Teste de Apotheca DT 18. Gasta 13 de sanidade.' },
+      { nome: 'Só os dignos', descricao: 'Escolha uma pessoa. Ela não pode mentir na sua frente por uma cena. Teste de Ágape DT 22. Gasta 22 de sanidade.' },
+      { nome: 'Passo sobre água', descricao: 'Você e o grupo caminham sobre qualquer superfície líquida. Sem teste. Gasta 12 de sanidade.' },
+    ] },
+  { id: 'ani_grohm', tipo: 'mistico', nome: 'Grohm', especie: 'Golem de pedra viva', vida: 200,
+    concede: { fisico: 8, motoras: -4, intelecto: -2 }, custoPorTurno: 10,
+    golpes: [
+      { nome: 'Punho de montanha', descricao: '12d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de sanidade.' },
+      { nome: 'Rachar o chão', descricao: '4d20 de dano em todos ao redor e todos ficam IMÓVEIS por 1 rodada, teste de Instrumento físico. Gasta 18 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Inabalável', descricao: 'Não pode ser derrubado, empurrado, nem afetado por IMÓVEL ou EM IRA pelo resto do combate. Ativar a habilidade custa 12 de sanidade.' },
+      { nome: 'Muralha', descricao: 'Você se torna parede: nenhum inimigo passa por você por 3 rodadas, mas você não pode atacar, só ser atacado. Gasta 24 de sanidade.' },
+    ] },
+  { id: 'ani_yssen', tipo: 'mistico', nome: 'Yssen', especie: 'Quimera', vida: 160,
+    concede: { fisico: 5, motoras: 5, psique: -3 }, custoPorTurno: 7,
+    golpes: [
+      { nome: 'Três bocas', descricao: '2d12 de dano três vezes, cada uma num alvo diferente, teste de Fúria de sangue. Gasta 14 de sanidade.' },
+      { nome: 'Cauda de serpente', descricao: '6d12 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 21 de sanidade.' },
+    ],
+    habilidades: [
+      { nome: 'Cabeças em desacordo', descricao: 'No início de cada rodada, role 1d6: em 1 ou 2 você ganha uma ação extra, em 5 ou 6 você perde a ação. Gasta 3 de sanidade.' },
+      { nome: 'Nada que se encaixe', descricao: 'Imune a efeitos que dependam de você ser uma coisa só: enfeitiçar, dominar, copiar ou prever suas ações. Sem custo.' },
+    ] },
+];
+
+/* Quantos animais cabem na ficha: um por nível no laço natural, um só no
+   místico. Sem tipo escolhido ainda, nenhum. */
+function limiteDeAnimais(char) {
+  if (char?.subdivisaoAnimalTipo === 'natural') return nivelDaFicha(char);
+  if (char?.subdivisaoAnimalTipo === 'mistico') return 1;
+  return 0;
+}
+
+const animaisDoTipo = (char) => ANIMAIS_CATALOGO.filter((a) => a.tipo === char?.subdivisaoAnimalTipo);
+
+/* Só vale o que existe no catálogo e combina com o tipo do laço: quem trocou
+   de natural para místico não carrega os lobos junto. */
+const animaisEscolhidos = (char) =>
+  (char?.animais || []).map((id) => ANIMAIS_CATALOGO.find((a) => a.id === id))
+    .filter((a) => a && a.tipo === char.subdivisaoAnimalTipo);
+
+/* A ficha como fica enquanto o druida usa aquele animal: os atributos somam o
+   que ele concede. É com ela que os golpes e habilidades do animal rolam. */
+function fichaTransformada(char, animal) {
+  const attributes = { ...(char.attributes || {}) };
+  for (const [attr, delta] of Object.entries(animal.concede || {})) {
+    attributes[attr] = (attributes[attr] ?? 0) + delta;
+  }
+  return { ...char, attributes };
+}
+
+/* Perícia de um "teste de X" escrito no texto. Quando o teste é do alvo
+   ("teste de Coordenação motora para não cair"), não há o que o druida role. */
+function periciaDoTexto(texto) {
+  const t = String(texto || '').toLowerCase();
+  const porTamanho = [...PERICIAS].sort((a, b) => b.nome.length - a.nome.length);
+  for (const p of porTamanho) {
+    const alvo = `teste de ${p.nome.toLowerCase()}`;
+    const i = t.indexOf(alvo);
+    if (i < 0) continue;
+    if (t.slice(i + alvo.length).trimStart().startsWith('para não')) return null;
+    return p.nome;
+  }
+  return null;
+}
+
 /* ---------- catálogo de feitiços dos magos ----------
    nivelMin = nível mágico exigido. 'negro' = exclusivo de magos negros (nível 100). */
 const FEITICOS_CATALOGO = [
@@ -1081,9 +1281,9 @@ const FEITICOS_CATALOGO = [
       'Objetos, estruturas e animais agora possuem a lucidez de um gênio. Eles te contam as últimas cenas acontecidas à sua frente com clareza, até mesmo sabendo informações como nomes e sentimentos por 10 de mana.',
     ] },
   { id: 'fei_rachadura', resistencia: 'Resiste com Velocidade de reação, recebendo metade do dano.', nome: 'Rachadura', nivelMin: 20,
-    descricao: 'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Coordenação motora ou cai e sofre 2d10 de dano. Gasta 4 de mana.',
+    descricao: 'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Velocidade de reação ou cai e sofre 2d10 de dano. Gasta 4 de mana.',
     evolucoes: [
-      'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Coordenação motora ou cai e sofre 2d10 de dano. Gasta 4 de mana.',
+      'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Velocidade de reação ou cai e sofre 2d10 de dano. Gasta 4 de mana.',
       'Você abre uma fenda mais grossa agora. Causa 3d12 de dano e gasta 6 de mana.',
       'Você abre uma cratera, pegando todos os alvos em um raio grande. Aliados também podem ser afetados e a cratera nunca se desfaz. Causa 4d10 de dano e gasta 9 de mana.',
     ] },
@@ -2077,7 +2277,92 @@ function DicionariosScreen({ onBack, inicial }) {
   );
 }
 
-function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios }) {
+/* ---------- condições ----------
+   Estados que golpes, feitiços e habilidades deixam em quem é atingido. A lista
+   é das condições que o próprio conteúdo do jogo já cita em maiúsculas (CEGO,
+   IMÓVEL...). O efeito de cada uma é uma proposta, esperando a revisão da
+   mestra. "Aparece em" não é escrito à mão: sai de uma busca nos catálogos, e
+   por isso acompanha qualquer texto novo que cite a condição. */
+const NOTA_CONDICOES = 'Cada condição dura o que o efeito que a causou disser. Sem duração escrita, vai até o fim da cena ou até alguém removê-la. Quando o efeito permite resistir, o alvo testa a perícia indicada contra a DT, e bônus de resistência a condições somam nesse teste.';
+
+const CONDICOES = [
+  { id: 'cego', nome: 'Cego', busca: /\bcegos?\b/iu,
+    efeito: 'Não enxerga. Não pode usar Esquiva e sofre −5 nos testes que dependem da visão, ataques incluídos.' },
+  { id: 'desnorteado', nome: 'Desnorteado', busca: /\bdesnortead[oa]s?\b/iu,
+    efeito: 'Só consegue fazer uma coisa por turno, se mover ou agir, e sofre −3 em todos os testes. Não pode usar Bloqueio nem Esquiva.' },
+  /* Só em maiúsculas: em minúsculas, "doente" aparece como adjetivo ("plantas doentes"). */
+  { id: 'doente', nome: 'Doente', busca: /\bDOENTE\b/u,
+    efeito: 'Sofre −2 em todos os testes e não recupera vida com descanso. Sai com tratamento, num teste de Apotheca com DT da mestra, ou com um efeito que remova condições.' },
+  { id: 'em_chamas', nome: 'Em chamas', busca: /\bem chamas\b/iu,
+    efeito: 'Sofre 1d8 de dano no começo de cada turno seu. Gastar a ação para se apagar, ou entrar na água, encerra a condição.' },
+  { id: 'em_ira', nome: 'Em ira', busca: /\bem ira\b/iu,
+    efeito: 'Precisa atacar a criatura mais próxima, aliada ou não, e não pode recuar, fugir nem usar habilidade que exija calma. Recebe +2 nos testes de ataque.' },
+  { id: 'imovel', nome: 'Imóvel', busca: /\bim[óo]ve(l|is)\b/iu,
+    efeito: 'Não sai do lugar e não pode usar Esquiva. Ainda ataca quem estiver ao alcance e usa o que não exija se mover.' },
+  { id: 'sangrando', nome: 'Sangrando', busca: /\bsangrando\b/iu,
+    efeito: 'Perde 1d6 de vida no começo de cada turno seu. Para quando alguém passa num teste de Apotheca DT 12 ou quando recebe qualquer cura.' },
+];
+
+/* Todo texto de catálogo com o nome de onde ele veio, para a busca acima. */
+function textosDosCatalogos() {
+  const fontes = [];
+  for (const a of ANIMAIS_CATALOGO) {
+    for (const acao of [...a.golpes, ...a.habilidades]) fontes.push({ origem: `${a.nome} (${acao.nome})`, texto: acao.descricao });
+  }
+  for (const f of FEITICOS_CATALOGO) fontes.push({ origem: f.nome, texto: [f.descricao, ...(f.evolucoes || [])].join(' ') });
+  for (const h of HABILIDADES_CATALOGO) fontes.push({ origem: h.nome, texto: h.descricao });
+  for (const x of [...ARMAS_CATALOGO, ...ARMADURAS_CATALOGO, ...ITENS_CATALOGO]) fontes.push({ origem: x.nome, texto: x.descricao });
+  return fontes;
+}
+
+function ListaCondicoes({ cor, tema }) {
+  const t = tema || { card: '#171029', borda: V.border, texto: V.text, suave: V.muted, apagado: '#6f6291' };
+  const fontes = textosDosCatalogos();
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: t.suave, fontFamily: F.body }}>
+        <HeartPulse size={12} /> Condições
+      </p>
+      <p className="text-xs leading-relaxed mb-3" style={{ color: t.apagado, fontFamily: F.body }}>{NOTA_CONDICOES}</p>
+      <div className="space-y-2">
+        {CONDICOES.map((c) => {
+          const onde = [...new Set(fontes.filter((f) => c.busca.test(f.texto || '')).map((f) => f.origem))];
+          return (
+            <div key={c.id} className="rounded-lg p-3" style={{ background: t.card, border: `1px solid ${t.borda}` }}>
+              <p className="text-sm" style={{ fontFamily: F.display, color: cor, fontWeight: 700, letterSpacing: '0.06em' }}>
+                {c.nome.toUpperCase()}
+              </p>
+              <p className="text-sm mt-1 leading-relaxed" style={{ fontFamily: F.body, color: t.texto }}>{c.efeito}</p>
+              {onde.length > 0 && (
+                <p className="text-xs mt-1.5 leading-relaxed" style={{ fontFamily: F.body, color: t.apagado }}>
+                  Aparece em: {onde.join(' · ')}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* A mesma lista, aberta pelo painel, para consultar fora de uma ficha. */
+function CondicoesScreen({ onBack }) {
+  return (
+    <div className="min-h-screen w-full" style={{ background: G.bg }}>
+      <style>{FONTS}</style>
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <button onClick={onBack} className="flex items-center gap-1.5 text-sm mb-6 hover:opacity-80" style={{ color: G.muted, fontFamily: F.body }}>
+          <ArrowLeft size={14} /> Voltar
+        </button>
+        <ListaCondicoes cor={V.brand}
+          tema={{ card: G.surface, borda: G.border, texto: G.text, suave: G.muted, apagado: G.muted }} />
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios, onCondicoes }) {
   /* A mestra ganha uma aba por tipo de ficha; os jogadores nem veem isso. */
   const [aba, setAba] = useState('jogadores');
   const abaAtiva = account.isMaster ? aba : 'jogadores';
@@ -2089,7 +2374,7 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
     <div className="min-h-screen w-full" style={{ background: G.bg }}>
       <style>{FONTS}</style>
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
           <div className="flex items-center gap-3">
             <Sigil size={38} glow={false} />
             <div>
@@ -2103,10 +2388,14 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center flex-wrap gap-2">
             <button onClick={onDicionarios} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
               style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
               <BookOpen size={14} /> Dicionários
+            </button>
+            <button onClick={onCondicoes} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
+              style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
+              <HeartPulse size={14} /> Condições
             </button>
             <button onClick={onLogout} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
               style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
@@ -3758,6 +4047,8 @@ function abasDaFicha(char) {
   /* O druida carrega a ficha do animal-laço junto com a dele. */
   if (char.originId === 'druida') base.push({ id: 'animal', nome: 'Animal' });
   base.push({ id: 'inventario', nome: 'Inventário' });
+  /* Condições é consulta: fica em toda ficha, para ninguém sair da mesa. */
+  base.push({ id: 'condicoes', nome: 'Condições' });
   return base;
 }
 
@@ -3845,137 +4136,223 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
   );
 }
 
-/* Lista de itens (armas, habilidades, feitiços) resolvendo os IDs no catálogo global */
-/* Ficha do animal-laço do druida. Nasce inteiramente vazia: nome, espécie,
-   recursos e golpes são escritos à mão, porque cada laço é único e não existe
-   catálogo de animais. Fica guardada dentro da própria ficha, em char.animal. */
-const animalVazio = () => ({ nome: '', especie: '', descricao: '', vida: 0, sanidade: 0, notas: '', golpes: [] });
+/* ---------- aba Animal do druida ----------
+   Os animais vêm prontos do ANIMAIS_CATALOGO: a ficha só guarda quais foram
+   escolhidos, em char.animais. A vida atual de cada um fica em
+   char.atual['animal:<id>'], ao lado da vida e da sanidade do próprio druida,
+   então o botão Restaurar enche os animais junto. */
+const chaveVidaAnimal = (animal) => `animal:${animal.id}`;
+const nomeDoAtributo = (key) => ATTRS.find((a) => a.key === key)?.nome || key;
 
-function FichaAnimal({ char, color, podeEditar, onSalvar }) {
-  const [draft, setDraft] = useState(() => ({ ...animalVazio(), ...(char.animal || {}) }));
-  const [salvando, setSalvando] = useState(false);
-  const [salvo, setSalvo] = useState(false);
+/* Ficha escrita à mão antes de existir o catálogo. Só aparece se ainda houver
+   algo guardado em char.animal, para ninguém perder o que já tinha escrito. */
+const temAnimalAntigo = (animal) =>
+  !!animal && !!(animal.nome || animal.especie || animal.descricao || animal.notas || (animal.golpes || []).length);
 
-  useEffect(() => { setDraft({ ...animalVazio(), ...(char.animal || {}) }); setSalvo(false); }, [char.id]);
+function FichaAnimalAntiga({ animal, color }) {
+  const texto = { fontFamily: F.body, color: V.muted };
+  return (
+    <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px dashed ${V.border}` }}>
+      <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>
+        {animal.nome || 'Sem nome'}
+        {animal.especie ? <span style={{ color: V.muted, fontWeight: 400 }}> · {animal.especie}</span> : null}
+      </p>
+      {(animal.vida || animal.sanidade) ? (
+        <p className="text-xs mt-0.5" style={{ fontFamily: F.mono, color }}>vida {animal.vida || 0} · sanidade {animal.sanidade || 0}</p>
+      ) : null}
+      {animal.descricao && <p className="text-xs mt-1 leading-relaxed whitespace-pre-line" style={texto}>{animal.descricao}</p>}
+      {(animal.golpes || []).map((g) => (
+        <p key={g.id} className="text-xs mt-1 leading-relaxed" style={texto}>
+          <strong style={{ color: V.text }}>{g.nome || 'Golpe'}</strong>
+          {g.dano ? ` · ${g.dano}` : ''}{g.teste ? ` · teste de ${g.teste}` : ''}{g.descricao ? ` — ${g.descricao}` : ''}
+        </p>
+      ))}
+      {animal.notas && <p className="text-xs mt-1 leading-relaxed whitespace-pre-line" style={texto}>{animal.notas}</p>}
+    </div>
+  );
+}
 
-  const set = (campo, valor) => { setSalvo(false); setDraft((d) => ({ ...d, [campo]: valor })); };
-  const golpes = draft.golpes || [];
-  const setGolpe = (id, campo, valor) => set('golpes', golpes.map((g) => (g.id === id ? { ...g, [campo]: valor } : g)));
+/* Uma linha de golpe ou habilidade. Os botões só aparecem no animal escolhido
+   e rolam com a ficha transformada, já somando o que o animal concede. */
+function AcaoAnimal({ acao, animal, fichaAnimal, color }) {
+  return (
+    <div className="rounded-md px-2.5 py-2" style={{ background: '#120d20', border: `1px solid ${V.border}` }}>
+      <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{acao.nome}</p>
+      <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{acao.descricao}</p>
+      {fichaAnimal && (
+        <BotoesDeRolagem char={fichaAnimal} color={color} nome={`${animal.nome} — ${acao.nome}`}
+          dano={acao.descricao} pericia={periciaDoTexto(acao.descricao)} />
+      )}
+    </div>
+  );
+}
 
-  const salvar = async () => {
-    setSalvando(true);
-    await onSalvar(draft);
-    setSalvando(false);
-    setSalvo(true);
+function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, onAlternar, onChangeAtual }) {
+  const [aberto, setAberto] = useState(false);
+  const expandido = escolhido || aberto;
+  const fichaAnimal = escolhido ? fichaTransformada(char, animal) : null;
+  const vidaAtual = valorAtual(char, chaveVidaAnimal(animal), animal.vida);
+
+  return (
+    <div className="rounded-lg" style={{ background: '#171029', border: `1px solid ${escolhido ? color : V.border}` }}>
+      <div className="flex items-start gap-2 p-2.5">
+        {podeAlternar && (
+          <button onClick={onAlternar} disabled={bloqueado}
+            title={escolhido ? 'Desfazer o laço com este animal' : bloqueado ? 'Seu nível já não comporta mais animais' : 'Criar laço com este animal'}
+            className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 disabled:opacity-30"
+            style={{ background: escolhido ? color : 'transparent', border: `1px solid ${color}` }}>
+            {escolhido ? <Check size={13} style={{ color: '#0d0a16' }} /> : <Plus size={13} style={{ color }} />}
+          </button>
+        )}
+        <button onClick={() => !escolhido && setAberto(!aberto)} className="min-w-0 flex-1 text-left">
+          <p className="text-sm flex items-center gap-1.5" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>
+            {animal.nome}
+            <span style={{ color: V.muted, fontWeight: 400 }}>· {animal.especie}</span>
+            {!escolhido && (
+              <ChevronDown size={11} className="shrink-0 transition-transform" style={{ color: V.muted, transform: aberto ? 'rotate(180deg)' : 'none' }} />
+            )}
+          </p>
+          <p className="text-xs mt-0.5" style={{ fontFamily: F.mono, color: V.muted }}>
+            vida {animal.vida} · {animal.custoPorTurno} de sanidade por turno
+          </p>
+        </button>
+      </div>
+
+      {expandido && (
+        <div className="px-2.5 pb-2.5">
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {Object.entries(animal.concede || {}).map(([attr, delta]) => (
+              <span key={attr} className="text-xs rounded-full px-2 py-0.5"
+                style={{ fontFamily: F.mono, color: delta < 0 ? '#e0577a' : color, border: `1px solid ${delta < 0 ? '#e0577a66' : `${color}66`}` }}>
+                {delta < 0 ? '−' : '+'}{Math.abs(delta)} {nomeDoAtributo(attr)}
+              </span>
+            ))}
+            {animal.concedeExtra && (
+              <span className="text-xs rounded-full px-2 py-0.5" style={{ fontFamily: F.mono, color, border: `1px solid ${color}66` }}>
+                {animal.concedeExtra}
+              </span>
+            )}
+          </div>
+
+          {escolhido && (
+            <div className="mb-2">
+              {onChangeAtual ? (
+                <BarraAjustavel label="Vida do animal" atual={vidaAtual} max={animal.vida} color="#e0577a"
+                  onChange={(v) => onChangeAtual(chaveVidaAnimal(animal), v)} />
+              ) : (
+                <ProgressBar value={vidaAtual} max={animal.vida} color="#e0577a" label="Vida do animal" />
+              )}
+            </div>
+          )}
+
+          <p className="text-xs uppercase tracking-widest mt-2 mb-1" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Golpes</p>
+          <div className="space-y-1.5">
+            {animal.golpes.map((g) => <AcaoAnimal key={g.nome} acao={g} animal={animal} fichaAnimal={fichaAnimal} color={color} />)}
+          </div>
+          <p className="text-xs uppercase tracking-widest mt-2.5 mb-1" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Habilidades</p>
+          <div className="space-y-1.5">
+            {animal.habilidades.map((h) => <AcaoAnimal key={h.nome} acao={h} animal={animal} fichaAnimal={fichaAnimal} color={color} />)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual }) {
+  const escolhidos = animaisEscolhidos(char);
+  const [verCatalogo, setVerCatalogo] = useState(escolhidos.length === 0);
+  const tipo = TIPOS_ANIMAL.find((t) => t.id === char.subdivisaoAnimalTipo);
+  const limite = limiteDeAnimais(char);
+  const idsEscolhidos = escolhidos.map((a) => a.id);
+  const disponiveis = animaisDoTipo(char).filter((a) => !idsEscolhidos.includes(a.id));
+  const passou = escolhidos.length > limite;
+
+  const alternar = (animal) => {
+    const novos = idsEscolhidos.includes(animal.id)
+      ? idsEscolhidos.filter((id) => id !== animal.id)
+      : [...idsEscolhidos, animal.id];
+    onSalvarAnimais(novos);
   };
 
-  const campo = (rotulo, valor, aoMudar, extras = {}) => (
-    <Field label={rotulo}>
-      {podeEditar ? (
-        <input value={valor} onChange={(e) => aoMudar(e.target.value)} {...extras}
-          className="w-full rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-violet-500" style={inputStyle} />
-      ) : (
-        <p className="text-sm" style={{ fontFamily: F.body, color: valor ? V.text : '#6f6291' }}>{valor || '—'}</p>
-      )}
-    </Field>
+  const titulo = (texto) => (
+    <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+      <PawPrint size={13} /> {texto}
+    </p>
   );
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
-          <PawPrint size={13} /> Animal-laço
+      <div className="flex items-center justify-between mb-2">
+        {titulo('Animais-laço')}
+        {tipo && (
+          <span className="text-xs rounded-full px-2.5 py-1" style={{ fontFamily: F.mono,
+            color: passou ? '#e0577a' : V.text, background: '#171029', border: `1px solid ${passou ? '#e0577a' : V.border}` }}>
+            {escolhidos.length} de {limite}
+          </span>
+        )}
+      </div>
+
+      {!tipo ? (
+        <p className="text-xs leading-relaxed mb-4" style={{ color: '#6f6291', fontFamily: F.body }}>
+          Esta ficha ainda não tem tipo de animal-laço. Edite a ficha e escolha entre natural e místico para ver os animais.
         </p>
-        {podeEditar && (
-          <button onClick={salvar} disabled={salvando} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-1.5 disabled:opacity-60"
-            style={{ background: color, color: '#0d0a16', fontFamily: F.body, fontWeight: 600 }}>
-            {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            {salvo && !salvando ? 'Salvo' : 'Salvar animal'}
-          </button>
-        )}
-      </div>
+      ) : (
+        <>
+          <p className="text-xs leading-relaxed mb-3" style={{ color: '#6f6291', fontFamily: F.body }}>
+            {char.subdivisaoAnimalTipo === 'natural'
+              ? `Laço natural: um animal por nível de personagem. No nível ${nivelDaFicha(char)}, cabem ${limite}.`
+              : 'Laço místico: um animal só.'}
+            {' '}Golpes e habilidades rolam já somando aos seus atributos o que o animal concede.
+          </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3">
-        {campo('Nome do animal', draft.nome, (v) => set('nome', v), { placeholder: 'Como você o chama' })}
-        {campo('Espécie', draft.especie, (v) => set('especie', v), { placeholder: 'Corvo, lobo, algo que ninguém viu...' })}
-      </div>
-
-      <div className="grid grid-cols-2 gap-x-3">
-        {campo('Vida', draft.vida, (v) => set('vida', Math.max(0, Math.floor(Number(v) || 0))), { type: 'number', min: '0' })}
-        {campo('Sanidade', draft.sanidade, (v) => set('sanidade', Math.max(0, Math.floor(Number(v) || 0))), { type: 'number', min: '0' })}
-      </div>
-
-      <Field label="Descrição">
-        {podeEditar ? (
-          <textarea value={draft.descricao} onChange={(e) => set('descricao', e.target.value)}
-            placeholder="Como ele é, como o laço foi feito, o que ele carrega de você..."
-            className="w-full rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 resize-none" style={{ ...inputStyle, minHeight: '90px' }} />
-        ) : (
-          <p className="text-sm leading-relaxed whitespace-pre-line" style={{ fontFamily: F.body, color: draft.descricao ? V.text : '#6f6291' }}>{draft.descricao || '—'}</p>
-        )}
-      </Field>
-
-      <div className="pt-2 mt-2 border-t" style={{ borderColor: V.border }}>
-        <div className="flex items-center justify-between mb-2 mt-3">
-          <p className="text-xs uppercase tracking-widest" style={{ color: V.muted, fontFamily: F.body }}>Golpes</p>
-          {podeEditar && (
-            <button onClick={() => set('golpes', [...golpes, { id: uid(), nome: '', dano: '', teste: '', descricao: '' }])}
-              className="text-xs flex items-center gap-1 rounded-full px-2.5 py-1" style={{ color, border: `1px solid ${color}88`, fontFamily: F.body }}>
-              <Plus size={12} /> Novo golpe
-            </button>
+          {passou && (
+            <p className="text-xs mb-3 flex items-start gap-1.5" style={{ color: '#e0577a', fontFamily: F.body }}>
+              <AlertCircle size={12} className="shrink-0 mt-0.5" />
+              <span>Esta ficha tem mais animais do que o nível permite. Desfaça algum laço ou suba de nível.</span>
+            </p>
           )}
-        </div>
 
-        {golpes.length === 0 ? (
-          <p className="text-xs italic" style={{ color: '#6f6291', fontFamily: F.body }}>Nenhum golpe ainda.</p>
-        ) : (
-          <div className="space-y-2">
-            {golpes.map((g) => (
-              <div key={g.id} className="rounded-lg p-2.5" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
-                {podeEditar ? (
-                  <>
-                    <div className="flex gap-2 mb-2">
-                      <input value={g.nome} onChange={(e) => setGolpe(g.id, 'nome', e.target.value)} placeholder="Nome do golpe"
-                        className="flex-1 rounded-md px-2.5 py-2 outline-none text-sm" style={inputStyle} />
-                      <button onClick={() => set('golpes', golpes.filter((x) => x.id !== g.id))}
-                        className="w-9 rounded-md flex items-center justify-center shrink-0"
-                        style={{ border: `1px solid ${V.border}`, color: '#e0577a' }} title="Remover golpe">
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                    <div className="flex gap-2 mb-2">
-                      <input value={g.dano} onChange={(e) => setGolpe(g.id, 'dano', e.target.value)} placeholder="Dano (ex: 1d8)"
-                        className="flex-1 rounded-md px-2.5 py-2 outline-none text-sm" style={inputStyle} />
-                      <input value={g.teste} onChange={(e) => setGolpe(g.id, 'teste', e.target.value)} placeholder="Teste (ex: Guerra)"
-                        className="flex-1 rounded-md px-2.5 py-2 outline-none text-sm" style={inputStyle} />
-                    </div>
-                    <textarea value={g.descricao} onChange={(e) => setGolpe(g.id, 'descricao', e.target.value)} placeholder="O que o golpe faz, custo, condições..."
-                      className="w-full rounded-md px-2.5 py-2 outline-none text-sm resize-none" style={{ ...inputStyle, minHeight: '54px' }} />
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{g.nome || 'Golpe sem nome'}</p>
-                      {g.dano && <span className="text-xs shrink-0" style={{ fontFamily: F.mono, color }}>{g.dano}</span>}
-                    </div>
-                    {g.teste && <p className="text-xs mt-0.5" style={{ fontFamily: F.body, color: '#6f6291' }}>Teste de {g.teste}</p>}
-                    {g.descricao && <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{g.descricao}</p>}
-                  </>
-                )}
+          {escolhidos.length === 0 ? (
+            <p className="text-xs italic mb-4" style={{ color: '#6f6291', fontFamily: F.body }}>Nenhum animal escolhido ainda.</p>
+          ) : (
+            <div className="space-y-2 mb-4">
+              {escolhidos.map((a) => (
+                <CardAnimal key={a.id} animal={a} char={char} color={color} escolhido
+                  podeAlternar={podeEditar} onAlternar={() => alternar(a)} onChangeAtual={onChangeAtual} />
+              ))}
+            </div>
+          )}
+
+          {podeEditar && disponiveis.length > 0 && (
+            <div className="pt-3 border-t" style={{ borderColor: V.border }}>
+              <div className="flex items-center justify-between mb-2">
+                {titulo('Escolher animais')}
+                <button onClick={() => setVerCatalogo(!verCatalogo)} className="text-xs" style={{ color, fontFamily: F.body }}>
+                  {verCatalogo ? 'Ocultar catálogo' : 'Mostrar catálogo'}
+                </button>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+              {verCatalogo && (
+                <div className="space-y-2">
+                  {disponiveis.map((a) => (
+                    <CardAnimal key={a.id} animal={a} char={char} color={color}
+                      podeAlternar bloqueado={escolhidos.length >= limite} onAlternar={() => alternar(a)} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
 
-      <Field label="Anotações">
-        {podeEditar ? (
-          <textarea value={draft.notas} onChange={(e) => set('notas', e.target.value)} placeholder="Bônus combinados com a mestra, limites, tudo o mais."
-            className="w-full rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 resize-none" style={{ ...inputStyle, minHeight: '70px' }} />
-        ) : (
-          <p className="text-sm leading-relaxed whitespace-pre-line" style={{ fontFamily: F.body, color: draft.notas ? V.text : '#6f6291' }}>{draft.notas || '—'}</p>
-        )}
-      </Field>
+      {temAnimalAntigo(char.animal) && (
+        <div className="pt-3 mt-4 border-t" style={{ borderColor: V.border }}>
+          {titulo('Ficha antiga, feita à mão')}
+          <div className="mt-2">
+            <FichaAnimalAntiga animal={char.animal} color={color} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -4519,9 +4896,11 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             </div>
           )}
           {tab === 'animal' && (
-            <FichaAnimal char={char} color={origin.cor} podeEditar={canEdit}
-              onSalvar={(animal) => onSaveEdit({ ...char, animal }, { silencioso: true })} />
+            <AbaAnimais char={char} color={origin.cor} podeEditar={canEdit}
+              onSalvarAnimais={(animais) => onSaveEdit({ ...char, animais }, { silencioso: true })}
+              onChangeAtual={canEdit ? alterarAtual : undefined} />
           )}
+          {tab === 'condicoes' && <ListaCondicoes cor={origin.cor} />}
           {tab === 'inventario' && (
             <div>
               <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
@@ -4626,6 +5005,7 @@ export default function App() {
   if (screen === 'auth' || !account) return <AuthScreen onAuth={handleAuth} />;
   if (screen === 'create') return <CreateWizard account={account} tipoFicha={novoTipo} onSave={handleSaveDraft} onCancel={() => setScreen('dashboard')} />;
   if (screen === 'dicionarios') return <DicionariosScreen onBack={() => setScreen('dashboard')} inicial={dicionarioInicial} />;
+  if (screen === 'condicoes') return <CondicoesScreen onBack={() => setScreen('dashboard')} />;
   if (screen === 'sheet' && viewingChar) {
     return <SheetScreen char={viewingChar} account={account} onBack={() => setScreen('dashboard')} onDelete={handleDelete} onSaveEdit={handleSaveDraft} />;
   }
@@ -4638,6 +5018,7 @@ export default function App() {
         setScreen('create');
       }}
       onOpen={(c) => { setViewingChar(c); setScreen('sheet'); }} onLogout={handleLogout}
-      onDicionarios={() => { setDicionarioInicial('geral'); setScreen('dicionarios'); }} />
+      onDicionarios={() => { setDicionarioInicial('geral'); setScreen('dicionarios'); }}
+      onCondicoes={() => setScreen('condicoes')} />
   );
 }
