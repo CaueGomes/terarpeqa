@@ -195,10 +195,12 @@ do catálogo da mestra.
   teste do alvo e não ganha botão. Se o nível baixar, os animais a mais ficam e
   a aba avisa. A ficha antiga feita à mão (`char.animal`) só aparece se tiver
   conteúdo, como leitura.
-- **Condições** (`CONDICOES`): aba em toda ficha e botão no painel. São as
-  condições que o conteúdo cita em maiúsculas: Cego, Desnorteado, Doente, Em
-  chamas, Em ira, Imóvel, Sangrando. "Aparece em" sai de uma busca nos
-  catálogos. A busca de Doente é só em maiúsculas, porque "plantas doentes"
+- **Condições** (`CONDICOES`): aba em toda ficha e botão no painel, em ordem
+  alfabética. São 11, com os textos oficiais da mestra (só a redação acertada):
+  Catástrofe, Cego, Depressivo, Desnorteado, Doente, Em chamas, Em ira,
+  Enfeitiçado, Exausto, Imóvel e Sangrando. Exausto guarda os níveis em
+  `niveis` (horas sem dormir e efeito). "Aparece em" sai de uma busca nos
+  catálogos; a busca de Doente é só em maiúsculas, porque "plantas doentes"
   aparece numa habilidade.
 - Personagem tem **foto** e **foto da marca** (a marca é quadrada, o retrato é
   redondo).
@@ -261,9 +263,9 @@ código**, não no banco. Expiração de banco não afeta nada disso.
 
 - **Textos das evoluções dos feitiços** que ainda não evoluem — o usuário disse
   que manda depois.
-- **Efeito das condições**: o usuário mandou só os nomes (dentro dos textos dos
-  animais). Os efeitos — penalidades de −2/−3/−5, dano de 1d6/1d8, DT 12 de
-  Apotheca — são proposta minha, esperando a revisão da mestra.
+- **Exausto, horas dos níveis** (24, 48, 64, 88, 112): todo salto é de 24h,
+  menos o do nível 2 para o 3, que é de 16h. Pode ser erro de digitação.
+  Mantido literal, aguardando confirmação.
 - **Animal místico não trava**: o jogador pode trocar o animal escolhido. Pela
   lore o laço é para a vida toda; se a mestra quiser, dá para deixar a troca só
   com ela.

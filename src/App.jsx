@@ -2278,29 +2278,44 @@ function DicionariosScreen({ onBack, inicial }) {
 }
 
 /* ---------- condições ----------
-   Estados que golpes, feitiços e habilidades deixam em quem é atingido. A lista
-   é das condições que o próprio conteúdo do jogo já cita em maiúsculas (CEGO,
-   IMÓVEL...). O efeito de cada uma é uma proposta, esperando a revisão da
-   mestra. "Aparece em" não é escrito à mão: sai de uma busca nos catálogos, e
-   por isso acompanha qualquer texto novo que cite a condição. */
-const NOTA_CONDICOES = 'Cada condição dura o que o efeito que a causou disser. Sem duração escrita, vai até o fim da cena ou até alguém removê-la. Quando o efeito permite resistir, o alvo testa a perícia indicada contra a DT, e bônus de resistência a condições somam nesse teste.';
+   Estados que golpes, feitiços e habilidades deixam em quem é atingido. Os
+   textos são os da mestra, só com a redação acertada. "Aparece em" não é
+   escrito à mão: sai de uma busca nos catálogos, e por isso acompanha
+   qualquer texto novo que cite a condição. */
+const NOTA_CONDICOES = 'Golpes, feitiços e habilidades dizem quando aplicam uma condição e, às vezes, por quanto tempo. Cada condição abaixo diz o que faz e como sair dela.';
 
 const CONDICOES = [
+  { id: 'catastrofe', nome: 'Catástrofe', busca: /\bcat[áa]strofe\b/iu,
+    efeito: 'Exclusiva de druidas com animal-laço místico. O animal toma o controle e o personagem é entregue temporariamente à mestra. Enquanto durar, o druida ataca o que estiver mais próximo, não distingue aliados de inimigos, não usa habilidades que exijam raciocínio e recebe +3d10 de dano em todos os ataques. Não pode ser enfeitiçado, acalmado nem convencido: o que age não é mais ele.' },
   { id: 'cego', nome: 'Cego', busca: /\bcegos?\b/iu,
-    efeito: 'Não enxerga. Não pode usar Esquiva e sofre −5 nos testes que dependem da visão, ataques incluídos.' },
+    efeito: 'Não enxerga. Ataques à distância sofrem −15 e ataques corpo a corpo, −10. Não pode ser alvo de efeitos visuais nem se beneficiar de nada que precise ser visto, e todo teste que dependa da visão falha automaticamente. Dura o que o efeito que a causou disser; sem duração definida, um teste de Velocidade de reação DT 20 ao final de cada rodada encerra a condição.' },
+  { id: 'depressivo', nome: 'Depressivo', busca: /\bdepressiv[oa]s?\b/iu,
+    efeito: 'Perde a vontade de agir. Age apenas uma vez a cada duas rodadas, sofre −5 em todos os testes e não pode receber cura de sanidade enquanto durar. Não sai sozinho: um aliado precisa gastar a ação e passar num teste de Império interior ou Ágape DT 18.' },
   { id: 'desnorteado', nome: 'Desnorteado', busca: /\bdesnortead[oa]s?\b/iu,
-    efeito: 'Só consegue fazer uma coisa por turno, se mover ou agir, e sofre −3 em todos os testes. Não pode usar Bloqueio nem Esquiva.' },
+    efeito: 'Perde a noção de onde está e de quem é quem. Ao agir, role 1d6: em 1 ou 2, age contra um alvo aleatório; em 3 ou 4, perde a ação; em 5 ou 6, age normalmente. Sofre −5 em testes de Motoras. Para sair, precisa passar num teste de Velocidade de reação DT 15 ao final de cada rodada.' },
   /* Só em maiúsculas: em minúsculas, "doente" aparece como adjetivo ("plantas doentes"). */
   { id: 'doente', nome: 'Doente', busca: /\bDOENTE\b/u,
-    efeito: 'Sofre −2 em todos os testes e não recupera vida com descanso. Sai com tratamento, num teste de Apotheca com DT da mestra, ou com um efeito que remova condições.' },
+    efeito: 'O corpo trabalha contra o alvo. Recebe 2d6 de dano por rodada, não recupera vida por nenhum meio e sofre −5 em testes de Físico. Não passa sozinha: é preciso tratamento de alguém treinado em Apotheca, com teste DT 20, ou um teste de Doença DT 22 do próprio alvo ao final de cada cena.' },
   { id: 'em_chamas', nome: 'Em chamas', busca: /\bem chamas\b/iu,
-    efeito: 'Sofre 1d8 de dano no começo de cada turno seu. Gastar a ação para se apagar, ou entrar na água, encerra a condição.' },
+    efeito: 'Recebe 1d10 de dano a cada rodada na condição. Para apagar o fogo, precisa gastar uma ação de movimento inteira e passar num teste de Coordenação motora DT 15, ou se molhar.' },
   { id: 'em_ira', nome: 'Em ira', busca: /\bem ira\b/iu,
-    efeito: 'Precisa atacar a criatura mais próxima, aliada ou não, e não pode recuar, fugir nem usar habilidade que exija calma. Recebe +2 nos testes de ataque.' },
+    efeito: 'Perde o controle sobre quem ataca. A cada rodada, deve atacar a criatura mais próxima, aliada ou não, e recebe +1d10 de dano em todos os ataques, mas sofre −10 em Defesa, Bloqueio e Esquiva. Não pode usar habilidades que exijam raciocínio, nem recuar. Para sair, precisa passar num teste de Volição DT 20 no início de cada rodada. Guerreiros só saem depois de matar ou desmaiar alguém, ou de serem mortos ou desmaiados.' },
+  { id: 'enfeiticado', nome: 'Enfeitiçado', busca: /\benfeitiç(?:ad[oa]s?|ar)\b/iu,
+    efeito: 'Obedece a quem lançou o efeito e considera essa pessoa um aliado, ainda que se lembre de tudo depois. Não ataca quem o enfeitiçou e cumpre ordens diretas dentro do razoável: não se mata, mas machuca quem mandarem machucar. Para sair, precisa passar num teste de Volição DT 20 ao final de cada rodada. Sofrer dano de quem o enfeitiçou rompe a condição na hora.' },
+  { id: 'exausto', nome: 'Exausto', busca: /\bexaust(?:[oa]s?|ão)\b/iu,
+    efeito: 'Acumula em níveis conforme as horas sem dormir, e cada nível é pior que o anterior.',
+    niveis: [
+      { horas: 24, efeito: '−2 em todos os testes.' },
+      { horas: 48, efeito: '−5 em todos os testes e metade do deslocamento.' },
+      { horas: 64, efeito: '−10 em todos os testes e apenas uma ação por rodada.' },
+      { horas: 88, efeito: 'Começa a ter alucinações e cai inconsciente em algum momento.' },
+      { horas: 112, efeito: 'Morre.' },
+    ],
+    depois: 'Cada noite inteira de descanso remove um nível. Nenhum teste remove exaustão, só o tempo.' },
   { id: 'imovel', nome: 'Imóvel', busca: /\bim[óo]ve(l|is)\b/iu,
-    efeito: 'Não sai do lugar e não pode usar Esquiva. Ainda ataca quem estiver ao alcance e usa o que não exija se mover.' },
+    efeito: 'Não consegue se deslocar, mas ainda pode agir de onde está. Sofre −10 em Esquiva, já que não tem para onde ir, e não pode usar habilidades que dependam de movimento. Para sair, precisa gastar a ação de movimento e passar num teste de Instrumento físico DT 18.' },
   { id: 'sangrando', nome: 'Sangrando', busca: /\bsangrando\b/iu,
-    efeito: 'Perde 1d6 de vida no começo de cada turno seu. Para quando alguém passa num teste de Apotheca DT 12 ou quando recebe qualquer cura.' },
+    efeito: 'Perde 1d8 de vida por rodada e deixa um rastro visível por onde passa. Cada nova aplicação acumula e soma mais 1d8 ao dano. Para estancar, alguém gasta uma ação e passa num teste de Apotheca DT 15, ou o próprio alvo perde uma ação inteira e passa em Resistência DT 18.' },
 ];
 
 /* Todo texto de catálogo com o nome de onde ele veio, para a busca acima. */
@@ -2333,6 +2348,17 @@ function ListaCondicoes({ cor, tema }) {
                 {c.nome.toUpperCase()}
               </p>
               <p className="text-sm mt-1 leading-relaxed" style={{ fontFamily: F.body, color: t.texto }}>{c.efeito}</p>
+              {c.niveis && (
+                <div className="mt-2 space-y-1">
+                  {c.niveis.map((n, i) => (
+                    <p key={n.horas} className="text-sm leading-relaxed flex gap-2" style={{ fontFamily: F.body, color: t.texto }}>
+                      <span className="shrink-0" style={{ fontFamily: F.mono, color: cor, minWidth: '6rem' }}>nível {i + 1} · {n.horas}h</span>
+                      <span>{n.efeito}</span>
+                    </p>
+                  ))}
+                </div>
+              )}
+              {c.depois && <p className="text-sm mt-2 leading-relaxed" style={{ fontFamily: F.body, color: t.texto }}>{c.depois}</p>}
               {onde.length > 0 && (
                 <p className="text-xs mt-1.5 leading-relaxed" style={{ fontFamily: F.body, color: t.apagado }}>
                   Aparece em: {onde.join(' · ')}
