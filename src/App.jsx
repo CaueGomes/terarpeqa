@@ -322,6 +322,17 @@ const DICIONARIOS = [
         ],
       },
       {
+        titulo: 'O Preconceito',
+        paragrafos: [
+          `Druidas nascem de duas pessoas que não são druidas e depois vão embora para o reino de Melôdia. Parece simples demais, mas alguns seres se recusam a acreditar nessa mecânica, e então um preconceito surge.`,
+          `Druidas são protegidos pelos deuses Karzaron e Âncore. Quando nascem em seu reino, são comunicados (o próprio deus ou alguém muito importante do reino) no mesmo momento e buscam proteção e ensinamento para que possam ir até o reino de Melôdia em segurança.`,
+          `Apesar de alguns de seus filhos não gostarem da ideia de dar à luz uma criança que vai embora e que fica “se aproveitando” de seus reinos por um tempo limitado, esses dois deuses são restritos quanto à presença e proteção de druidas em seus reinos. Todos obedecem, gostando ou não.`,
+          `No reino de Împera, a história é diferente.`,
+          `A deusa não constituiu nenhuma lei de proteção ou mesmo um simples ensinamento de como seus cidadãos devem tratar druidas. Pelo contrário: a guarda real muitas das vezes persegue e mata druidas abandonados pelas suas famílias “de sangue” e maior parte deles nunca consegue sair daquele reino e irem para o reino de Melôdia. Algumas histórias dizem que até mesmo druidas no reino de Împera são colocados para fazer o trabalho sujo e insalubre do reino em troca de suas meras sobrevivências.`,
+          `Împera não odeia druidas, na verdade ela não liga para eles. Mas no momento em que nada os protege de cidadãos que dão à luz algo cujo objetivo de vida é ir embora sem mais nem menos, druidas correm risco de vida desde seus nascimentos.`,
+        ],
+      },
+      {
         titulo: 'Animal-laço',
         paragrafos: [
           `Todo druida sente algo estranho dentro de si ao nascer, e isso cresce com o tempo. Não é uma sensação ruim, muito pelo contrário. É algo estranhamente confortável, e fica maior perto de certos animais. Isto é um sinal de que há um animal-laço te esperando em algum lugar do universo.`,
@@ -388,7 +399,7 @@ const DICIONARIOS = [
       {
         titulo: 'Quem é seu Deus',
         paragrafos: [
-          `Você é filho de Karzaron, e magos que o conheceram pessoalmente dizem por aí que sua personalidade se resume a duas palavras: inteligência e ambiciosidade. Karzaron é um deus sério, quieto e que segue a lógica o máximo que conseguir.`,
+          `Você é filho de Karzaron, e lendas dizem por aí que sua personalidade se resume a duas palavras: inteligência e ambiciosidade. Karzaron é um deus sério, quieto e que segue a lógica o máximo que conseguir.`,
           `Karzaron criou a magia que está dentro de você, mago, e você deve ser grato até seu último suspiro. Este é um presente que nenhum dos outros deuses conseguiria replicar. E você o possui, então use-o com sabedoria.`,
           `O reino de Karzaron possui uma administração simples: magos possuem livre arbítrio sobre suas vidas e não são penalizados por suas escolhas de carreira ou modo de viver. A lógica de Karzaron é fazer com que seus filhos escolham, aprendam, errem, acertem, e sigam esse ciclo até encontrarem seus caminhos. Obviamente, uma vida de estudos e poder sempre terá seus privilégios, mas isso não impede nenhum mago de viver com sua própria dignidade em simplicidade.`,
           `Comércios são valorizados, e professores possuem o máximo de respeito. Karzaron defende que o melhor que alguém pode fazer enquanto viver é aprender e ensinar, passar adiante os mais diversos conhecimentos. Comida, água, medicina, moradia e livros, bem como pergaminhos e materiais de escrita, são necessidades básicas e não custam dinheiro no reino de Karzaron.`,
