@@ -1078,148 +1078,148 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_rharo', tipo: 'natural', nome: 'Rharo', especie: 'Lobo-cinzento', vida: 40,
     concede: { fisico: 3, motoras: 2 }, custoPorTurno: 4,
     golpes: [
-      { nome: 'Mordida na jugular', descricao: '3d10 de dano, teste de Instrumento físico. Gasta 6 de sanidade.' },
-      { nome: 'Derrubada', descricao: '2d10 de dano e o alvo cai, teste de Coordenação motora para não cair. Gasta 4 de sanidade.' },
+      { nome: 'Mordida na jugular', descricao: '3d10 de dano, teste de Instrumento físico. Gasta 6 de conexão.' },
+      { nome: 'Derrubada', descricao: '2d10 de dano e o alvo cai, teste de Coordenação motora para não cair. Gasta 4 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Chamado da matilha', descricao: 'Atrai lobos selvagens da região. Teste de Ágape DT 15. Gasta 8 de sanidade.' },
-      { nome: 'Faro de sangue', descricao: 'Rastreia qualquer criatura ferida num raio amplo. Teste de Esprit de Corps DT 13. Gasta 6 de sanidade.' },
+      { nome: 'Chamado da matilha', descricao: 'Atrai lobos selvagens da região. Teste de Ágape DT 15. Gasta 8 de conexão.' },
+      { nome: 'Faro de sangue', descricao: 'Rastreia qualquer criatura ferida num raio amplo. Teste de Esprit de Corps DT 13. Gasta 6 de conexão.' },
     ] },
   { id: 'ani_vhera', tipo: 'natural', nome: 'Vhera', especie: 'Corvo-grande', vida: 30,
     concede: { intelecto: 4, motoras: 2 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Bicada nos olhos', descricao: '2d10 de dano e aplica CEGO por 1 rodada, teste de Coordenação motora. Gasta 7 de sanidade.' },
+      { nome: 'Bicada nos olhos', descricao: '2d10 de dano e aplica CEGO por 1 rodada, teste de Coordenação motora. Gasta 7 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Voo de reconhecimento', descricao: 'Sobrevoa e mapeia a área inteira. Teste de Compostura DT 12. Gasta 6 de sanidade.' },
-      { nome: 'Coisas brilhantes', descricao: 'Rouba um objeto pequeno de alguém sem ser notado. Teste de Silêncio DT 18. Gasta 8 de sanidade.' },
+      { nome: 'Voo de reconhecimento', descricao: 'Sobrevoa e mapeia a área inteira. Teste de Compostura DT 12. Gasta 6 de conexão.' },
+      { nome: 'Coisas brilhantes', descricao: 'Rouba um objeto pequeno de alguém sem ser notado. Teste de Silêncio DT 18. Gasta 8 de conexão.' },
     ] },
   { id: 'ani_bhorn', tipo: 'natural', nome: 'Bhorn', especie: 'Urso-pardo', vida: 85,
     concede: { fisico: 5, motoras: -2 }, custoPorTurno: 4,
     golpes: [
-      { nome: 'Patada', descricao: '5d12 de dano, teste de Instrumento físico. Gasta 10 de sanidade.' },
-      { nome: 'Abraço de urso', descricao: '3d12 de dano e o alvo fica IMÓVEL, teste de Instrumento físico. Gasta 8 de sanidade.' },
+      { nome: 'Patada', descricao: '5d12 de dano, teste de Instrumento físico. Gasta 10 de conexão.' },
+      { nome: 'Abraço de urso', descricao: '3d12 de dano e o alvo fica IMÓVEL, teste de Instrumento físico. Gasta 8 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Couro grosso', descricao: 'Reduz todo dano recebido pela metade por 2 rodadas. Sem teste. Gasta 10 de sanidade.' },
-      { nome: 'Rugido', descricao: 'Todos os inimigos testam Volição DT 16 ou recuam uma rodada. Gasta 10 de sanidade.' },
+      { nome: 'Couro grosso', descricao: 'Reduz todo dano recebido pela metade por 2 rodadas. Sem teste. Gasta 10 de conexão.' },
+      { nome: 'Rugido', descricao: 'Todos os inimigos testam Volição DT 16 ou recuam uma rodada. Gasta 10 de conexão.' },
     ] },
   { id: 'ani_silqua', tipo: 'natural', nome: 'Silqua', especie: 'Serpente-real', vida: 25,
     concede: { motoras: 3, intelecto: 2 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Presa peçonhenta', descricao: '3d10 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 12 de sanidade.' },
-      { nome: 'Constrição', descricao: 'Prende o alvo e causa 2d12 de dano por rodada enquanto mantiver preso, teste de Coordenação motora. Gasta 9 de sanidade.' },
+      { nome: 'Presa peçonhenta', descricao: '3d10 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 12 de conexão.' },
+      { nome: 'Constrição', descricao: 'Prende o alvo e causa 2d12 de dano por rodada enquanto mantiver preso, teste de Coordenação motora. Gasta 9 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Rastejo silencioso', descricao: 'Move-se sem ser detectado por ninguém. Teste de Silêncio DT 15. Gasta 6 de sanidade.' },
-      { nome: 'Troca de pele', descricao: 'Remove uma condição negativa de si mesmo, tanto da forma animal quanto da forma druida. Teste de Resistência DT 18. Gasta 12 de sanidade.' },
+      { nome: 'Rastejo silencioso', descricao: 'Move-se sem ser detectado por ninguém. Teste de Silêncio DT 15. Gasta 6 de conexão.' },
+      { nome: 'Troca de pele', descricao: 'Remove uma condição negativa de si mesmo, tanto da forma animal quanto da forma druida. Teste de Resistência DT 18. Gasta 12 de conexão.' },
     ] },
   { id: 'ani_ysbel', tipo: 'natural', nome: 'Ysbel', especie: 'Falcão-peregrino', vida: 30,
     concede: { motoras: 5 }, custoPorTurno: 2,
     golpes: [
-      { nome: 'Mergulho', descricao: '4d10 de dano, teste de Velocidade de reação. Só funciona vindo de cima. Gasta 5 de sanidade.' },
+      { nome: 'Mergulho', descricao: '4d10 de dano, teste de Velocidade de reação. Só funciona vindo de cima. Gasta 5 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Visão de altura', descricao: 'Enxerga detalhes a quilômetros de distância. Teste de Compostura DT 10. Gasta 3 de sanidade.' },
-      { nome: 'Velocidade cortante', descricao: 'Age duas vezes na próxima rodada. Teste de Savoir-faire DT 18. Gasta 10 de sanidade.' },
+      { nome: 'Visão de altura', descricao: 'Enxerga detalhes a quilômetros de distância. Teste de Compostura DT 10. Gasta 3 de conexão.' },
+      { nome: 'Velocidade cortante', descricao: 'Age duas vezes na próxima rodada. Teste de Savoir-faire DT 18. Gasta 10 de conexão.' },
     ] },
   { id: 'ani_truque', tipo: 'natural', nome: 'Truque', especie: 'Raposa-vermelha', vida: 25,
     concede: { psique: 3, motoras: 3 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Bote rápido', descricao: '3d10 de dano, teste de Coordenação motora. Gasta 5 de sanidade.' },
+      { nome: 'Bote rápido', descricao: '3d10 de dano, teste de Coordenação motora. Gasta 5 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Rastro falso', descricao: 'Quem te perseguir precisa passar em Esprit de Corps DT 20 ou te perde completamente. Gasta 7 de sanidade.' },
-      { nome: 'Onde ninguém procura', descricao: 'Encontra um esconderijo em qualquer terreno, para você e mais um. Teste de Silêncio DT 15. Gasta 10 de sanidade.' },
+      { nome: 'Rastro falso', descricao: 'Quem te perseguir precisa passar em Esprit de Corps DT 20 ou te perde completamente. Gasta 7 de conexão.' },
+      { nome: 'Onde ninguém procura', descricao: 'Encontra um esconderijo em qualquer terreno, para você e mais um. Teste de Silêncio DT 15. Gasta 10 de conexão.' },
     ] },
   { id: 'ani_nhora', tipo: 'natural', nome: 'Nhora', especie: 'Coruja-das-torres', vida: 20,
     concede: { intelecto: 4, psique: 2 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Garras silenciosas', descricao: '3d10 de dano, sempre conta como ataque surpresa se o alvo não te viu, teste de Silêncio. Gasta 6 de sanidade.' },
+      { nome: 'Garras silenciosas', descricao: '3d10 de dano, sempre conta como ataque surpresa se o alvo não te viu, teste de Silêncio. Gasta 6 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Olhos da noite', descricao: 'Enxerga perfeitamente no escuro absoluto por uma cena. Sem teste. Gasta 6 de sanidade.' },
-      { nome: 'Voo sem som', descricao: 'Não pode ser ouvido por nada, de forma alguma. Teste de Silêncio DT 12. Gasta 8 de sanidade.' },
+      { nome: 'Olhos da noite', descricao: 'Enxerga perfeitamente no escuro absoluto por uma cena. Sem teste. Gasta 6 de conexão.' },
+      { nome: 'Voo sem som', descricao: 'Não pode ser ouvido por nada, de forma alguma. Teste de Silêncio DT 12. Gasta 8 de conexão.' },
     ] },
   { id: 'ani_cassiel', tipo: 'natural', nome: 'Cassiel', especie: 'Cervo-galheiro', vida: 40,
     concede: { fisico: 3, psique: 3 }, custoPorTurno: 4,
     golpes: [
-      { nome: 'Chifrada', descricao: '4d12 de dano e empurra o alvo, teste de Instrumento físico. Gasta 6 de sanidade.' },
+      { nome: 'Chifrada', descricao: '4d12 de dano e empurra o alvo, teste de Instrumento físico. Gasta 6 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Presença serena', descricao: 'Todos os aliados recuperam 2d10 de sanidade. Teste de Ágape DT 16. Gasta 14 de sanidade.' },
-      { nome: 'Passo de floresta', descricao: 'Você e o grupo atravessam mato fechado sem deixar rastro. Teste de Savoir-faire DT 14. Gasta 9 de sanidade.' },
+      { nome: 'Presença serena', descricao: 'Todos os aliados recuperam 2d10 de sanidade. Teste de Ágape DT 16. Gasta 14 de conexão.' },
+      { nome: 'Passo de floresta', descricao: 'Você e o grupo atravessam mato fechado sem deixar rastro. Teste de Savoir-faire DT 14. Gasta 9 de conexão.' },
     ] },
   { id: 'ani_krak', tipo: 'natural', nome: 'Krak', especie: 'Javali-do-norte', vida: 50,
     concede: { fisico: 4 }, concedeExtra: '+2 de resistência a condições', custoPorTurno: 5,
     golpes: [
-      { nome: 'Investida cega', descricao: '5d12 de dano, mas você não pode mudar de direção, teste de Instrumento físico. Gasta 10 de sanidade.' },
-      { nome: 'Presas curvas', descricao: '3d12 de dano e aplica SANGRANDO, teste de Instrumento físico. Gasta 7 de sanidade.' },
+      { nome: 'Investida cega', descricao: '5d12 de dano, mas você não pode mudar de direção, teste de Instrumento físico. Gasta 10 de conexão.' },
+      { nome: 'Presas curvas', descricao: '3d12 de dano e aplica SANGRANDO, teste de Instrumento físico. Gasta 7 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Teimosia', descricao: 'Não pode ser derrubado nem ficar IMÓVEL por 2 rodadas. Sem teste. Gasta 9 de sanidade.' },
+      { nome: 'Teimosia', descricao: 'Não pode ser derrubado nem ficar IMÓVEL por 2 rodadas. Sem teste. Gasta 9 de conexão.' },
     ] },
   { id: 'ani_mhira', tipo: 'natural', nome: 'Mhira', especie: 'Gato-do-mato', vida: 25,
     concede: { motoras: 4, psique: 2 }, custoPorTurno: 2,
     golpes: [
-      { nome: 'Arranhão triplo', descricao: '2d8 de dano três vezes, mas precisa ser no mesmo alvo, teste de Coordenação motora. Gasta 9 de sanidade.' },
+      { nome: 'Arranhão triplo', descricao: '2d8 de dano três vezes, mas precisa ser no mesmo alvo, teste de Coordenação motora. Gasta 9 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Queda de pé', descricao: 'Ignora completamente dano de queda e sempre cai em segurança. Sem teste. Gasta 4 de sanidade.' },
-      { nome: 'Passo sobre telhado', descricao: 'Escala e equilibra-se em qualquer superfície. Teste de Savoir-faire DT 12. Gasta 5 de sanidade.' },
+      { nome: 'Queda de pé', descricao: 'Ignora completamente dano de queda e sempre cai em segurança. Sem teste. Gasta 4 de conexão.' },
+      { nome: 'Passo sobre telhado', descricao: 'Escala e equilibra-se em qualquer superfície. Teste de Savoir-faire DT 12. Gasta 5 de conexão.' },
     ] },
 
   /* ===== MÍSTICOS ===== */
   { id: 'ani_ashvara', tipo: 'mistico', nome: 'Ashvara', especie: 'Fênix', vida: 90,
     concede: { psique: 5, intelecto: 4 }, custoPorTurno: 8,
     golpes: [
-      { nome: 'Pluma incandescente', descricao: '5d12 de dano e aplica EM CHAMAS, teste de Coordenação motora. Gasta 15 de sanidade.' },
-      { nome: 'Voo em brasa', descricao: '4d20 de dano em todos numa linha reta, teste de Savoir-faire. Gasta 18 de sanidade.' },
+      { nome: 'Pluma incandescente', descricao: '5d12 de dano e aplica EM CHAMAS, teste de Coordenação motora. Gasta 15 de conexão.' },
+      { nome: 'Voo em brasa', descricao: '4d20 de dano em todos numa linha reta, teste de Savoir-faire. Gasta 18 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Renascer', descricao: 'Uma vez por sessão, ao cair a 0 de vida, você volta com metade dela. Gasta 10 de sanidade.' },
-      { nome: 'Calor que cura', descricao: 'Cura 3d20 de vida em todos os aliados próximos. Teste de Ágape DT 18. Gasta 20 de sanidade.' },
-      { nome: 'Dessa vez não', descricao: 'Garante um acerto em qualquer teste. Gasta 13 de sanidade.' },
+      { nome: 'Renascer', descricao: 'Uma vez por sessão, ao cair a 0 de vida, você volta com metade dela. Gasta 10 de conexão.' },
+      { nome: 'Calor que cura', descricao: 'Cura 3d20 de vida em todos os aliados próximos. Teste de Ágape DT 18. Gasta 20 de conexão.' },
+      { nome: 'Dessa vez não', descricao: 'Garante um acerto em qualquer teste. Gasta 13 de conexão.' },
     ] },
   { id: 'ani_verthaz', tipo: 'mistico', nome: 'Verthaz', especie: 'Dragão', vida: 140,
     concede: { fisico: 6, intelecto: 4, motoras: -2 }, custoPorTurno: 10,
     golpes: [
-      { nome: 'Sopro', descricao: '8d20 de dano num cone amplo, teste de Volição. Gasta 25 de sanidade.' },
-      { nome: 'Garra e cauda', descricao: '8d12 de dano em dois alvos diferentes, teste de Instrumento físico. Gasta 27 de sanidade.' },
+      { nome: 'Sopro', descricao: '8d20 de dano num cone amplo, teste de Volição. Gasta 25 de conexão.' },
+      { nome: 'Garra e cauda', descricao: '8d12 de dano em dois alvos diferentes, teste de Instrumento físico. Gasta 27 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Escamas antigas', descricao: 'Reduz todo dano recebido pela metade, permanentemente enquanto transformado. Ativar essa habilidade custa 6 de sanidade.' },
-      { nome: 'Presença de dragão', descricao: 'Todos os inimigos testam Volição DT 20 ou ficam DESNORTEADOS por 2 rodadas. Gasta 18 de sanidade.' },
-      { nome: 'Ganância', descricao: 'Você sabe onde está o objeto mais valioso num raio enorme. Teste de Esprit de Corps DT 16. Gasta 10 de sanidade.' },
+      { nome: 'Escamas antigas', descricao: 'Reduz todo dano recebido pela metade, permanentemente enquanto transformado. Ativar essa habilidade custa 6 de conexão.' },
+      { nome: 'Presença de dragão', descricao: 'Todos os inimigos testam Volição DT 20 ou ficam DESNORTEADOS por 2 rodadas. Gasta 18 de conexão.' },
+      { nome: 'Ganância', descricao: 'Você sabe onde está o objeto mais valioso num raio enorme. Teste de Esprit de Corps DT 16. Gasta 10 de conexão.' },
     ] },
   { id: 'ani_isilme', tipo: 'mistico', nome: 'Isilme', especie: 'Unicórnio', vida: 80,
     concede: { psique: 6, motoras: 4 }, custoPorTurno: 9,
     golpes: [
-      { nome: 'Chifre verdadeiro', descricao: '4d12 de dano, e o dobro contra quem já mentiu para você nesta cena, teste de Império interior. Gasta 18 de sanidade.' },
+      { nome: 'Chifre verdadeiro', descricao: '4d12 de dano, e o dobro contra quem já mentiu para você nesta cena, teste de Império interior. Gasta 18 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Purificação', descricao: 'Remove veneno, DOENTE e qualquer efeito mágico hostil de um aliado. Teste de Apotheca DT 18. Gasta 13 de sanidade.' },
-      { nome: 'Só os dignos', descricao: 'Escolha uma pessoa. Ela não pode mentir na sua frente por uma cena. Teste de Ágape DT 22. Gasta 22 de sanidade.' },
-      { nome: 'Passo sobre água', descricao: 'Você e o grupo caminham sobre qualquer superfície líquida. Sem teste. Gasta 12 de sanidade.' },
+      { nome: 'Purificação', descricao: 'Remove veneno, DOENTE e qualquer efeito mágico hostil de um aliado. Teste de Apotheca DT 18. Gasta 13 de conexão.' },
+      { nome: 'Só os dignos', descricao: 'Escolha uma pessoa. Ela não pode mentir na sua frente por uma cena. Teste de Ágape DT 22. Gasta 22 de conexão.' },
+      { nome: 'Passo sobre água', descricao: 'Você e o grupo caminham sobre qualquer superfície líquida. Sem teste. Gasta 12 de conexão.' },
     ] },
   { id: 'ani_grohm', tipo: 'mistico', nome: 'Grohm', especie: 'Golem de pedra viva', vida: 200,
     concede: { fisico: 8, motoras: -4, intelecto: -2 }, custoPorTurno: 10,
     golpes: [
-      { nome: 'Punho de montanha', descricao: '12d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de sanidade.' },
-      { nome: 'Rachar o chão', descricao: '4d20 de dano em todos ao redor e todos ficam IMÓVEIS por 1 rodada, teste de Instrumento físico. Gasta 18 de sanidade.' },
+      { nome: 'Punho de montanha', descricao: '12d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de conexão.' },
+      { nome: 'Rachar o chão', descricao: '4d20 de dano em todos ao redor e todos ficam IMÓVEIS por 1 rodada, teste de Instrumento físico. Gasta 18 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Inabalável', descricao: 'Não pode ser derrubado, empurrado, nem afetado por IMÓVEL ou EM IRA pelo resto do combate. Ativar a habilidade custa 12 de sanidade.' },
-      { nome: 'Muralha', descricao: 'Você se torna parede: nenhum inimigo passa por você por 3 rodadas, mas você não pode atacar, só ser atacado. Gasta 24 de sanidade.' },
+      { nome: 'Inabalável', descricao: 'Não pode ser derrubado, empurrado, nem afetado por IMÓVEL ou EM IRA pelo resto do combate. Ativar a habilidade custa 12 de conexão.' },
+      { nome: 'Muralha', descricao: 'Você se torna parede: nenhum inimigo passa por você por 3 rodadas, mas você não pode atacar, só ser atacado. Gasta 24 de conexão.' },
     ] },
   { id: 'ani_yssen', tipo: 'mistico', nome: 'Yssen', especie: 'Quimera', vida: 160,
     concede: { fisico: 5, motoras: 5, psique: -3 }, custoPorTurno: 7,
     golpes: [
-      { nome: 'Três bocas', descricao: '2d12 de dano três vezes, cada uma num alvo diferente, teste de Fúria de sangue. Gasta 14 de sanidade.' },
-      { nome: 'Cauda de serpente', descricao: '6d12 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 21 de sanidade.' },
+      { nome: 'Três bocas', descricao: '2d12 de dano três vezes, cada uma num alvo diferente, teste de Fúria de sangue. Gasta 14 de conexão.' },
+      { nome: 'Cauda de serpente', descricao: '6d12 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 21 de conexão.' },
     ],
     habilidades: [
-      { nome: 'Cabeças em desacordo', descricao: 'No início de cada rodada, role 1d6: em 1 ou 2 você ganha uma ação extra, em 5 ou 6 você perde a ação. Gasta 3 de sanidade.' },
+      { nome: 'Cabeças em desacordo', descricao: 'No início de cada rodada, role 1d6: em 1 ou 2 você ganha uma ação extra, em 5 ou 6 você perde a ação. Gasta 3 de conexão.' },
       { nome: 'Nada que se encaixe', descricao: 'Imune a efeitos que dependam de você ser uma coisa só: enfeitiçar, dominar, copiar ou prever suas ações. Sem custo.' },
     ] },
 ];
@@ -1252,6 +1252,21 @@ function fichaDaFormaAnimal(char, animal) {
   const attributes = { intelecto: 0, psique: 0, fisico: 0, motoras: 0, ...(animal.concede || {}) };
   return { id: char.id, name: char.name, owner: char.owner, attributes, pericias: {}, periciasOutros: {} };
 }
+
+/* ---------- pontos de conexão ----------
+   Transformar e manter a forma saem da sanidade do druida. Já os golpes e as
+   habilidades do animal saem daqui: cada animal tem a sua própria barra. Zerar
+   a conexão expulsa o druida da forma; zerar a vida do animal desfaz o laço
+   para sempre.
+
+   O máximo é a soma do que as ações daquele animal custam, ou seja, dá para
+   usar cada golpe e cada habilidade uma vez, ou repetir os mais baratos. O
+   número sai do texto das ações, como todo o resto: mudar o custo de um golpe
+   já muda a barra. */
+const RE_CUSTO_CONEXAO = /(?:gasta|custa)\s+(\d{1,3})\s*(?:pontos?\s+)?(?:de\s+)?conexão/i;
+const custoDeConexao = (acao) => Number(String(acao?.descricao || '').match(RE_CUSTO_CONEXAO)?.[1]) || 0;
+const acoesDoAnimal = (animal) => [...(animal?.golpes || []), ...(animal?.habilidades || [])];
+const conexaoMaxima = (animal) => acoesDoAnimal(animal).reduce((soma, acao) => soma + custoDeConexao(acao), 0);
 
 /* Perícia de um "teste de X" escrito no texto. Quando o teste é do alvo
    ("teste de Coordenação motora para não cair"), não há o que o druida role. */
@@ -4182,6 +4197,7 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
    char.atual['animal:<id>'], ao lado da vida e da sanidade do próprio druida,
    então o botão Restaurar enche os animais junto. */
 const chaveVidaAnimal = (animal) => `animal:${animal.id}`;
+const chaveConexaoAnimal = (animal) => `conexao:${animal.id}`;
 const nomeDoAtributo = (key) => ATTRS.find((a) => a.key === key)?.nome || key;
 
 /* Ficha escrita à mão antes de existir o catálogo. Só aparece se ainda houver
@@ -4232,6 +4248,8 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, o
   const expandido = escolhido || aberto;
   const fichaAnimal = escolhido ? fichaDaFormaAnimal(char, animal) : null;
   const vidaAtual = valorAtual(char, chaveVidaAnimal(animal), animal.vida);
+  const conexaoMax = conexaoMaxima(animal);
+  const conexaoAtual = valorAtual(char, chaveConexaoAnimal(animal), conexaoMax);
 
   return (
     <div className="rounded-lg" style={{ background: '#171029', border: `1px solid ${escolhido ? color : V.border}` }}>
@@ -4253,7 +4271,7 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, o
             )}
           </p>
           <p className="text-xs mt-0.5" style={{ fontFamily: F.mono, color: V.muted }}>
-            vida {animal.vida} · {animal.custoPorTurno} de sanidade por turno
+            vida {animal.vida} · conexão {conexaoMax} · {animal.custoPorTurno} de sanidade por turno
           </p>
         </button>
       </div>
@@ -4275,12 +4293,30 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, o
           </div>
 
           {escolhido && (
-            <div className="mb-2">
+            <div className="mb-2 space-y-2">
               {onChangeAtual ? (
                 <BarraAjustavel label="Vida do animal" atual={vidaAtual} max={animal.vida} color="#e0577a"
                   onChange={(v) => onChangeAtual(chaveVidaAnimal(animal), v)} />
               ) : (
                 <ProgressBar value={vidaAtual} max={animal.vida} color="#e0577a" label="Vida do animal" />
+              )}
+              {onChangeAtual ? (
+                <BarraAjustavel label="Conexão" atual={conexaoAtual} max={conexaoMax} color={color}
+                  onChange={(v) => onChangeAtual(chaveConexaoAnimal(animal), v)} />
+              ) : (
+                <ProgressBar value={conexaoAtual} max={conexaoMax} color={color} label="Conexão" />
+              )}
+              {conexaoAtual <= 0 && (
+                <p className="text-xs flex items-start gap-1.5" style={{ color: '#e0577a', fontFamily: F.body }}>
+                  <AlertCircle size={12} className="shrink-0 mt-0.5" />
+                  <span>Conexão zerada: você é expulso da forma deste animal.</span>
+                </p>
+              )}
+              {vidaAtual <= 0 && (
+                <p className="text-xs flex items-start gap-1.5" style={{ color: '#e0577a', fontFamily: F.body }}>
+                  <AlertCircle size={12} className="shrink-0 mt-0.5" />
+                  <span>Vida zerada: o laço com este animal se perde para sempre.</span>
+                </p>
               )}
             </div>
           )}
@@ -4345,6 +4381,9 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
               : 'Laço místico: um animal só.'}
             {' '}Na forma animal a sua ficha não conta: golpes e habilidades rolam o dado mais o
             que o animal concede no atributo da perícia, sem o seu atributo nem o seu treino.
+            Transformar e manter a forma gastam a sua sanidade; golpes e habilidades gastam a
+            conexão do animal. Conexão zerada te expulsa da forma, e vida zerada desfaz o laço
+            para sempre.
           </p>
 
           {passou && (

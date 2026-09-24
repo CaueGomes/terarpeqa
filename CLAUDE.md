@@ -188,7 +188,15 @@ do catálogo da mestra.
   (10 naturais, 5 místicos). Laço natural escolhe **um animal por nível de
   personagem**; laço místico escolhe **um só**. A ficha guarda só os ids em
   `char.animais`; a vida atual de cada animal fica em
-  `char.atual['animal:<id>']`, então o Restaurar enche os animais junto.
+  `char.atual['animal:<id>']` e a conexão em `char.atual['conexao:<id>']`,
+  então o Restaurar enche os dois junto.
+- **Pontos de conexão** (só nas fichas de animal): golpes e habilidades do
+  animal gastam **conexão**, não sanidade. A sanidade continua pagando a
+  transformação e o custo por turno da forma. Cada animal tem a sua barra, e o
+  máximo é a **soma do que as ações dele custam** (`conexaoMaxima`, lida do
+  texto): natural 18 a 39, místico 38 a 86. Conexão zerada expulsa o druida da
+  forma; vida do animal zerada desfaz o laço para sempre. A aba avisa nos dois
+  casos, mas não mexe na ficha sozinha — quem desfaz o laço é o jogador.
   Na forma animal **a ficha do druida é ignorada** (decisão do usuário em
   13/09/2026): golpes e habilidades rolam com `fichaDaFormaAnimal`, que tem só
   o que o animal concede nos atributos, sem classe, treino nem bônus de perícia.
