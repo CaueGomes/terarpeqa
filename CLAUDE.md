@@ -103,6 +103,10 @@ bônus mas não a escolha. Ficha de mestra não tem teto.
 O bônus da perícia em si **não** inclui o atributo, porque é ele que define o
 Bloqueio — mexer nisso quebra o Bloqueio.
 
+A classe **Criatura do Mar** (antiga "Sereia / Tritão", renomeada em
+25/09/2026) mantém o id `sereia`: sereia e tritão são só as subclasses dela.
+Trocar o id quebraria todas as fichas salvas, as armas e as habilidades.
+
 Perícias dadas pela classe: druida → Ágape; mago → Savoir-faire e Dicionário
 mental. Os `id` das perícias nunca mudam (são a chave do treino nas fichas
 salvas); renomear é só trocar o `nome`. Ex.: "Percepção" ainda tem id `logica`,
@@ -116,7 +120,7 @@ mana     = nível mágico   (só mago; nível mágico 35 = 35 de mana)
 ```
 Vida, sanidade e **Defesa base** saem do mesmo orçamento: **60 pontos por
 classe**, contando 1 por vida, 1 por sanidade e **2 por ponto de Defesa acima
-de 8**. Guerreiro 36/14/13, pirata 32/20/12, sereia 30/24/11, druida 30/26/10,
+de 8**. Guerreiro 36/14/13, pirata 32/20/12, criatura do mar 30/24/11, druida 30/26/10,
 nascido de ouro 26/28/11, mago 22/36/9. Cada subdivisão distribui mais 6 pontos
 na mesma moeda (ensanguentado, por exemplo, compra 2 de Defesa). Por nível,
 vida + sanidade continuam somando 9. `balancoConferido()` fecha essa conta e
@@ -286,9 +290,14 @@ código**, não no banco. Expiração de banco não afeta nada disso.
 - **Animal místico não trava**: o jogador pode trocar o animal escolhido. Pela
   lore o laço é para a vida toda; se a mestra quiser, dá para deixar a troca só
   com ela.
-- **Linha de resistência nas habilidades**: só 5 das 53 estão preenchidas (as
+- **Linha de resistência nas habilidades**: só 8 das 79 estão preenchidas (as
   que já diziam no texto que o alvo resiste). O mecanismo está pronto, falta a
   lista dele.
+- **Habilidade nova mexe na sanidade de quem a recebe**, porque a reserva é a
+  mediana dos custos. As 26 de 25/09/2026 são baratas e baixaram a reserva do
+  druida natural (24 → 18) e do predileto dos mares (21 → 16), e subiram a do
+  nascido de ouro (bobo 12 → 15, dono da coroa 18 → 21). Se isso incomodar, o
+  que muda é `USOS_DE_HABILIDADE_POR_CENA` ou trocar a mediana por outra conta.
 - **Frênesi, evolução 3** diz "troca 30 de mana por miseráveis 8 de mana" —
   provavelmente deveria ser sanidade. Mantido literal, aguardando confirmação.
 - **Botão de rolagem lê a primeira notação do texto.** Em Desossar e Mestre das

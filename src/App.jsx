@@ -51,7 +51,7 @@ const ORIGINS = [
 Você é filho(a) de Melôdia, cuja voz acalma a todos ao seu redor e sua bondade faz com que vida cresça em tudo que toca.
 
 Você tem o poder da floresta e dos animais! Como druida, a natureza é sua amiga e guardiã eterna. Evite ficar longe de sua proteção.` },
-  { id: 'sereia', nome: 'Sereia / Tritão', deus: 'Ancorê', dominio: 'Água', cor: '#2FB6C4', corClara: '#9FE6EE', Icon: Waves,
+  { id: 'sereia', nome: 'Criatura do Mar', deus: 'Ancorê', dominio: 'Água', cor: '#2FB6C4', corClara: '#9FE6EE', Icon: Waves,
     frase: 'Nade junto às ondas, você nasceu aqui.',
     subdivisao: 'tipo',
     narrativa: `Bela escolha, filho(a) das marés.
@@ -214,7 +214,7 @@ const BALANCO_SUBDIVISAO = {
   // druida — pelo tipo de animal-laço
   mistico: { vida: 0, sanidade: 6, defesa: 0 },
   natural: { vida: 4, sanidade: 0, defesa: 1 },
-  // sereia / tritão
+  // criatura do mar — sereia ou tritão
   sereia: { vida: 0, sanidade: 6, defesa: 0 },
   triton: { vida: 4, sanidade: 0, defesa: 1 },
   // guerreiro
@@ -355,7 +355,7 @@ const DICIONARIOS = [
 
   {
     id: 'sereia',
-    titulo: 'Dicionário das Sereias e Tritões',
+    titulo: 'Dicionário das Criaturas do Mar',
     subtitulo: 'Filhos de Âncore',
     classeId: 'sereia',
     secoes: [
@@ -624,7 +624,7 @@ const ARMAS_CATALOGO = [
     dano: '3d10', teste: 'Coordenação motora', peso: 3,
     descricao: 'Lâmina curva usada em rituais e, quando preciso, em pescoços.' },
 
-  /* ===== SEREIA / TRITÃO ===== */
+  /* ===== CRIATURA DO MAR ===== */
   { id: 'arm_concha_afiada', nome: 'Concha afiada', classe: 'sereia', subdivisaoId: 'sereia',
     dano: '3d6 (6d6 na água)', teste: 'Coordenação motora', peso: 1,
     descricao: 'Borda cortante, quase invisível na água.' },
@@ -727,7 +727,7 @@ const ARMADURAS_CATALOGO = [
   { id: 'arma_pele_segunda_muda', nome: 'Pele de segunda muda', classe: 'druida', animalTipo: 'mistico',
     defesa: 3, peso: 2, descricao: 'Feita do que seu animal descartou. A cada Catástrofe, o DT do teste de Eletroquímica sobe 2 — ela lembra de quem veio.' },
 
-  /* ===== SEREIA / TRITÃO ===== */
+  /* ===== CRIATURA DO MAR ===== */
   { id: 'arma_veu_escamas', nome: 'Véu de escamas', classe: 'sereia', subdivisaoId: 'sereia',
     defesa: 2, peso: 1, descricao: 'Camada fina e iridescente, quase invisível fora d\u2019água.' },
   { id: 'arma_coroa_nacar', nome: 'Coroa de nácar', classe: 'sereia', subdivisaoId: 'sereia',
@@ -806,7 +806,7 @@ const ITENS_CATALOGO = [
   { id: 'ite_vertebra_primeiro_dono', nome: 'Vértebra do primeiro dono', classe: 'druida', animalTipo: 'mistico', peso: 2,
     descricao: 'Um osso do animal místico de outro druida, morto há tempos. Segurando-o durante a Catástrofe, você pode fazer o teste de Eletroquímica com Volição no lugar. Não gasta, mas o seu animal odeia quando você usa.' },
 
-  /* ===== SEREIA / TRITÃO ===== */
+  /* ===== CRIATURA DO MAR ===== */
   { id: 'ite_frasco_agua_natal', nome: 'Frasco de água natal', classe: 'sereia', peso: 2,
     descricao: 'Água do seu reino. Bebida, recupera 3d6 de sanidade.' },
   { id: 'ite_batom_escamas', nome: 'Batom de escamas', classe: 'sereia', subdivisaoId: 'sereia', peso: 2,
@@ -907,8 +907,12 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Seu animal místico sussurra algo verdadeiro que você não teria como saber. Gasta 12 de sanidade. A mestra escolhe o que ele conta — e ele sempre pede algo em troca. Você precisa necessariamente estar perto de seu animal.' },
   { id: 'hab_coleira_curta', nome: 'Coleira curta', classe: 'druida', animalTipo: 'mistico',
     descricao: 'Você adia a Catástrofe por 2 rodadas, ignorando os testes de Eletroquímica nesse intervalo. Gasta 18 de sanidade, e o DT do próximo teste sobe em 5.' },
+  { id: 'hab_memorias_do_solo', nome: 'Memórias do solo', classe: 'druida',
+    descricao: 'Você toca a terra de um local à sua escolha e sabe se, quem, como e quando alguém já morreu ali, num raio médio. Teste de Déjà-vu.' },
+  { id: 'hab_decomposicao', nome: 'Decomposição', classe: 'druida',
+    descricao: 'Você acelera a decadência de objetos, armadilhas ou armaduras inimigas, desde que consiga tocá-los. Teste de Doença. Gasta 3 de sanidade.' },
 
-  /* ===== SEREIA / TRITÃO ===== */
+  /* ===== CRIATURA DO MAR ===== */
   { id: 'hab_chamado_profundezas', nome: 'Chamado das profundezas', classe: 'sereia',
     descricao: 'Uma vez por cena, você chama a água — chuva, maré, um cano estourado, o que houver — e ela vem. A mestra decide o que a água consegue fazer no ambiente. Gasta 12 de sanidade.' },
   { id: 'hab_canto_afogamento', resistencia: 'Resiste com Volição.', nome: 'Canto do afogamento', classe: 'sereia', subdivisaoId: 'sereia',
@@ -927,6 +931,14 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Você arrasta um inimigo para perto de você, mesmo a distância. Ele resiste com Instrumento físico (DT da mestra). Gasta 9 de sanidade.' },
   { id: 'hab_folego_emprestado', nome: 'Fôlego emprestado', classe: 'sereia', subdivisaoId: 'triton',
     descricao: 'Você e seus aliados respiram debaixo d\u2019água e se movem nela como em terra firme por uma cena inteira. Gasta 12 de sanidade.' },
+  { id: 'hab_cicatriz_do_mar', nome: 'Cicatriz do Mar', classe: 'sereia',
+    descricao: 'Uma vez por sessão, você ignora o próximo efeito que reduziria sua sanidade a zero: fica estável, mas abalado até a próxima cena. Ao sair dela você enlouquece, só que já num lugar seguro. Gasta 12 de sanidade.' },
+  { id: 'hab_sangue_que_chama', nome: 'Sangue que Chama', classe: 'sereia', subdivisaoId: 'sereia',
+    descricao: 'Você corta a própria palma e deixa pingar no chão ou na água. O sangue reconhece o inimigo mais próximo e se transforma num ferrão que o atinge sozinho. Gasta 5 de sanidade.' },
+  { id: 'hab_cancao_cortante', resistencia: 'Resiste com Volição ou Resistência.', nome: 'Canção Cortante', classe: 'sereia', subdivisaoId: 'sereia',
+    descricao: 'Sua voz vibra numa frequência que rasga por dentro. O alvo sofre 2d12 de dano sônico direto, sem defesa física possível: ele resiste com Volição ou Resistência. Gasta 6 de sanidade.' },
+  { id: 'hab_couraca_de_coral', nome: 'Couraça de Coral', classe: 'sereia', subdivisaoId: 'triton',
+    descricao: 'Sua pele endurece como recife por uma cena inteira, somando +3 de defesa contra ataques físicos. Gasta 9 de sanidade.' },
 
   /* ===== MAGO ===== */
   { id: 'hab_emprestimo_tinta', nome: 'Empréstimo de tinta', classe: 'mago',
@@ -937,6 +949,12 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Escolha um feitiço seu no começo da sessão. Ele custa 2 de mana a menos até o fim dela. Passivo, sem custo.' },
   { id: 'hab_segunda_tentativa', nome: 'Segunda tentativa', classe: 'mago',
     descricao: 'Quando um feitiço seu falha ou é resistido, você pode conjurá-lo de novo imediatamente pela metade do custo.' },
+  { id: 'hab_mana_emprestada_carne', nome: 'Mana emprestada da carne', classe: 'mago',
+    descricao: 'Você converte sanidade em mana na razão de 1 para 2, até cinco vezes por sessão. Ambição custa caro, e Karzaron nunca escondeu isso.' },
+  { id: 'hab_quanto_custa', nome: 'Quanto custa?', classe: 'mago',
+    descricao: 'Você identifica o valor real e a origem de qualquer artefato mágico, inclusive se ele é falsificado. Teste de Dicionário mental (DT da mestra). Gasta 6 de sanidade.' },
+  { id: 'hab_conheco_esse_cheiro', nome: 'Eu conheço esse cheiro', classe: 'mago',
+    descricao: 'Você reconhece na hora se alguém usou manteiga azul, há quanto tempo e o quanto. Passivo, sem custo — e você nunca conta como sabe.' },
 
   /* ===== GUERREIRO ===== */
   { id: 'hab_plateia_quer_sangue', nome: 'A plateia quer sangue', classe: 'guerreiro',
@@ -961,6 +979,10 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Uma vez por cena, seu ataque ignora completamente defesa, bloqueio e esquiva. Gasta 7 de sanidade.' },
   { id: 'hab_distancia_numero', nome: 'Distância é só um número', classe: 'guerreiro', subdivisaoId: 'nerena',
     descricao: 'Você troca livremente entre alcance corpo a corpo e à distância na mesma ação, sem penalidade. Gasta 6 de sanidade por rodada mantida.' },
+  { id: 'hab_ultimo_suspiro', nome: 'Último Suspiro', classe: 'guerreiro',
+    descricao: 'Ao chegar a zero de vida, você fica de pé por mais uma rodada em vez de cair. Gasta 7 de sanidade e exige um teste de Resistência bem-sucedido.' },
+  { id: 'hab_sacrificio_de_metal', nome: 'Sacrifício de metal', classe: 'guerreiro',
+    descricao: 'Quando recebe um golpe forte, você destrói parte do escudo ou da armadura para anular o dano. Gasta 3 de sanidade, sem teste.' },
 
   /* ===== PIRATA ===== */
   { id: 'hab_todo_porto_amigo', nome: 'Todo porto tem um amigo', classe: 'pirata',
@@ -983,6 +1005,22 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Antes de uma cena de perigo, você prevê um obstáculo e o grupo inteiro recebe +5 no primeiro teste relacionado a ele. Gasta 12 de sanidade.' },
   { id: 'hab_duas_maos_tres_tarefas', nome: 'Duas mãos, três tarefas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
     descricao: 'Por 2 rodadas, você faz duas ações por turno em vez de uma. Gasta 14 de sanidade.' },
+  { id: 'hab_sangue_por_sangue', nome: 'Sangue por Sangue', classe: 'pirata',
+    descricao: 'Se um aliado sofre dano grave, seu próximo ataque contra quem causou ganha +1d10 de dano. Gasta 6 de sanidade.' },
+  { id: 'hab_nao_vou_cair_sozinho', nome: 'Não Vou Cair Sozinho', classe: 'pirata',
+    descricao: 'Ao ser derrotado, você ainda desfere um último golpe antes de cair. Gasta 11 de sanidade.' },
+  { id: 'hab_golpe_sujo', nome: 'Golpe Sujo', classe: 'pirata', subdivisaoId: 'trapaceiro',
+    descricao: 'Ataque que ignora a defesa quando o inimigo não sabe que você está ali ou está distraído. Gasta 9 de sanidade.' },
+  { id: 'hab_isca_fatal', nome: 'Isca Fatal', classe: 'pirata', subdivisaoId: 'trapaceiro',
+    descricao: 'Você finge um movimento e o inimigo reage errado, recebendo dano extra do seu ataque real. Gasta 10 de sanidade e exige um teste de Coordenação motora bem-sucedido.' },
+  { id: 'hab_base_do_improviso', nome: 'À Base do Improviso', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
+    descricao: 'Você transforma qualquer objeto que tenha em mãos numa arma eficiente por um ataque, com dano acima do normal. Gasta 8 de sanidade e exige um teste de C\u2019est la vie bem-sucedido.' },
+  { id: 'hab_duas_maos_um_golpe', nome: 'Duas Mãos, Um Golpe', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
+    descricao: 'Pelo mesmo princípio de Duas mãos, três tarefas, você ataca duas vezes no mesmo turno, cada golpe com dano reduzido. Gasta 12 de sanidade.' },
+  { id: 'hab_vinganca_profundezas', nome: 'Vingança das Profundezas', classe: 'pirata', subdivisaoId: 'predileto_mares',
+    descricao: 'Depois de sofrer dano, seu próximo ataque causa dano extra. Gasta 7 de sanidade.' },
+  { id: 'hab_sorte_furada', nome: 'Sorte Furada', classe: 'pirata', subdivisaoId: 'predileto_mares',
+    descricao: 'Quando você erraria um ataque, pode rolar de novo. O destino cobra o favor: o próximo teste do inimigo contra você também melhora. Gasta 7 de sanidade.' },
 
   /* ===== NASCIDO DE OURO ===== */
   { id: 'hab_o_nome_pesa', nome: 'O nome pesa', classe: 'nascido_ouro',
@@ -1005,6 +1043,20 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Enquanto houver aliados feridos na cena, você recebe +5 em todos os testes de combate. Passivo, sem custo.' },
   { id: 'hab_que_membro_familia_real', nome: 'Que membro da família real faz isso?', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
     descricao: 'Uma vez por cena, você abre mão de toda a sua defesa nesta rodada e, em troca, seu ataque causa o dobro de dano. Gasta 5 de sanidade.' },
+  { id: 'hab_meu_irmao_faria_melhor', nome: 'Meu irmão faria melhor', classe: 'nascido_ouro',
+    descricao: 'Quando você falha num teste na frente de outras pessoas, recebe +5 no próximo. Você cresceu sendo comparado, e aprendeu a usar isso. Gasta 3 de sanidade.' },
+  { id: 'hab_tropas_a_caminho', nome: 'Tropas a caminho', classe: 'nascido_ouro',
+    descricao: 'Uma vez por sessão, você convoca a guarda real para onde estiver, dentro do reino de Împera. Elas levam algumas rodadas para chegar, e a mestra decide quantas. Gasta 12 de sanidade.' },
+  { id: 'hab_ninguem_me_leva_a_serio', resistencia: 'Resiste com Volição.', nome: 'Ninguém me leva a sério', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte',
+    descricao: 'Reação: quando alguém te ataca, ele precisa passar em Volição DT 15 ou desiste no meio do golpe e escolhe outro alvo. Gasta 9 de sanidade.' },
+  { id: 'hab_quem_falou_pode_sair', resistencia: 'Resiste com Volição.', nome: 'Quem falou pode sair', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
+    descricao: 'Você expulsa alguém de um recinto apenas dizendo para sair. Teste de Autoridade (DT da mestra). Funciona em cidadãos de prata sem resistência; os demais testam Volição. Gasta 12 de sanidade.' },
+  { id: 'hab_eu_vou_na_frente', nome: 'Eu vou na frente', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
+    descricao: 'Você entra primeiro em qualquer situação perigosa e recebe +10 em testes de combate na primeira rodada. Passivo, sem custo.' },
+  { id: 'hab_voce_nao_merece_isso', nome: 'Você não merece isso', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
+    descricao: 'Você protege alguém de presenciar algo terrível, colocando-se no caminho. O aliado não perde sanidade pela cena; você perde o dobro. Gasta 6 de sanidade mais o que ele perderia.' },
+  { id: 'hab_tiro_a_coroa', nome: 'Tiro a Coroa', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
+    descricao: 'Você renuncia publicamente à sua posição por uma cena inteira e age como qualquer outra pessoa: recebe +10 em todos os testes de combate e +10 em Silêncio e Compostura, porque ninguém olha duas vezes para quem não parece importante. Em troca, não pode usar nenhuma habilidade que dependa do seu nome ou da sua posição. A qualquer momento da cena você pode se revelar: todos os presentes que não sabiam quem você era perdem a próxima ação, e você recebe +15 no seu próximo teste de Autoridade. Gasta 8 de sanidade.' },
 ];
 
 /* Uma habilidade está disponível se bate com a classe e, quando houver,
