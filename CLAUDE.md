@@ -79,6 +79,9 @@ produção já tem as tabelas.
 
 ### Atributos
 Intelecto, Psique, Físico, Motoras. Começam em **0**, máximo 5.
+Cada ponto vale **8** de vida (Físico), 8 de sanidade (Psique) ou 1 de Defesa e
+1 de Esquiva (Motoras). Era 12 e caiu para 8 em 26/09/2026: com 12, quatro
+pontos de Físico valiam quase quatro golpes de arma e o combate não acabava.
 Pontos: **4 no nível 1**, mais 1 nos níveis **3, 5, 7 e 9**, mais 2 no **10**
 (total 10). Tabela `GANHO_ATRIBUTO_POR_NIVEL`.
 
@@ -114,8 +117,8 @@ salvas); renomear é só trocar o `nome`. Ex.: "Percepção" ainda tem id `logic
 
 ### Vida, sanidade e mana
 ```
-vida     = classe.vidaBase + vidaPorNivel × (nível−1) + subdivisão + Físico×12 + ganho do nível mágico + bônus de lore
-sanidade = classe.sanBase + reserva de habilidades + sanPorNivel × (nível−1) + subdivisão + Psique×12 + ganho do nível mágico + bônus de lore
+vida     = classe.vidaBase + vidaPorNivel × (nível−1) + subdivisão + Físico×8 + ganho do nível mágico + bônus de lore
+sanidade = classe.sanBase + reserva de habilidades + sanPorNivel × (nível−1) + subdivisão + Psique×8 + ganho do nível mágico + bônus de lore
 mana     = nível mágico   (só mago; nível mágico 35 = 35 de mana)
 ```
 Vida, sanidade e **Defesa base** saem do mesmo orçamento: **60 pontos por
@@ -127,8 +130,9 @@ vida + sanidade continuam somando 9. `balancoConferido()` fecha essa conta e
 avisa no console em desenvolvimento se alguma linha sair do orçamento.
 
 A **reserva de habilidades** é a parte da sanidade que vem do que as
-habilidades custam: a mediana do custo das habilidades daquela classe +
-subdivisão, vezes 2 (duas ativações típicas por cena). Ela é **lida do texto
+habilidades custam: a média das **3 mais caras** daquela classe + subdivisão,
+vezes 2 (duas ativações típicas por cena). Era a mediana de todas, e isso fazia
+habilidade barata nova **abaixar** a sanidade de quem a recebia. Ela é **lida do texto
 das habilidades** por `custoSanidadeDaHabilidade` — quem escrever "Gasta 12 de
 sanidade" numa habilidade nova já muda a conta sozinho. O regex exige a palavra
 "gasta" antes do número, senão "recupera 3d10 de sanidade" viraria custo.
@@ -137,18 +141,27 @@ Consequência a conhecer: druida místico e dono da coroa passam o mago em
 sanidade total, porque as habilidades deles são as mais caras da mesa. O mago
 lidera a parte da classe (36), não a reserva (12, ele gasta mana).
 
+**Sanidade zero** (regra escrita em 26/09/2026): cai inconsciente na hora,
+acorda no fim da cena com a condição **Depressivo** e recupera metade da
+sanidade numa noite inteira de descanso. Em zero não dá para usar habilidade.
+
 ### Defesas
 ```
-Defesa   = base da classe + subdivisão + Motoras×2 + equipamento + outros
+Defesa   = base da classe + subdivisão + Motoras + equipamento + outros
 Bloqueio = bônus de Resistência × 2 + equipamento + outros
 Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros
 ```
 A Defesa já foi cortada em 25% no fim da conta; o usuário pediu o valor cheio
 de volta em 12/09/2026, e hoje ela vale a soma inteira.
 
-Motoras conta dobrado **só na Defesa**, que é o único dos três valores sem uma
-perícia para crescer junto. Ficha sem classe (deus, inimigo) usa a base 10 do
-`BALANCO_PADRAO`.
+Motoras contou **dobrado** na Defesa entre 12/09 e 26/09/2026. Voltou a contar
+uma vez: com o dobro, a Defesa crescia 10 pontos do nível 1 ao 10 enquanto o
+ataque crescia 5, e ninguém acertava ninguém no nível alto.
+
+**O que cada reação faz** (escrito em 26/09/2026, antes era só o número):
+uma reação por rodada; a **Esquiva** entra no lugar da Defesa como DT daquele
+ataque; o **Bloqueio** abate o próprio valor do dano que passou.
+Ficha sem classe (deus, inimigo) usa a base 10 do `BALANCO_PADRAO`.
 
 ### Feitiços
 24 feitiços, 15 com **evoluções I, II e III**; os outros mostram "Esse feitiço
@@ -156,8 +169,10 @@ não tem evoluções disponíveis". A evolução escolhida é o custo em vagas
 (I=1, II=2, III=3). Vagas: `2 + ⌊nível mágico ÷ 10⌋`.
 Todo feitiço é lançado com **Dicionário mental**. Mana só é gasta em rituais.
 
-**DT para resistir** = `10 + ⌊nível mágico do personagem ÷ 10⌋ + ⌊nível do feitiço ÷ 10⌋`.
-Mago de nível mágico 35 lançando um feitiço de nível 20 exige DT 15. Aparece já
+**DT para resistir** = `12 + ⌊nível mágico do personagem ÷ 10⌋ + ⌊nível do feitiço ÷ 5⌋`.
+Mago de nível mágico 35 lançando um feitiço de nível 20 exige DT 19. A conta
+mudou em 26/09/2026: com a antiga (base 10 e ÷10 nos dois), um feitiço de nível
+20 ficava em DT 14 e quase todo mundo resistia. Aparece já
 calculada na aba de feitiços da ficha, ao lado da perícia de resistência, e só
 nos feitiços que têm o campo `resistencia` — os outros não mostram DT nenhuma.
 O nível de cada feitiço também aparece nessa aba, não só na tela de edição.
@@ -169,6 +184,11 @@ e é lida como evolução I.
 mesa em que a mestra vê o histórico de todos, um total vindo do cliente seria
 só uma sugestão. Botões ao lado de cada perícia, arma, habilidade e feitiço.
 Armas têm dois botões: teste e dano.
+
+**Dano de arma** = dado + atributo da perícia do ataque + ⌊nível ÷ 2⌋
+(desde 26/09/2026). Habilidade, feitiço, item e golpe de animal **não** somam
+nada: lá o dado escrito já é o efeito inteiro. Quem soma é o botão, com a prop
+`armado`; o rótulo do botão é "Dano" em arma e "Rolar" no resto.
 
 **Crítico** (só armas): dado bruto do ataque ≥ **18**, sem atributo nem bônus,
 faz o golpe seguinte sair no **dano máximo** — cada dado no valor mais alto, sem
@@ -182,6 +202,22 @@ nascem em 0 e são digitadas; atributos sem teto; as 23 perícias livres; nenhum
 catálogo pré-carregado. Deus funde habilidades e feitiços em "Poderes Divinos".
 Especial escolhe uma classe; deus e inimigo não têm classe.
 
+### Habilidades: vagas e automáticas
+**Vagas** (`vagasDeHabilidade`): 2 no nível 1 e mais 1 a cada 2 níveis, 6 no
+nível 10. Antes não havia limite nenhum. Ficha de mestra não tem limite.
+
+**Automáticas** (`HABILIDADES_AUTOMATICAS`): a classe dá algumas de graça, já
+marcadas, sem ocupar vaga e sem poder desmarcar. Druida ganha *Faço de ti meu
+laço* e a *Metamorfose* do tipo de animal dele; pirata ganha *Porão sem fundo*,
+que **dobra a carga** (a conta está em `pesoCarregado`). Elas aparecem com
+estrela no seletor e entram em `habilidadesDaFicha`, não em `char.habilidades`.
+
+### Itens
+Item **sem `classe`** é geral e aparece para todo mundo (11 hoje: lampião,
+corda, pederneira...). O pirata é a classe de item: tem 19, entre os antigos e
+os novos (rede, armadilha de urso, pólvora, luneta, piche, gancho). Item com
+notação de dado no texto ganha botão de rolagem no inventário.
+
 ### Conteúdo criado na ficha
 Armas, armaduras e habilidades criadas de dentro de uma ficha ficam **nela**
 (`char.custom`), não em lugar compartilhado. Feitiço é a exceção: continua vindo
@@ -190,7 +226,12 @@ do catálogo da mestra.
 ### Outros
 - Druida tem aba **Animal** com os animais prontos do `ANIMAIS_CATALOGO`
   (10 naturais, 5 místicos). Laço natural escolhe **um animal por nível de
-  personagem**; laço místico escolhe **um só**. A ficha guarda só os ids em
+  personagem**; laço místico escolhe **um só**, e cada místico pede um nível
+  mínimo (`nivelMin`): Ashvara 3, Isilme 5, Yssen 7, Verthaz 9, Grohm 10.
+  Antes um druida de nível 1 podia pegar o Grohm, com 200 de vida.
+  **DT de Ágape para entrar na forma** = 10 + o custo por turno do animal.
+  **DT de resistência de cada golpe** = 10 + metade do custo em conexão dele,
+  e cada golpe diz com qual perícia o alvo resiste (campo `resiste`). A ficha guarda só os ids em
   `char.animais`; a vida atual de cada animal fica em
   `char.atual['animal:<id>']` e a conexão em `char.atual['conexao:<id>']`,
   então o Restaurar enche os dois junto.
@@ -213,9 +254,13 @@ do catálogo da mestra.
   alfabética. São 11, com os textos oficiais da mestra (só a redação acertada):
   Catástrofe, Cego, Depressivo, Desnorteado, Doente, Em chamas, Em ira,
   Enfeitiçado, Exausto, Imóvel e Sangrando. Exausto guarda os níveis em
-  `niveis` (horas sem dormir e efeito). "Aparece em" sai de uma busca nos
-  catálogos; a busca de Doente é só em maiúsculas, porque "plantas doentes"
-  aparece numa habilidade.
+  `niveis` (24, 48, 72, 96 e 120 horas sem dormir). "Aparece em" sai de uma
+  busca nos catálogos; a busca de Doente é só em maiúsculas, porque "plantas
+  doentes" aparece numa habilidade. Em ira e Enfeitiçado saem com **Controle
+  seus demônios**, que antes não era usada por nada.
+- **Mecânicas** (`secoesDeMecanicas`): aba em toda ficha e botão no painel, com
+  as regras inteiras explicadas. Os números vêm das constantes, nunca digitados
+  no texto: mudar a regra muda a aba junto.
 - Personagem tem **foto** e **foto da marca** (a marca é quadrada, o retrato é
   redondo).
 - Todo peso de catálogo já foi somado em 1 (não existe mais "sem peso").
@@ -284,25 +329,14 @@ código**, não no banco. Expiração de banco não afeta nada disso.
 
 - **Textos das evoluções dos feitiços** que ainda não evoluem — o usuário disse
   que manda depois.
-- **Exausto, horas dos níveis** (24, 48, 64, 88, 112): todo salto é de 24h,
-  menos o do nível 2 para o 3, que é de 16h. Pode ser erro de digitação.
-  Mantido literal, aguardando confirmação.
 - **Animal místico não trava**: o jogador pode trocar o animal escolhido. Pela
   lore o laço é para a vida toda; se a mestra quiser, dá para deixar a troca só
   com ela.
 - **Linha de resistência nas habilidades**: só 8 das 79 estão preenchidas (as
   que já diziam no texto que o alvo resiste). O mecanismo está pronto, falta a
   lista dele.
-- **Habilidade nova mexe na sanidade de quem a recebe**, porque a reserva é a
-  mediana dos custos. As 26 de 25/09/2026 são baratas e baixaram a reserva do
-  druida natural (24 → 18) e do predileto dos mares (21 → 16), e subiram a do
-  nascido de ouro (bobo 12 → 15, dono da coroa 18 → 21). Se isso incomodar, o
-  que muda é `USOS_DE_HABILIDADE_POR_CENA` ou trocar a mediana por outra conta.
-- **Frênesi, evolução 3** diz "troca 30 de mana por miseráveis 8 de mana" —
-  provavelmente deveria ser sanidade. Mantido literal, aguardando confirmação.
-- **Botão de rolagem lê a primeira notação do texto.** Em Desossar e Mestre das
-  Marionetes isso é a duração ("1d100 de minutos"), e o botão chama de dano.
-  Rola certo, só o rótulo é que mente.
+- **Habilidade cara nova sobe a sanidade** de quem a recebe, porque a reserva é
+  a média das 3 mais caras. Habilidade barata não mexe em nada.
 - **Fichas antigas acima do orçamento** de atributos depois da mudança para base
   0. Ofereci escrever um script que lista quais precisam de revisão.
 - Dicionários das outras classes podem ser reescritos como o do guerreiro foi.
@@ -318,3 +352,9 @@ código**, não no banco. Expiração de banco não afeta nada disso.
   12/09/2026; antes era × 2).
 - No Bloqueio, só a **Resistência** dobra; equipamento e outros entram cheios.
 - Banco: recomeçar de graça em vez de pagar para resgatar os dados perdidos.
+- O crítico continua valendo para o **golpe seguinte**, não para o que acertou.
+  A análise de 26/09/2026 ofereceu trocar e a decisão foi manter.
+- Em 26/09/2026 o usuário mandou aplicar **todas** as sugestões daquela análise:
+  dano com atributo, Motoras×1, atributo valendo 8, vagas de habilidade, nível
+  mínimo nos animais místicos, régua de bônus, DT de ritual nova, sanidade zero,
+  Bloqueio e Esquiva definidos, reserva pelas 3 mais caras.

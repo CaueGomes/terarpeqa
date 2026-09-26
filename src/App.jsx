@@ -598,7 +598,7 @@ const DICIONARIOS = [
 const ARMAS_CATALOGO = [
   /* ===== GUERREIRO ===== */
   { id: 'arm_manoplas_ferro', nome: 'Manoplas de ferro bruto', classe: 'guerreiro', subdivisaoId: 'brutus',
-    dano: '2d10', teste: 'Instrumento físico', peso: 3,
+    dano: '3d10', teste: 'Instrumento físico', peso: 3,
     descricao: 'Placas grosseiras amarradas nos punhos, sem acabamento nenhum.' },
   { id: 'arm_correntes_arena', nome: 'Correntes de arena', classe: 'guerreiro', subdivisaoId: 'brutus',
     dano: '2d8', teste: 'Instrumento físico', peso: 2,
@@ -657,7 +657,7 @@ const ARMAS_CATALOGO = [
     dano: '3d8 (6d8 se mentiu ao alvo)', teste: 'Drama', peso: 2,
     descricao: 'Uma lâmina de cada lado do punho, pra quando a conversa vira.' },
   { id: 'arm_pistola_emperrada', nome: 'Pistola emperrada', classe: 'pirata', subdivisaoId: 'trapaceiro',
-    dano: '5d10', teste: 'Compostura', peso: 3,
+    dano: '3d10', teste: 'Compostura', peso: 3,
     descricao: 'Falha muito, mas ninguém sabe disso além de você. Role 1d6 antes de atirar: em 1 ou 2, ela falha.' },
   { id: 'arm_chave_mestra', nome: 'Chave-mestra reforçada', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
     dano: '2d8', teste: "C'est la vie", peso: 2,
@@ -677,7 +677,7 @@ const ARMAS_CATALOGO = [
     dano: '3d12', teste: 'Instrumento físico', peso: 4,
     descricao: 'Você lixou o símbolo da família de propósito.' },
   { id: 'arm_escudo_vanguarda', nome: 'Escudo de vanguarda', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    dano: '3d6', teste: 'Limiar da dor', peso: 3,
+    dano: '3d6', teste: 'Guerra', peso: 3,
     descricao: 'Pesado, feito pra ficar entre alguém e o perigo. Concede +5 de defesa enquanto empunhado.' },
 ];
 
@@ -698,7 +698,9 @@ function pesoCarregado(char, armasCustom = []) {
   }, 0);
   const itens = (char.inventario || []).reduce((soma, it) => soma + (Number(it.peso) || 0), 0);
   const total = armas + itens + pesoArmadura(char);
-  const capacidade = 4 + (char.attributes?.fisico ?? 0) * 2;
+  /* O Porão sem fundo do pirata dobra o que cabe nas costas. */
+  const dobra = habilidadesDaFicha(char).includes('hab_porao_sem_fundo') ? 2 : 1;
+  const capacidade = (4 + (char.attributes?.fisico ?? 0) * 2) * dobra;
   return { total, capacidade, excedido: total > capacidade };
 }
 
@@ -794,6 +796,32 @@ function pesoArmadura(char, custons = []) {
 
 /* ---------- catálogo de itens de inventário ---------- */
 const ITENS_CATALOGO = [
+  /* ===== GERAIS =====
+     Sem classe: aparecem para todo mundo. São o equipamento de aventura que o
+     sistema não tinha, e que dá o que fazer fora de combate. */
+  { id: 'ite_lampiao', nome: 'Lampião de óleo', peso: 2,
+    descricao: 'Ilumina um raio amplo por uma cena inteira. No escuro sem luz, todo teste que dependa de enxergar sofre −5. Cair de mau jeito quebra o vidro.' },
+  { id: 'ite_corda_quinze', nome: 'Corda de quinze metros', peso: 2,
+    descricao: 'Concede +3 em testes de Savoir-faire para escalar, descer, amarrar ou prender alguém.' },
+  { id: 'ite_pederneira', nome: 'Pederneira e isca', peso: 1,
+    descricao: 'Acende fogo com uma ação. Perto de óleo, piche ou pólvora, acende o que você quiser.' },
+  { id: 'ite_odre_agua', nome: 'Odre de água', peso: 1,
+    descricao: 'Um dia de água para uma pessoa. Jogar o odre inteiro em alguém encerra a condição EM CHAMAS e gasta o item.' },
+  { id: 'ite_racao_viagem', nome: 'Ração de viagem', peso: 1,
+    descricao: 'Comida seca para três dias. Sem comer nem dormir, você avança um nível de EXAUSTO por dia.' },
+  { id: 'ite_manta_grossa', nome: 'Manta grossa', peso: 2,
+    descricao: 'Dormir ao relento sem ela pede um teste de Resistência DT 12 para descansar de verdade; com ela, não pede nada.' },
+  { id: 'ite_agulha_linha', nome: 'Agulha e linha', peso: 1,
+    descricao: 'Concede +3 em testes de Apotheca para estancar a condição SANGRANDO.' },
+  { id: 'ite_papel_tinta', nome: 'Papel, tinta e carvão', peso: 1,
+    descricao: 'Para copiar, falsificar, registrar ou deixar recado. Concede +3 em Savoir-faire em qualquer trabalho de escrita.' },
+  { id: 'ite_espelho_bolso', nome: 'Espelho de bolso', peso: 1,
+    descricao: 'Olhar a esquina sem se expor: +3 em Percepção para observar alguém sem ser visto.' },
+  { id: 'ite_sino_alarme', nome: 'Sino de alarme', peso: 1,
+    descricao: 'Amarrado numa porta ou num fio, acorda o grupo quando alguém passa. Ninguém surpreende o acampamento enquanto ele estiver armado.' },
+  { id: 'ite_pe_de_cabra', nome: 'Pé de cabra', peso: 2,
+    descricao: 'Concede +3 em Instrumento físico para arrombar porta, tampa, grade ou caixa.' },
+
   /* ===== DRUIDA ===== */
   { id: 'ite_cantil_seiva', nome: 'Cantil de seiva', classe: 'druida', peso: 2,
     descricao: 'Recupera 2d6 de vida. Enche sozinho a cada amanhecer.' },
@@ -853,6 +881,30 @@ const ITENS_CATALOGO = [
     descricao: 'Falsifica selos e assinaturas. +5 em testes de Drama envolvendo documentos. Não gasta, mas só pode ser usado uma vez por cena.' },
   { id: 'ite_baralho_marcado', nome: 'Baralho marcado', classe: 'pirata', subdivisaoId: 'trapaceiro', peso: 2,
     descricao: 'Você vence qualquer jogo de azar. Se pegarem, o problema é outro. Não gasta.' },
+  { id: 'ite_rede_pesca', nome: 'Rede de pesca', classe: 'pirata', peso: 2,
+    descricao: 'Lançada em cima de alguém, o alvo resiste com Coordenação motora DT 15 ou fica IMÓVEL por 1 rodada. Soltar a rede do chão toma a sua ação.' },
+  { id: 'ite_barril_salmoura', nome: 'Barril de salmoura', classe: 'pirata', peso: 4,
+    descricao: 'Comida para o bando por uma semana. Empurrado ladeira ou convés abaixo, causa 3d8 de dano em quem estiver na frente, que resiste com Velocidade de reação DT 14.' },
+  { id: 'ite_armadilha_urso', nome: 'Armadilha de urso', classe: 'pirata', peso: 3,
+    descricao: 'Armada no chão, causa 2d10 de dano e deixa IMÓVEL quem pisar. Notar antes exige Percepção DT 16. Não gasta: dá para rearmar.' },
+  { id: 'ite_gancho_abordagem', nome: 'Gancho de abordagem', classe: 'pirata', peso: 2,
+    descricao: 'Prende em qualquer borda: você sobe sem teste. Jogado numa pessoa, puxa ela para perto com Instrumento físico DT 14.' },
+  { id: 'ite_luneta_rachada', nome: 'Luneta rachada', classe: 'pirata', peso: 1,
+    descricao: 'Concede +5 em Percepção para o que está longe. A rachadura corta a imagem no meio, então serve para o horizonte e atrapalha de perto.' },
+  { id: 'ite_polvora_encerada', nome: 'Pólvora em saco encerado', classe: 'pirata', peso: 2,
+    descricao: 'Explode com qualquer fogo: 4d10 de dano num raio pequeno, e quem estiver nele resiste com Velocidade de reação DT 16 para tomar metade. Gasta ao usar.' },
+  { id: 'ite_carta_marque', nome: 'Carta de marque falsa', classe: 'pirata', peso: 1,
+    descricao: 'Um documento que diz que você tem permissão da coroa. Concede +5 em Drama diante de quem sabe ler e não conhece o selo de verdade.' },
+  { id: 'ite_ancora_arrasto', nome: 'Âncora de arrasto', classe: 'pirata', peso: 3,
+    descricao: 'Jogada atrás de algo em fuga, trava o que estiver correndo: o alvo resiste com Instrumento físico DT 15 ou para no lugar.' },
+  { id: 'ite_bau_fundo_falso', nome: 'Baú de fundo falso', classe: 'pirata', peso: 3,
+    descricao: 'Esconde até três itens pequenos. Quem revistar precisa passar em Percepção DT 18 para achar o fundo.' },
+  { id: 'ite_apito_contramestre', nome: 'Apito de contramestre', classe: 'pirata', peso: 1,
+    descricao: 'Um toque e o bando entende a ordem sem ninguém falar. O grupo inteiro recebe +2 no próximo teste de uma manobra combinada.' },
+  { id: 'ite_piche_estopa', nome: 'Piche e estopa', classe: 'pirata', peso: 2,
+    descricao: 'Cobre um trecho de chão: quem correr por ali cai com Coordenação motora DT 14. Se encostar fogo, o trecho inteiro aplica EM CHAMAS.' },
+  { id: 'ite_garrafa_quebrada', nome: 'Garrafa quebrada', classe: 'pirata', peso: 1,
+    descricao: 'O improviso de sempre. Causa 2d6 de dano, e 4d6 se o alvo estiver bêbado, distraído ou de costas.' },
   { id: 'ite_caixa_pecas_soltas', nome: 'Caixa de peças soltas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos', peso: 3,
     descricao: 'Sempre tem a peça que falta. +5 em testes de C\u2019est la vie para improvisar. Não gasta.' },
 
@@ -874,7 +926,8 @@ const ITENS_CATALOGO = [
 /* Mesmo filtro do resto, com trava extra de nível para itens de mago negro. */
 function itemDisponivel(item, char) {
   if (fichaLivre(char)) return false;
-  if (item.classe !== char.originId) return false;
+  /* Item sem classe é geral: aparece para qualquer personagem. */
+  if (item.classe && item.classe !== char.originId) return false;
   if (item.subdivisaoId && item.subdivisaoId !== char.subdivisaoId) return false;
   if (item.animalTipo && item.animalTipo !== char.subdivisaoAnimalTipo) return false;
   if (item.nivelMin === 'negro' && (char.subdivisaoNivel || 0) < NIVEL_MAX) return false;
@@ -960,7 +1013,7 @@ const HABILIDADES_CATALOGO = [
   { id: 'hab_plateia_quer_sangue', nome: 'A plateia quer sangue', classe: 'guerreiro',
     descricao: 'Você ignora medo, intimidação e controle mental por 2 rodadas, avançando em linha reta. Gasta 5 de sanidade. Você também não consegue recuar ou mudar de plano nesse intervalo.' },
   { id: 'hab_arena_nunca_sai', nome: 'A arena nunca sai de você', classe: 'guerreiro',
-    descricao: 'Você reconhece na hora quem é o mais perigoso de um grupo e quanto dano aquele inimigo ainda aguenta antes de cair. Gasta 4 de sanidade.' },
+    descricao: 'Você reconhece na hora quem é o mais perigoso de um grupo e quanto dano aquele inimigo ainda aguenta antes de cair. Teste de Percepção (DT da mestra). Gasta 4 de sanidade.' },
   { id: 'hab_faca_disso_cicatriz', nome: 'Faça disso uma cicatriz', classe: 'guerreiro', subdivisaoId: 'brutus',
     descricao: 'Sacrifique uma parte do seu corpo à sua escolha (deverá ser aceito pela mestra) e perca metade da sua vida máxima para evitar um golpe que seria fatal a um colega. Se você estiver com menos da metade da sua vida ao utilizar esse golpe, você se sacrifica pelo seu aliado, dando a ele uma nova chance de viver. Seu aliado recupera metade da vida que você perdeu usando a habilidade. Você pode usar essa habilidade uma vez por cena e pode ser usada fora de sua ação.' },
   { id: 'hab_deixe_me_viver', nome: 'Deixe-me viver um pouco mais', classe: 'guerreiro', subdivisaoId: 'brutus',
@@ -1021,12 +1074,14 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Depois de sofrer dano, seu próximo ataque causa dano extra. Gasta 7 de sanidade.' },
   { id: 'hab_sorte_furada', nome: 'Sorte Furada', classe: 'pirata', subdivisaoId: 'predileto_mares',
     descricao: 'Quando você erraria um ataque, pode rolar de novo. O destino cobra o favor: o próximo teste do inimigo contra você também melhora. Gasta 7 de sanidade.' },
+  { id: 'hab_porao_sem_fundo', nome: 'Porão sem fundo', classe: 'pirata',
+    descricao: 'Você aprendeu a amarrar, pendurar e enfiar coisa em cada vão do casaco, da bota e do cinto. Sua carga máxima é o dobro da de qualquer outra pessoa. Passivo, sem custo, e já vem com você.' },
 
   /* ===== NASCIDO DE OURO ===== */
   { id: 'hab_o_nome_pesa', nome: 'O nome pesa', classe: 'nascido_ouro',
-    descricao: 'Você diz quem você é e o mundo reage. Em qualquer situação social com quem reconheça a coroa, você recebe +10 no teste. Gasta 6 de sanidade.' },
+    descricao: 'Você diz quem você é e o mundo reage. Em qualquer situação social com quem reconheça a coroa, você recebe +10 no teste. Gasta 8 de sanidade.' },
   { id: 'hab_corte_tem_olhos', nome: 'A corte tem olhos', classe: 'nascido_ouro',
-    descricao: 'Você sabe se está sendo seguido, vigiado ou traído, embora nem sempre saiba por quem. Gasta 5 de sanidade e dura até o final da cena.' },
+    descricao: 'Você sabe se está sendo seguido, vigiado ou traído, embora nem sempre saiba por quem. Teste de Percepção (DT da mestra). Gasta 5 de sanidade e dura até o final da cena.' },
   { id: 'hab_ate_impera_riu', nome: 'Até Împera riu', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte',
     descricao: 'Você desarma uma situação tensa com uma piada. Teste de Império interior (DT da mestra); se passar, ninguém ataca por 1 rodada. Gasta 9 de sanidade.' },
   { id: 'hab_ninguem_desconfia_palhaco', nome: 'Ninguém desconfia do palhaço', classe: 'nascido_ouro', subdivisaoId: 'bobo_corte',
@@ -1040,7 +1095,7 @@ const HABILIDADES_CATALOGO = [
   { id: 'hab_impera_em_pessoa', resistencia: 'Resiste com Volição.', nome: 'Împera em pessoa', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
     descricao: 'Uma vez por cena, alguém te confunde com Împera e obedece uma única ordem sem questionar (se a pessoa conhecer ela). O alvo pode tentar resistir com um teste de Volição, mas a DT é a soma da sua Autoridade com a da ficha de Împera. Gasta 12 de sanidade a cada ordem dada.' },
   { id: 'hab_pais_protege_corpo', nome: 'Um país se protege com o corpo', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    descricao: 'Enquanto houver aliados feridos na cena, você recebe +5 em todos os testes de combate. Passivo, sem custo.' },
+    descricao: 'Enquanto houver aliados feridos na cena, você recebe +5 em todos os testes de combate. Gasta 8 de sanidade e dura até o fim da cena.' },
   { id: 'hab_que_membro_familia_real', nome: 'Que membro da família real faz isso?', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
     descricao: 'Uma vez por cena, você abre mão de toda a sua defesa nesta rodada e, em troca, seu ataque causa o dobro de dano. Gasta 5 de sanidade.' },
   { id: 'hab_meu_irmao_faria_melhor', nome: 'Meu irmão faria melhor', classe: 'nascido_ouro',
@@ -1052,11 +1107,11 @@ const HABILIDADES_CATALOGO = [
   { id: 'hab_quem_falou_pode_sair', resistencia: 'Resiste com Volição.', nome: 'Quem falou pode sair', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
     descricao: 'Você expulsa alguém de um recinto apenas dizendo para sair. Teste de Autoridade (DT da mestra). Funciona em cidadãos de prata sem resistência; os demais testam Volição. Gasta 12 de sanidade.' },
   { id: 'hab_eu_vou_na_frente', nome: 'Eu vou na frente', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    descricao: 'Você entra primeiro em qualquer situação perigosa e recebe +10 em testes de combate na primeira rodada. Passivo, sem custo.' },
+    descricao: 'Você entra primeiro em qualquer situação perigosa e recebe +5 em testes de combate na primeira rodada. Passivo, sem custo.' },
   { id: 'hab_voce_nao_merece_isso', nome: 'Você não merece isso', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
     descricao: 'Você protege alguém de presenciar algo terrível, colocando-se no caminho. O aliado não perde sanidade pela cena; você perde o dobro. Gasta 6 de sanidade mais o que ele perderia.' },
   { id: 'hab_tiro_a_coroa', nome: 'Tiro a Coroa', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
-    descricao: 'Você renuncia publicamente à sua posição por uma cena inteira e age como qualquer outra pessoa: recebe +10 em todos os testes de combate e +10 em Silêncio e Compostura, porque ninguém olha duas vezes para quem não parece importante. Em troca, não pode usar nenhuma habilidade que dependa do seu nome ou da sua posição. A qualquer momento da cena você pode se revelar: todos os presentes que não sabiam quem você era perdem a próxima ação, e você recebe +15 no seu próximo teste de Autoridade. Gasta 8 de sanidade.' },
+    descricao: 'Você renuncia publicamente à sua posição por uma cena inteira e age como qualquer outra pessoa: recebe +10 em todos os testes de combate e +10 em Silêncio e Compostura, porque ninguém olha duas vezes para quem não parece importante. Em troca, não pode usar nenhuma habilidade que dependa do seu nome ou da sua posição. A qualquer momento da cena você pode se revelar: todos os presentes que não sabiam quem você era perdem a próxima ação, e você recebe +15 no seu próximo teste de Autoridade. Gasta 15 de sanidade.' },
 ];
 
 /* Uma habilidade está disponível se bate com a classe e, quando houver,
@@ -1075,10 +1130,13 @@ function habilidadeDisponivel(hab, char) {
    escrever o número aqui na mão desatualizaria na primeira vez que alguma
    habilidade mudasse de preço.
 
-   Custo típico = a mediana do que as habilidades da pessoa cobram (a mediana,
-   e não a média, para um exagero solto como os 30 de "Não foi dessa vez" não
-   puxar a conta inteira). A reserva paga duas dessas por cena. */
+   Custo típico = a média das três habilidades mais caras que a pessoa pode ter.
+   Era a mediana de todas, e isso tinha um efeito estranho: habilidade barata
+   nova abaixava a sanidade máxima de quem a recebia. Com as três mais caras, a
+   reserva só sobe quando entra habilidade cara. A reserva paga duas dessas por
+   cena. */
 const USOS_DE_HABILIDADE_POR_CENA = 2;
+const HABILIDADES_NA_RESERVA = 3;
 /* O custo vem sempre depois de um "gasta": exige a palavra para não confundir
    com quem devolve sanidade ("recupera 3d10 de sanidade"). */
 const RE_CUSTO_SANIDADE = /gasta\s+(?:(\d{1,2})d(\d{1,3})|(\d{1,3}))\s*(?:pontos?\s+)?(?:d[ae]\s+)?(?:sua\s+pr[óo]pria\s+)?sanidade/gi;
@@ -1099,13 +1157,36 @@ function custoTipicoDeSanidade(char) {
     .filter((h) => habilidadeDisponivel(h, char))
     .map(custoSanidadeDaHabilidade)
     .filter((c) => c > 0)
-    .sort((a, b) => a - b);
+    .sort((a, b) => b - a)
+    .slice(0, HABILIDADES_NA_RESERVA);
   if (!custos.length) return 0;
-  const meio = Math.floor(custos.length / 2);
-  return custos.length % 2 ? custos[meio] : (custos[meio - 1] + custos[meio]) / 2;
+  return custos.reduce((soma, c) => soma + c, 0) / custos.length;
 }
 
 const reservaDeSanidade = (char) => Math.round(custoTipicoDeSanidade(char) * USOS_DE_HABILIDADE_POR_CENA);
+
+/* ---------- habilidades que a classe dá ----------
+   Vêm marcadas sozinhas, não ocupam vaga e não podem ser desmarcadas: são
+   parte de ser daquela classe, não uma escolha. O druida ganha o laço e a
+   metamorfose do tipo de animal dele; o pirata ganha o porão. */
+const HABILIDADES_AUTOMATICAS = {
+  druida: ['hab_faco_de_ti_meu_laco', 'hab_metamorfose_natural', 'hab_metamorfose_mistico'],
+  pirata: ['hab_porao_sem_fundo'],
+};
+
+function habilidadesAutomaticas(char) {
+  if (fichaLivre(char)) return [];
+  return (HABILIDADES_AUTOMATICAS[char?.originId] || []).filter((id) => {
+    const h = HABILIDADES_CATALOGO.find((x) => x.id === id);
+    return h && habilidadeDisponivel(h, char);
+  });
+}
+
+/* O que a ficha mostra: o que a classe deu mais o que a pessoa escolheu. */
+function habilidadesDaFicha(char) {
+  const automaticas = habilidadesAutomaticas(char);
+  return [...automaticas, ...(char?.habilidades || []).filter((id) => !automaticas.includes(id))];
+}
 
 /* Rótulo curto de origem, para exibir no card */
 function escopoHabilidade(hab) {
@@ -1130,8 +1211,8 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_rharo', tipo: 'natural', nome: 'Rharo', especie: 'Lobo-cinzento', vida: 40,
     concede: { fisico: 3, motoras: 2 }, custoPorTurno: 4,
     golpes: [
-      { nome: 'Mordida na jugular', descricao: '3d10 de dano, teste de Instrumento físico. Gasta 6 de conexão.' },
-      { nome: 'Derrubada', descricao: '2d10 de dano e o alvo cai, teste de Coordenação motora para não cair. Gasta 4 de conexão.' },
+      { nome: 'Mordida na jugular', resiste: 'Velocidade de reação', descricao: '3d10 de dano, teste de Instrumento físico. Gasta 6 de conexão.' },
+      { nome: 'Derrubada', resiste: 'Coordenação motora', descricao: '2d10 de dano e o alvo cai, teste de Coordenação motora para não cair. Gasta 4 de conexão.' },
     ],
     habilidades: [
       { nome: 'Chamado da matilha', descricao: 'Atrai lobos selvagens da região. Teste de Ágape DT 15. Gasta 8 de conexão.' },
@@ -1140,7 +1221,7 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_vhera', tipo: 'natural', nome: 'Vhera', especie: 'Corvo-grande', vida: 30,
     concede: { intelecto: 4, motoras: 2 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Bicada nos olhos', descricao: '2d10 de dano e aplica CEGO por 1 rodada, teste de Coordenação motora. Gasta 7 de conexão.' },
+      { nome: 'Bicada nos olhos', resiste: 'Velocidade de reação', descricao: '2d10 de dano e aplica CEGO por 1 rodada, teste de Coordenação motora. Gasta 7 de conexão.' },
     ],
     habilidades: [
       { nome: 'Voo de reconhecimento', descricao: 'Sobrevoa e mapeia a área inteira. Teste de Compostura DT 12. Gasta 6 de conexão.' },
@@ -1149,8 +1230,8 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_bhorn', tipo: 'natural', nome: 'Bhorn', especie: 'Urso-pardo', vida: 85,
     concede: { fisico: 5, motoras: -2 }, custoPorTurno: 4,
     golpes: [
-      { nome: 'Patada', descricao: '5d12 de dano, teste de Instrumento físico. Gasta 10 de conexão.' },
-      { nome: 'Abraço de urso', descricao: '3d12 de dano e o alvo fica IMÓVEL, teste de Instrumento físico. Gasta 8 de conexão.' },
+      { nome: 'Patada', resiste: 'Velocidade de reação', descricao: '5d12 de dano, teste de Instrumento físico. Gasta 10 de conexão.' },
+      { nome: 'Abraço de urso', resiste: 'Instrumento físico', descricao: '3d12 de dano e o alvo fica IMÓVEL, teste de Instrumento físico. Gasta 8 de conexão.' },
     ],
     habilidades: [
       { nome: 'Couro grosso', descricao: 'Reduz todo dano recebido pela metade por 2 rodadas. Sem teste. Gasta 10 de conexão.' },
@@ -1159,8 +1240,8 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_silqua', tipo: 'natural', nome: 'Silqua', especie: 'Serpente-real', vida: 25,
     concede: { motoras: 3, intelecto: 2 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Presa peçonhenta', descricao: '3d10 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 12 de conexão.' },
-      { nome: 'Constrição', descricao: 'Prende o alvo e causa 2d12 de dano por rodada enquanto mantiver preso, teste de Coordenação motora. Gasta 9 de conexão.' },
+      { nome: 'Presa peçonhenta', resiste: 'Resistência', descricao: '3d10 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 12 de conexão.' },
+      { nome: 'Constrição', resiste: 'Coordenação motora', descricao: 'Prende o alvo e causa 2d12 de dano por rodada enquanto mantiver preso, teste de Coordenação motora. Gasta 9 de conexão.' },
     ],
     habilidades: [
       { nome: 'Rastejo silencioso', descricao: 'Move-se sem ser detectado por ninguém. Teste de Silêncio DT 15. Gasta 6 de conexão.' },
@@ -1169,7 +1250,7 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_ysbel', tipo: 'natural', nome: 'Ysbel', especie: 'Falcão-peregrino', vida: 30,
     concede: { motoras: 5 }, custoPorTurno: 2,
     golpes: [
-      { nome: 'Mergulho', descricao: '4d10 de dano, teste de Velocidade de reação. Só funciona vindo de cima. Gasta 5 de conexão.' },
+      { nome: 'Mergulho', resiste: 'Velocidade de reação', descricao: '4d10 de dano, teste de Velocidade de reação. Só funciona vindo de cima. Gasta 5 de conexão.' },
     ],
     habilidades: [
       { nome: 'Visão de altura', descricao: 'Enxerga detalhes a quilômetros de distância. Teste de Compostura DT 10. Gasta 3 de conexão.' },
@@ -1178,7 +1259,7 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_truque', tipo: 'natural', nome: 'Truque', especie: 'Raposa-vermelha', vida: 25,
     concede: { psique: 3, motoras: 3 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Bote rápido', descricao: '3d10 de dano, teste de Coordenação motora. Gasta 5 de conexão.' },
+      { nome: 'Bote rápido', resiste: 'Velocidade de reação', descricao: '3d10 de dano, teste de Coordenação motora. Gasta 5 de conexão.' },
     ],
     habilidades: [
       { nome: 'Rastro falso', descricao: 'Quem te perseguir precisa passar em Esprit de Corps DT 20 ou te perde completamente. Gasta 7 de conexão.' },
@@ -1187,7 +1268,7 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_nhora', tipo: 'natural', nome: 'Nhora', especie: 'Coruja-das-torres', vida: 20,
     concede: { intelecto: 4, psique: 2 }, custoPorTurno: 3,
     golpes: [
-      { nome: 'Garras silenciosas', descricao: '3d10 de dano, sempre conta como ataque surpresa se o alvo não te viu, teste de Silêncio. Gasta 6 de conexão.' },
+      { nome: 'Garras silenciosas', resiste: 'Percepção', descricao: '3d10 de dano, sempre conta como ataque surpresa se o alvo não te viu, teste de Silêncio. Gasta 6 de conexão.' },
     ],
     habilidades: [
       { nome: 'Olhos da noite', descricao: 'Enxerga perfeitamente no escuro absoluto por uma cena. Sem teste. Gasta 6 de conexão.' },
@@ -1196,7 +1277,7 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_cassiel', tipo: 'natural', nome: 'Cassiel', especie: 'Cervo-galheiro', vida: 40,
     concede: { fisico: 3, psique: 3 }, custoPorTurno: 4,
     golpes: [
-      { nome: 'Chifrada', descricao: '4d12 de dano e empurra o alvo, teste de Instrumento físico. Gasta 6 de conexão.' },
+      { nome: 'Chifrada', resiste: 'Instrumento físico', descricao: '4d12 de dano e empurra o alvo, teste de Instrumento físico. Gasta 6 de conexão.' },
     ],
     habilidades: [
       { nome: 'Presença serena', descricao: 'Todos os aliados recuperam 2d10 de sanidade. Teste de Ágape DT 16. Gasta 14 de conexão.' },
@@ -1205,8 +1286,8 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_krak', tipo: 'natural', nome: 'Krak', especie: 'Javali-do-norte', vida: 50,
     concede: { fisico: 4 }, concedeExtra: '+2 de resistência a condições', custoPorTurno: 5,
     golpes: [
-      { nome: 'Investida cega', descricao: '5d12 de dano, mas você não pode mudar de direção, teste de Instrumento físico. Gasta 10 de conexão.' },
-      { nome: 'Presas curvas', descricao: '3d12 de dano e aplica SANGRANDO, teste de Instrumento físico. Gasta 7 de conexão.' },
+      { nome: 'Investida cega', resiste: 'Velocidade de reação', descricao: '5d12 de dano, mas você não pode mudar de direção, teste de Instrumento físico. Gasta 10 de conexão.' },
+      { nome: 'Presas curvas', resiste: 'Resistência', descricao: '3d12 de dano e aplica SANGRANDO, teste de Instrumento físico. Gasta 7 de conexão.' },
     ],
     habilidades: [
       { nome: 'Teimosia', descricao: 'Não pode ser derrubado nem ficar IMÓVEL por 2 rodadas. Sem teste. Gasta 9 de conexão.' },
@@ -1214,7 +1295,7 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_mhira', tipo: 'natural', nome: 'Mhira', especie: 'Gato-do-mato', vida: 25,
     concede: { motoras: 4, psique: 2 }, custoPorTurno: 2,
     golpes: [
-      { nome: 'Arranhão triplo', descricao: '2d8 de dano três vezes, mas precisa ser no mesmo alvo, teste de Coordenação motora. Gasta 9 de conexão.' },
+      { nome: 'Arranhão triplo', resiste: 'Velocidade de reação', descricao: '2d8 de dano três vezes, mas precisa ser no mesmo alvo, teste de Coordenação motora. Gasta 9 de conexão.' },
     ],
     habilidades: [
       { nome: 'Queda de pé', descricao: 'Ignora completamente dano de queda e sempre cai em segurança. Sem teste. Gasta 4 de conexão.' },
@@ -1222,53 +1303,53 @@ const ANIMAIS_CATALOGO = [
     ] },
 
   /* ===== MÍSTICOS ===== */
-  { id: 'ani_ashvara', tipo: 'mistico', nome: 'Ashvara', especie: 'Fênix', vida: 90,
+  { id: 'ani_ashvara', tipo: 'mistico', nivelMin: 3, nome: 'Ashvara', especie: 'Fênix', vida: 90,
     concede: { psique: 5, intelecto: 4 }, custoPorTurno: 8,
     golpes: [
-      { nome: 'Pluma incandescente', descricao: '5d12 de dano e aplica EM CHAMAS, teste de Coordenação motora. Gasta 15 de conexão.' },
-      { nome: 'Voo em brasa', descricao: '4d20 de dano em todos numa linha reta, teste de Savoir-faire. Gasta 18 de conexão.' },
+      { nome: 'Pluma incandescente', resiste: 'Velocidade de reação', descricao: '5d12 de dano e aplica EM CHAMAS, teste de Coordenação motora. Gasta 15 de conexão.' },
+      { nome: 'Voo em brasa', resiste: 'Velocidade de reação', descricao: '4d20 de dano em todos numa linha reta, teste de Savoir-faire. Gasta 18 de conexão.' },
     ],
     habilidades: [
       { nome: 'Renascer', descricao: 'Uma vez por sessão, ao cair a 0 de vida, você volta com metade dela. Gasta 10 de conexão.' },
       { nome: 'Calor que cura', descricao: 'Cura 3d20 de vida em todos os aliados próximos. Teste de Ágape DT 18. Gasta 20 de conexão.' },
       { nome: 'Dessa vez não', descricao: 'Garante um acerto em qualquer teste. Gasta 13 de conexão.' },
     ] },
-  { id: 'ani_verthaz', tipo: 'mistico', nome: 'Verthaz', especie: 'Dragão', vida: 140,
+  { id: 'ani_verthaz', tipo: 'mistico', nivelMin: 9, nome: 'Verthaz', especie: 'Dragão', vida: 140,
     concede: { fisico: 6, intelecto: 4, motoras: -2 }, custoPorTurno: 10,
     golpes: [
-      { nome: 'Sopro', descricao: '8d20 de dano num cone amplo, teste de Volição. Gasta 25 de conexão.' },
-      { nome: 'Garra e cauda', descricao: '8d12 de dano em dois alvos diferentes, teste de Instrumento físico. Gasta 27 de conexão.' },
+      { nome: 'Sopro', resiste: 'Resistência', descricao: '8d20 de dano num cone amplo, teste de Volição. Gasta 25 de conexão.' },
+      { nome: 'Garra e cauda', resiste: 'Velocidade de reação', descricao: '8d12 de dano em dois alvos diferentes, teste de Instrumento físico. Gasta 27 de conexão.' },
     ],
     habilidades: [
       { nome: 'Escamas antigas', descricao: 'Reduz todo dano recebido pela metade, permanentemente enquanto transformado. Ativar essa habilidade custa 6 de conexão.' },
       { nome: 'Presença de dragão', descricao: 'Todos os inimigos testam Volição DT 20 ou ficam DESNORTEADOS por 2 rodadas. Gasta 18 de conexão.' },
       { nome: 'Ganância', descricao: 'Você sabe onde está o objeto mais valioso num raio enorme. Teste de Esprit de Corps DT 16. Gasta 10 de conexão.' },
     ] },
-  { id: 'ani_isilme', tipo: 'mistico', nome: 'Isilme', especie: 'Unicórnio', vida: 80,
+  { id: 'ani_isilme', tipo: 'mistico', nivelMin: 5, nome: 'Isilme', especie: 'Unicórnio', vida: 80,
     concede: { psique: 6, motoras: 4 }, custoPorTurno: 9,
     golpes: [
-      { nome: 'Chifre verdadeiro', descricao: '4d12 de dano, e o dobro contra quem já mentiu para você nesta cena, teste de Império interior. Gasta 18 de conexão.' },
+      { nome: 'Chifre verdadeiro', resiste: 'Volição', descricao: '4d12 de dano, e o dobro contra quem já mentiu para você nesta cena, teste de Império interior. Gasta 18 de conexão.' },
     ],
     habilidades: [
       { nome: 'Purificação', descricao: 'Remove veneno, DOENTE e qualquer efeito mágico hostil de um aliado. Teste de Apotheca DT 18. Gasta 13 de conexão.' },
       { nome: 'Só os dignos', descricao: 'Escolha uma pessoa. Ela não pode mentir na sua frente por uma cena. Teste de Ágape DT 22. Gasta 22 de conexão.' },
       { nome: 'Passo sobre água', descricao: 'Você e o grupo caminham sobre qualquer superfície líquida. Sem teste. Gasta 12 de conexão.' },
     ] },
-  { id: 'ani_grohm', tipo: 'mistico', nome: 'Grohm', especie: 'Golem de pedra viva', vida: 200,
+  { id: 'ani_grohm', tipo: 'mistico', nivelMin: 10, nome: 'Grohm', especie: 'Golem de pedra viva', vida: 200,
     concede: { fisico: 8, motoras: -4, intelecto: -2 }, custoPorTurno: 10,
     golpes: [
-      { nome: 'Punho de montanha', descricao: '12d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de conexão.' },
-      { nome: 'Rachar o chão', descricao: '4d20 de dano em todos ao redor e todos ficam IMÓVEIS por 1 rodada, teste de Instrumento físico. Gasta 18 de conexão.' },
+      { nome: 'Punho de montanha', resiste: 'Resistência', descricao: '12d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de conexão.' },
+      { nome: 'Rachar o chão', resiste: 'Coordenação motora', descricao: '4d20 de dano em todos ao redor e todos ficam IMÓVEIS por 1 rodada, teste de Instrumento físico. Gasta 18 de conexão.' },
     ],
     habilidades: [
       { nome: 'Inabalável', descricao: 'Não pode ser derrubado, empurrado, nem afetado por IMÓVEL ou EM IRA pelo resto do combate. Ativar a habilidade custa 12 de conexão.' },
       { nome: 'Muralha', descricao: 'Você se torna parede: nenhum inimigo passa por você por 3 rodadas, mas você não pode atacar, só ser atacado. Gasta 24 de conexão.' },
     ] },
-  { id: 'ani_yssen', tipo: 'mistico', nome: 'Yssen', especie: 'Quimera', vida: 160,
+  { id: 'ani_yssen', tipo: 'mistico', nivelMin: 7, nome: 'Yssen', especie: 'Quimera', vida: 160,
     concede: { fisico: 5, motoras: 5, psique: -3 }, custoPorTurno: 7,
     golpes: [
-      { nome: 'Três bocas', descricao: '2d12 de dano três vezes, cada uma num alvo diferente, teste de Fúria de sangue. Gasta 14 de conexão.' },
-      { nome: 'Cauda de serpente', descricao: '6d12 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 21 de conexão.' },
+      { nome: 'Três bocas', resiste: 'Velocidade de reação', descricao: '2d12 de dano três vezes, cada uma num alvo diferente, teste de Fúria de sangue. Gasta 14 de conexão.' },
+      { nome: 'Cauda de serpente', resiste: 'Resistência', descricao: '6d12 de dano e aplica DOENTE, teste de Velocidade de reação. Gasta 21 de conexão.' },
     ],
     habilidades: [
       { nome: 'Cabeças em desacordo', descricao: 'No início de cada rodada, role 1d6: em 1 ou 2 você ganha uma ação extra, em 5 ou 6 você perde a ação. Gasta 3 de conexão.' },
@@ -1278,6 +1359,10 @@ const ANIMAIS_CATALOGO = [
 
 /* Quantos animais cabem na ficha: um por nível no laço natural, um só no
    místico. Sem tipo escolhido ainda, nenhum. */
+/* O animal místico agora pede nível de personagem: o Grohm com 200 de vida
+   não podia estar disponível na primeira sessão. */
+const animalLiberado = (animal, char) => !animal?.nivelMin || nivelDaFicha(char) >= animal.nivelMin;
+
 function limiteDeAnimais(char) {
   if (char?.subdivisaoAnimalTipo === 'natural') return nivelDaFicha(char);
   if (char?.subdivisaoAnimalTipo === 'mistico') return 1;
@@ -1316,6 +1401,16 @@ function fichaDaFormaAnimal(char, animal) {
    número sai do texto das ações, como todo o resto: mudar o custo de um golpe
    já muda a barra. */
 const RE_CUSTO_CONEXAO = /(?:gasta|custa)\s+(\d{1,3})\s*(?:pontos?\s+)?(?:de\s+)?conexão/i;
+
+/* ---------- as DTs do animal ----------
+   Entrar na forma é um teste de Ágape: quanto mais o animal cobra por turno,
+   mais difícil é convencê-lo a dividir o corpo com você. Resistir a um golpe é
+   mais difícil quanto mais caro o golpe, porque conexão é o esforço que o
+   animal põe nele. As duas contas saem dos números que o animal já tem, então
+   mudar o custo de um golpe move a DT junto. */
+const DT_BASE_ANIMAL = 10;
+const dtParaTransformar = (animal) => DT_BASE_ANIMAL + (animal?.custoPorTurno || 0);
+const dtDoGolpe = (animal, acao) => DT_BASE_ANIMAL + Math.ceil(custoDeConexao(acao) / 2);
 const custoDeConexao = (acao) => Number(String(acao?.descricao || '').match(RE_CUSTO_CONEXAO)?.[1]) || 0;
 const acoesDoAnimal = (animal) => [...(animal?.golpes || []), ...(animal?.habilidades || [])];
 const conexaoMaxima = (animal) => acoesDoAnimal(animal).reduce((soma, acao) => soma + custoDeConexao(acao), 0);
@@ -1350,7 +1445,7 @@ const FEITICOS_CATALOGO = [
     evolucoes: [
       'Você ainda não teve que sobreviver a muitas coisas, então o desespero da batalha te dá 10 de mana em troca de 15 pontos de sanidade.',
       'Agora você pode trocar 20 de sanidade por 15 de mana.',
-      'Agora você troca 30 de mana por miseráveis 8 de mana. Essa evolução do feitiço tem uso limitado em 3 vezes por sessão.',
+      'Agora você troca miseráveis 8 de sanidade por 30 de mana. Essa evolução do feitiço tem uso limitado em 3 vezes por sessão.',
     ] },
   { id: 'fei_deixe_me_vencer', nome: 'Deixe-me vencer desta vez', nivelMin: 10,
     descricao: 'Você pode refazer um teste à sua escolha, jogando novamente seus dados sem nenhuma punição. Gasta 4 de mana.' },
@@ -1479,12 +1574,15 @@ function rotuloNivelFeitico(feitico) {
 }
 
 /* ---------- DT para resistir a um ritual ----------
-   10 de base, mais 1 a cada 10 níveis mágicos de quem lança e mais 1 a cada 10
+   12 de base, mais 1 a cada 10 níveis mágicos de quem lança e mais 1 a cada 5
    níveis do próprio feitiço. Um mago de nível mágico 35 lançando um feitiço de
-   nível 20 exige DT 15 (10 + 3 + 2). Só faz sentido em feitiço que tem perícia
-   de resistência; os outros não mostram DT nenhuma. */
-const DT_BASE_RITUAL = 10;
+   nível 20 exige DT 19 (12 + 3 + 4). A conta mudou em 26/09/2026: com a antiga,
+   um feitiço de nível 20 ficava em DT 14, e qualquer personagem de nível médio
+   resistia em três de cada quatro vezes. Só faz sentido em feitiço que tem
+   perícia de resistência; os outros não mostram DT nenhuma. */
+const DT_BASE_RITUAL = 12;
 const DEGRAU_DT = 10;
+const DEGRAU_DT_FEITICO = 5;
 const nivelMagicoDaFicha = (char) =>
   (char?.originId === 'mago' ? (char.subdivisaoNivel || NIVEL_MIN) : Number(char?.subdivisaoNivel) || 0);
 
@@ -1492,7 +1590,7 @@ function dtParaResistir(char, feitico) {
   if (!feitico?.resistencia) return null;
   return DT_BASE_RITUAL
     + Math.floor(nivelMagicoDaFicha(char) / DEGRAU_DT)
-    + Math.floor(nivelDoFeitico(feitico) / DEGRAU_DT);
+    + Math.floor(nivelDoFeitico(feitico) / DEGRAU_DT_FEITICO);
 }
 
 function motivoBloqueio(feitico) {
@@ -1645,22 +1743,22 @@ function nomesPericias(ids) {
 }
 
 /* ---------- defesa, bloqueio e esquiva (estrutura do CRIS) ----------
-   Defesa  = base da classe + Motoras × 2 + equipamento + outros  (valor passivo)
+   Defesa  = base da classe + Motoras + equipamento + outros  (valor passivo)
    Bloqueio = bônus de Resistência × 2 + equipamento + outros
    Esquiva  = 10 + Motoras + treino de Velocidade de reação + equipamento + outros
 
    A base da Defesa vem da classe e da subdivisão (guerreiro 13, mago 9), e é a
    única das três que muda de pessoa para pessoa antes de qualquer ponto gasto.
-   Motoras conta dobrado só aqui, porque a Defesa é o único dos três valores em
-   que o atributo é tudo o que a pessoa tem: o Bloqueio tem a Resistência e a
-   Esquiva tem a Velocidade de reação para crescer junto.
+   Motoras contou dobrado aqui por um tempo; voltou a contar uma vez em
+   26/09/2026, porque a Defesa crescia 10 pontos do nível 1 ao 10 enquanto o
+   ataque crescia 5, e ninguém mais acertava ninguém.
 
    A Defesa vale o total da soma, sem corte nenhum no fim — ela já foi reduzida
    em 25% por um tempo e o usuário pediu o valor cheio de volta. O Bloqueio é o
    único sem base e sem atributo: ele vale o dobro do que a perícia Resistência
    somar. */
 const MULTIPLICADOR_BLOQUEIO = 2;
-const MULTIPLICADOR_MOTORAS_DEFESA = 2;
+const MULTIPLICADOR_MOTORAS_DEFESA = 1;
 const BASE_ESQUIVA = 10;
 const PERICIA_BLOQUEIO = 'resistencia';
 const PERICIA_ESQUIVA = 'velocidade_reacao';
@@ -1723,10 +1821,10 @@ function markColor(origin, char) {
   return origin.cor;
 }
 /* Cada ponto de Físico vira vida e cada ponto de Psique vira sanidade, no
-   mesmo peso — é o maior salto da ficha, e é de propósito: são 5 pontos no
-   máximo, disputados com Intelecto e Motoras. Motoras vira Defesa em
-   computeDefesas, na moeda da Defesa. */
-const GANHO_POR_ATRIBUTO = 12;
+   mesmo peso. Era 12 e caiu para 8 em 26/09/2026: com 12, quatro pontos de
+   Físico valiam 48 de vida, quase quatro golpes de arma, e o combate não
+   terminava mais. Motoras vira Defesa em computeDefesas, na moeda da Defesa. */
+const GANHO_POR_ATRIBUTO = 8;
 
 function computeRecursos(char) {
   /* Ficha da mestra ignora as fórmulas: cada máximo nasce em 0 e é digitado
@@ -1788,6 +1886,19 @@ function pontosDeAtributo(char) {
   return pontos;
 }
 const degrausDePericia = (char) => 4 + 2 * (nivelDaFicha(char) - NIVEL_CLASSE_MIN);
+
+/* ---------- vagas de habilidade ----------
+   Duas no nível 1 e mais uma a cada dois níveis: seis no nível 10. Antes não
+   havia limite nenhum, e um personagem de nível 1 podia marcar o catálogo
+   inteiro da subclasse dele. O que a classe dá de graça não ocupa vaga, e a
+   ficha da mestra não tem limite. */
+const HABILIDADES_INICIAIS = 2;
+const vagasDeHabilidade = (char) =>
+  (fichaLivre(char) ? Infinity : HABILIDADES_INICIAIS + Math.floor((nivelDaFicha(char) - NIVEL_CLASSE_MIN) / 2));
+const habilidadesGastas = (char, selecionadas) => {
+  const automaticas = habilidadesAutomaticas(char);
+  return (selecionadas || []).filter((id) => !automaticas.includes(id)).length;
+};
 
 function degrausGastos(char) {
   const concedidas = periciasConcedidas(char);
@@ -2358,6 +2469,230 @@ function DicionariosScreen({ onBack, inicial }) {
   );
 }
 
+/* ---------- mecânicas ----------
+   O livro de regras dentro do site. Os números vêm das constantes, nunca
+   digitados aqui: mudar a regra no código muda o texto junto. */
+function secoesDeMecanicas() {
+  const grau = (i) => `${TIERS[i].nome} +${TIERS[i].bonus}`;
+  const faixa = (g) => FAIXAS_DE_TREINO.find((f) => f.grauMaximo === g)?.doNivel;
+  return [
+    {
+      titulo: 'Como se rola um teste',
+      paragrafos: [
+        'Todo teste do jogo é um d20 somado ao atributo da perícia e ao que ela já tem de treino e de outros bônus. ' +
+        'É esse número que aparece na coluna Teste da sua ficha, e é ele que o botão de rolagem usa.',
+        'A DT é o número que você precisa alcançar ou passar. Quem define é a mestra, com duas exceções que a ficha já ' +
+        'calcula: atacar alguém usa a Defesa do alvo como DT, e resistir a um ritual de mago usa a DT que aparece no feitiço.',
+      ],
+      itens: [
+        'DT 10 é rotina: quem treinou passa quase sempre.',
+        'DT 15 é o padrão: mais ou menos três em cada cinco para quem treinou.',
+        'DT 20 é façanha: só especialista de nível alto passa com regularidade.',
+        'Não existe vantagem, desvantagem nem reteste comum. Reteste só vem de habilidade.',
+      ],
+    },
+    {
+      titulo: 'Atributos',
+      paragrafos: [
+        `Intelecto, Psique, Físico e Motoras começam em 0 e vão até ${ATTR_MAX}. Você recebe ` +
+        `${PONTOS_ATRIBUTO_INICIAIS} pontos no nível 1, mais 1 nos níveis 3, 5, 7 e 9, e 2 no nível 10.`,
+      ],
+      itens: [
+        `Físico dá ${GANHO_POR_ATRIBUTO} de vida por ponto e aumenta o quanto você carrega.`,
+        `Psique dá ${GANHO_POR_ATRIBUTO} de sanidade por ponto.`,
+        `Motoras dá ${MULTIPLICADOR_MOTORAS_DEFESA} de Defesa e 1 de Esquiva por ponto.`,
+        'Intelecto não dá recurso nenhum: ele aparece nos testes das perícias dele.',
+        'O atributo também entra no dano das suas armas, junto com metade do seu nível.',
+      ],
+    },
+    {
+      titulo: 'Níveis',
+      paragrafos: [
+        `Todo personagem tem nível de 1 a ${NIVEL_CLASSE_MAX}, e quem sobe o número é a mestra: não existe experiência. ` +
+        `Cada nível soma vida e sanidade conforme a classe, dá mais degraus de perícia e libera graus de treino mais altos.`,
+        `O mago tem também o nível mágico, de ${NIVEL_MIN} a ${NIVEL_MAX}, que decide quais feitiços ele alcança, ` +
+        `quantas vagas tem, quanta mana carrega e quão difícil é resistir aos rituais dele.`,
+      ],
+    },
+    {
+      titulo: 'Perícias',
+      paragrafos: [
+        `São ${PERICIAS.length} perícias em quatro graus: ${grau(0)}, ${grau(1)}, ${grau(2)} e ${grau(3)}. ` +
+        `Subir uma perícia um grau custa um degrau, e você tem 4 degraus no nível 1 e mais 2 por nível.`,
+        `O nível também limita até onde dá para subir: até o ${faixa(2) - 1} o máximo é ${TIERS[1].nome}, ` +
+        `do ${faixa(2)} ao ${faixa(3) - 1} abre o ${TIERS[2].nome}, e do ${faixa(3)} em diante o ${TIERS[3].nome}. ` +
+        `A escolha acima do teto fica guardada: ao subir de nível o bônus volta sozinho.`,
+        'As perícias que a sua classe dá já vêm no Treinado e não custam degrau.',
+      ],
+    },
+    {
+      titulo: 'Vida, sanidade e mana',
+      paragrafos: [
+        'A vida vem da classe, do nível, da subclasse e do seu Físico. A sanidade vem dos mesmos lugares, com o Psique ' +
+        'no lugar do Físico, mais a reserva de habilidades. A mana é só do mago e vale o nível mágico dele.',
+        `A reserva de habilidades é a parte da sanidade que existe porque as suas habilidades custam: o sistema pega as ` +
+        `${HABILIDADES_NA_RESERVA} habilidades mais caras que você pode ter e reserva ${USOS_DE_HABILIDADE_POR_CENA} usos ` +
+        `da média delas. Por isso a sua sanidade máxima muda quando a subclasse muda.`,
+      ],
+      itens: [
+        'Sanidade paga habilidade. Mana paga ritual. Vida é o que sobra quando você erra a conta.',
+        'Uma noite inteira de descanso devolve vida, sanidade, mana e a conexão dos animais. O botão Restaurar faz isso na ficha.',
+      ],
+    },
+    {
+      titulo: 'Quando a sanidade chega a zero',
+      paragrafos: [
+        'Você cai inconsciente na hora, onde estiver. Acorda ao fim da cena com a condição Depressivo, que só sai com ' +
+        'ajuda de um aliado, e com metade da sanidade de volta depois de uma noite inteira de descanso.',
+        'Enquanto estiver em zero, você não usa habilidade nenhuma: não há com o que pagar.',
+      ],
+    },
+    {
+      titulo: 'Defesa, Bloqueio e Esquiva',
+      paragrafos: [
+        'A Defesa é passiva e vale o tempo todo: ela é a DT de quem ataca você. Bloqueio e Esquiva são reações, e você ' +
+        'só usa uma por rodada.',
+      ],
+      itens: [
+        `Defesa = base da sua classe e subclasse + Motoras + equipamento. Quem ataca você precisa alcançar esse número.`,
+        `Esquiva = ${BASE_ESQUIVA} + Motoras + o treino de Velocidade de reação + equipamento. Ao usar, ela entra no lugar ` +
+        `da Defesa como DT daquele ataque.`,
+        `Bloqueio = o bônus de Resistência contado ${MULTIPLICADOR_BLOQUEIO} vezes + equipamento. Ao usar, ele abate o ` +
+        `próprio valor do dano que passou.`,
+      ],
+    },
+    {
+      titulo: 'Atacar e causar dano',
+      paragrafos: [
+        'Atacar é um teste comum: cada arma diz qual perícia usa, e a DT é a Defesa do alvo. O dano é o dado da arma ' +
+        'somado ao atributo daquela perícia e a metade do seu nível, arredondada para baixo.',
+        `Crítico é coisa de arma: quando o d20 do ataque sai ${CRITICO_MINIMO} ou mais, sem contar nenhum bônus, o próximo ` +
+        `golpe seu sai no dano máximo, sem rolar. A ficha avisa que o crítico está armado e o servidor monta o valor.`,
+      ],
+    },
+    {
+      titulo: 'O que você carrega',
+      paragrafos: [
+        'A sua carga máxima é 4 mais o dobro do seu Físico. Cada arma, armadura e item tem um peso, e passar do limite ' +
+        'aparece em vermelho na ficha.',
+        'Pirata carrega o dobro: o Porão sem fundo já vem ligado na ficha dele.',
+      ],
+    },
+    {
+      titulo: 'Habilidades',
+      paragrafos: [
+        `Você tem ${HABILIDADES_INICIAIS} vagas de habilidade no nível 1 e ganha mais uma a cada dois níveis. ` +
+        `As habilidades que a sua classe dá de graça vêm marcadas com estrela, já ligadas, e não ocupam vaga.`,
+        'Quase toda habilidade custa sanidade, e o custo está escrito no próprio texto dela. Passiva é o que diz ' +
+        '"sem custo": vale o tempo todo, sem gastar nada.',
+      ],
+    },
+    {
+      titulo: 'Feitiços',
+      paragrafos: [
+        `Só o mago tem. O nível mágico libera quais feitiços você alcança e quantas vagas você tem: são 2 vagas mais 1 a ` +
+        `cada 10 níveis mágicos. A evolução escolhida é o que o feitiço ocupa: a I ocupa 1 vaga, a II ocupa 2 e a III ocupa 3.`,
+        `Todo feitiço é lançado com um teste de Dicionário mental. A mana só é gasta em ritual, e quando o feitiço permite ` +
+        `resistir, a DT é ${DT_BASE_RITUAL} mais 1 a cada ${DEGRAU_DT} níveis mágicos seus e mais 1 a cada ` +
+        `${DEGRAU_DT_FEITICO} níveis do feitiço. A ficha mostra essa DT pronta.`,
+      ],
+    },
+    {
+      titulo: 'Druida: o animal-laço',
+      paragrafos: [
+        'Quem tem laço natural escolhe um animal por nível de personagem. Quem tem laço místico escolhe um só, e cada ' +
+        'animal místico pede um nível mínimo para se enlaçar.',
+        `Para entrar na forma, passe num teste de Ágape: a DT é ${DT_BASE_ANIMAL} mais o que aquele animal cobra de ` +
+        `sanidade por turno. Enquanto estiver transformado, pague esse custo por turno da sua sanidade.`,
+      ],
+      itens: [
+        'Golpes e habilidades do animal gastam conexão, que é a barra própria dele, não a sua sanidade.',
+        'Na forma animal a sua ficha não conta: o teste é o dado mais o que o animal concede naquele atributo.',
+        `Cada golpe tem a sua DT de resistência, que é ${DT_BASE_ANIMAL} mais metade do que o golpe custa de conexão.`,
+        'Conexão em zero te expulsa da forma. Vida do animal em zero desfaz o laço para sempre.',
+      ],
+    },
+    {
+      titulo: 'Condições',
+      paragrafos: [
+        'Condição é um estado que um golpe, feitiço ou habilidade deixa em quem foi atingido: Cego, Sangrando, Em chamas ' +
+        'e as outras. Cada uma diz o que faz e como sair dela.',
+        'A lista inteira está na aba Condições, aqui do lado, e também no botão Condições do painel.',
+      ],
+    },
+    {
+      titulo: 'Fichas da mestra',
+      paragrafos: [
+        'Deus, inimigo e especial não seguem fórmula nenhuma: vida, sanidade e mana começam em zero e são digitadas, ' +
+        'os atributos não têm teto, as perícias ficam livres e não vem catálogo nenhum pronto.',
+        'Só a conta mestra cria e enxerga essas fichas, e o servidor recusa a gravação de quem não for ela.',
+      ],
+    },
+    {
+      titulo: 'O que o site faz por você',
+      paragrafos: [
+        'Os dados rolam no servidor, não no navegador: ninguém edita um resultado. A mestra vê o histórico da mesa ' +
+        'inteira; cada jogador vê só o que rolou.',
+        'A ficha calcula vida, sanidade, mana, as três defesas, a carga, as DTs dos rituais e dos animais, as vagas e os ' +
+        'limites. O que ela não faz é descontar recurso sozinha: sanidade, mana e conexão você move na mão, com as setas ' +
+        'de cada barra.',
+      ],
+    },
+  ];
+}
+
+function ListaMecanicas({ cor, tema }) {
+  const t = tema || { card: '#171029', borda: V.border, texto: V.text, suave: V.muted, apagado: '#6f6291' };
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: t.suave, fontFamily: F.body }}>
+        <ScrollText size={12} /> Mecânicas
+      </p>
+      <p className="text-xs leading-relaxed mb-3" style={{ color: t.apagado, fontFamily: F.body }}>
+        As regras do jogo, do jeito que a ficha calcula. Os números aqui saem do próprio sistema: se uma regra mudar,
+        este texto muda junto.
+      </p>
+      <div className="space-y-2">
+        {secoesDeMecanicas().map((s) => (
+          <div key={s.titulo} className="rounded-lg p-3" style={{ background: t.card, border: `1px solid ${t.borda}` }}>
+            <p className="text-sm" style={{ fontFamily: F.display, color: cor, fontWeight: 700, letterSpacing: '0.04em' }}>
+              {s.titulo.toUpperCase()}
+            </p>
+            {s.paragrafos.map((p) => (
+              <p key={p.slice(0, 24)} className="text-sm mt-1.5 leading-relaxed" style={{ fontFamily: F.body, color: t.texto }}>{p}</p>
+            ))}
+            {s.itens && (
+              <div className="mt-1.5 space-y-1">
+                {s.itens.map((i) => (
+                  <p key={i.slice(0, 24)} className="text-sm leading-relaxed flex gap-2" style={{ fontFamily: F.body, color: t.texto }}>
+                    <span style={{ color: cor }}>·</span><span>{i}</span>
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* A mesma lista, aberta pelo painel, para consultar fora de uma ficha. */
+function MecanicasScreen({ onBack }) {
+  return (
+    <div className="min-h-screen w-full" style={{ background: G.bg }}>
+      <style>{FONTS}</style>
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <button onClick={onBack} className="flex items-center gap-1.5 text-sm mb-6 hover:opacity-80" style={{ color: G.muted, fontFamily: F.body }}>
+          <ArrowLeft size={14} /> Voltar
+        </button>
+        <ListaMecanicas cor={V.brand}
+          tema={{ card: G.surface, borda: G.border, texto: G.text, suave: G.muted, apagado: G.muted }} />
+      </div>
+    </div>
+  );
+}
+
 /* ---------- condições ----------
    Estados que golpes, feitiços e habilidades deixam em quem é atingido. Os
    textos são os da mestra, só com a redação acertada. "Aparece em" não é
@@ -2371,7 +2706,7 @@ const CONDICOES = [
   { id: 'cego', nome: 'Cego', busca: /\bcegos?\b/iu,
     efeito: 'Não enxerga. Ataques à distância sofrem −15 e ataques corpo a corpo, −10. Não pode ser alvo de efeitos visuais nem se beneficiar de nada que precise ser visto, e todo teste que dependa da visão falha automaticamente. Dura o que o efeito que a causou disser; sem duração definida, um teste de Velocidade de reação DT 20 ao final de cada rodada encerra a condição.' },
   { id: 'depressivo', nome: 'Depressivo', busca: /\bdepressiv[oa]s?\b/iu,
-    efeito: 'Perde a vontade de agir. Age apenas uma vez a cada duas rodadas, sofre −5 em todos os testes e não pode receber cura de sanidade enquanto durar. Não sai sozinho: um aliado precisa gastar a ação e passar num teste de Império interior ou Ágape DT 18.' },
+    efeito: 'Perde a vontade de agir. Age apenas uma vez a cada duas rodadas, sofre −5 em todos os testes e não pode receber cura de sanidade enquanto durar. Não sai sozinho: um aliado precisa gastar a ação e passar num teste de Império interior ou Ágape DT 18. Quem chega a zero de sanidade acorda com esta condição.' },
   { id: 'desnorteado', nome: 'Desnorteado', busca: /\bdesnortead[oa]s?\b/iu,
     efeito: 'Perde a noção de onde está e de quem é quem. Ao agir, role 1d6: em 1 ou 2, age contra um alvo aleatório; em 3 ou 4, perde a ação; em 5 ou 6, age normalmente. Sofre −5 em testes de Motoras. Para sair, precisa passar num teste de Velocidade de reação DT 15 ao final de cada rodada.' },
   /* Só em maiúsculas: em minúsculas, "doente" aparece como adjetivo ("plantas doentes"). */
@@ -2380,17 +2715,17 @@ const CONDICOES = [
   { id: 'em_chamas', nome: 'Em chamas', busca: /\bem chamas\b/iu,
     efeito: 'Recebe 1d10 de dano a cada rodada na condição. Para apagar o fogo, precisa gastar uma ação de movimento inteira e passar num teste de Coordenação motora DT 15, ou se molhar.' },
   { id: 'em_ira', nome: 'Em ira', busca: /\bem ira\b/iu,
-    efeito: 'Perde o controle sobre quem ataca. A cada rodada, deve atacar a criatura mais próxima, aliada ou não, e recebe +1d10 de dano em todos os ataques, mas sofre −10 em Defesa, Bloqueio e Esquiva. Não pode usar habilidades que exijam raciocínio, nem recuar. Para sair, precisa passar num teste de Volição DT 20 no início de cada rodada. Guerreiros só saem depois de matar ou desmaiar alguém, ou de serem mortos ou desmaiados.' },
+    efeito: 'Perde o controle sobre quem ataca. A cada rodada, deve atacar a criatura mais próxima, aliada ou não, e recebe +1d10 de dano em todos os ataques, mas sofre −10 em Defesa, Bloqueio e Esquiva. Não pode usar habilidades que exijam raciocínio, nem recuar. Para sair, precisa passar num teste de Controle seus demônios DT 20 no início de cada rodada. Guerreiros só saem depois de matar ou desmaiar alguém, ou de serem mortos ou desmaiados.' },
   { id: 'enfeiticado', nome: 'Enfeitiçado', busca: /\benfeitiç(?:ad[oa]s?|ar)\b/iu,
-    efeito: 'Obedece a quem lançou o efeito e considera essa pessoa um aliado, ainda que se lembre de tudo depois. Não ataca quem o enfeitiçou e cumpre ordens diretas dentro do razoável: não se mata, mas machuca quem mandarem machucar. Para sair, precisa passar num teste de Volição DT 20 ao final de cada rodada. Sofrer dano de quem o enfeitiçou rompe a condição na hora.' },
+    efeito: 'Obedece a quem lançou o efeito e considera essa pessoa um aliado, ainda que se lembre de tudo depois. Não ataca quem o enfeitiçou e cumpre ordens diretas dentro do razoável: não se mata, mas machuca quem mandarem machucar. Para sair, precisa passar num teste de Volição ou de Controle seus demônios DT 20 ao final de cada rodada. Sofrer dano de quem o enfeitiçou rompe a condição na hora.' },
   { id: 'exausto', nome: 'Exausto', busca: /\bexaust(?:[oa]s?|ão)\b/iu,
     efeito: 'Acumula em níveis conforme as horas sem dormir, e cada nível é pior que o anterior.',
     niveis: [
       { horas: 24, efeito: '−2 em todos os testes.' },
       { horas: 48, efeito: '−5 em todos os testes e metade do deslocamento.' },
-      { horas: 64, efeito: '−10 em todos os testes e apenas uma ação por rodada.' },
-      { horas: 88, efeito: 'Começa a ter alucinações e cai inconsciente em algum momento.' },
-      { horas: 112, efeito: 'Morre.' },
+      { horas: 72, efeito: '−10 em todos os testes e apenas uma ação por rodada.' },
+      { horas: 96, efeito: 'Começa a ter alucinações e cai inconsciente em algum momento.' },
+      { horas: 120, efeito: 'Morre.' },
     ],
     depois: 'Cada noite inteira de descanso remove um nível. Nenhum teste remove exaustão, só o tempo.' },
   { id: 'imovel', nome: 'Imóvel', busca: /\bim[óo]ve(l|is)\b/iu,
@@ -2469,7 +2804,7 @@ function CondicoesScreen({ onBack }) {
   );
 }
 
-function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios, onCondicoes }) {
+function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios, onCondicoes, onMecanicas }) {
   /* A mestra ganha uma aba por tipo de ficha; os jogadores nem veem isso. */
   const [aba, setAba] = useState('jogadores');
   const abaAtiva = account.isMaster ? aba : 'jogadores';
@@ -2499,6 +2834,10 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
             <button onClick={onDicionarios} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
               style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
               <BookOpen size={14} /> Dicionários
+            </button>
+            <button onClick={onMecanicas} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
+              style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
+              <ScrollText size={14} /> Mecânicas
             </button>
             <button onClick={onCondicoes} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
               style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
@@ -3551,6 +3890,10 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
   const [aberta, setAberta] = useState(null);
 
   const disponiveis = HABILIDADES_CATALOGO.filter((h) => habilidadeDisponivel(h, char));
+  const automaticas = habilidadesAutomaticas(char);
+  const vagas = vagasDeHabilidade(char);
+  const gastas = habilidadesGastas(char, selecionadas);
+  const cheio = gastas >= vagas;
 
   const submit = () => {
     if (!nome.trim()) return;
@@ -3559,19 +3902,23 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
   };
 
   const Card = ({ h, custom }) => {
-    const ativa = selecionadas.includes(h.id);
+    const daClasse = automaticas.includes(h.id);
+    const ativa = daClasse || selecionadas.includes(h.id);
     const expandida = aberta === h.id;
+    const bloqueada = !ativa && cheio;
     return (
       <div className="rounded-lg" style={{ background: ativa ? `${color}18` : '#171029', border: `1px solid ${ativa ? color : V.border}` }}>
         <div className="flex items-start gap-2 p-2.5">
-          <button onClick={() => onToggle(h.id)} className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+          <button onClick={() => !daClasse && onToggle(h.id)} disabled={daClasse || bloqueada}
+            title={daClasse ? 'A sua classe já dá esta habilidade' : bloqueada ? 'Suas vagas de habilidade acabaram' : undefined}
+            className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 disabled:opacity-40"
             style={{ background: ativa ? color : 'transparent', border: `1px solid ${color}` }}>
-            {ativa ? <Check size={13} color="#0d0a16" /> : <Plus size={13} color={color} />}
+            {daClasse ? <Star size={12} color="#0d0a16" /> : ativa ? <Check size={13} color="#0d0a16" /> : <Plus size={13} color={color} />}
           </button>
           <button onClick={() => setAberta(expandida ? null : h.id)} className="min-w-0 flex-1 text-left">
             <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{h.nome}</p>
             <p className="text-xs mt-0.5" style={{ fontFamily: F.body, color: V.muted }}>
-              {custom ? 'criada nesta ficha' : escopoHabilidade(h)} · toque para ler
+              {daClasse ? 'da sua classe, não ocupa vaga' : custom ? 'criada nesta ficha' : escopoHabilidade(h)} · toque para ler
             </p>
           </button>
         </div>
@@ -3587,9 +3934,24 @@ function SeletorHabilidades({ char, selecionadas, onToggle, color, customs, canC
 
   return (
     <div className="mb-6">
-      <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
-        <Flame size={13} /> {titulo}
-      </p>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs uppercase tracking-widest flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+          <Flame size={13} /> {titulo}
+        </p>
+        {Number.isFinite(vagas) && (
+          <span className="text-xs rounded-full px-2.5 py-1" style={{ fontFamily: F.mono,
+            color: gastas > vagas ? '#e0577a' : V.text, background: '#171029',
+            border: `1px solid ${gastas > vagas ? '#e0577a' : V.border}` }}>
+            {gastas} de {vagas} vagas
+          </span>
+        )}
+      </div>
+      {Number.isFinite(vagas) && (
+        <p className="text-xs mb-3 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+          São {HABILIDADES_INICIAIS} vagas no nível 1 e mais uma a cada dois níveis. As marcadas com estrela vêm da sua
+          classe, já estão ligadas e não ocupam vaga.
+        </p>
+      )}
 
       {disponiveis.length === 0 && customs.length === 0 ? (
         <p className="text-xs italic mb-2" style={{ color: '#6f6291', fontFamily: F.body }}>
@@ -3966,7 +4328,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
         );
       })()}
 
-      {(char.armas?.length > 0 || char.habilidades?.length > 0 || char.feiticos?.length > 0) && (
+      {(char.armas?.length > 0 || habilidadesDaFicha(char).length > 0 || char.feiticos?.length > 0) && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           {char.armas?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
@@ -3974,10 +4336,10 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
               {namesFrom(char.armas, catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO, char)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
-          {char.habilidades?.length > 0 && (
+          {habilidadesDaFicha(char).length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Flame size={12} /> Habilidades</p>
-              {namesFrom(char.habilidades, catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
+              {namesFrom(habilidadesDaFicha(char), catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char)).map((n) => <p key={n} className="text-sm" style={{ color: V.text, fontFamily: F.body }}>{n}</p>)}
             </div>
           )}
           {char.feiticos?.length > 0 && (
@@ -4154,7 +4516,9 @@ function abasDaFicha(char) {
   /* O druida carrega a ficha do animal-laço junto com a dele. */
   if (char.originId === 'druida') base.push({ id: 'animal', nome: 'Animal' });
   base.push({ id: 'inventario', nome: 'Inventário' });
-  /* Condições é consulta: fica em toda ficha, para ninguém sair da mesa. */
+  /* Mecânicas e Condições são consulta: ficam em toda ficha, para ninguém
+     precisar sair da mesa para lembrar uma regra. */
+  base.push({ id: 'mecanicas', nome: 'Mecânicas' });
   base.push({ id: 'condicoes', nome: 'Condições' });
   return base;
 }
@@ -4191,7 +4555,7 @@ function ListaArmas({ char, catalogo, color }) {
               <p className="text-xs mt-1" style={{ fontFamily: F.body, color: '#6f6291' }}>
                 {a.teste ? `Teste de ${a.teste}` : ''}{a.teste && a.peso !== undefined ? ' · ' : ''}{a.peso > 0 ? `peso ${a.peso}` : 'sem peso'}
               </p>
-              <BotoesDeRolagem char={char} color={color} nome={a.nome} dano={a.dano} pericia={a.teste} comCritico />
+              <BotoesDeRolagem char={char} color={color} nome={a.nome} dano={a.dano} pericia={a.teste} comCritico armado />
             </div>
           ))}
         </div>
@@ -4234,10 +4598,11 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
         </div>
       )}
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Defesa é o valor passivo: {d.defesaPartes.base} {char.originId ? 'da sua classe' : 'de base'} + Motoras×2 +
-        equipamento, sem corte nenhum. Bloqueio e Esquiva são reações — uma por rodada. O
-        Bloqueio vale o dobro do bônus de <strong style={{ color }}>Resistência</strong>, sem
-        base e sem atributo; a Esquiva soma 10 + Motoras + Velocidade de reação.
+        Defesa é o valor passivo: {d.defesaPartes.base} {char.originId ? 'da sua classe' : 'de base'} + Motoras +
+        equipamento. Ela é a DT de quem ataca você. Bloqueio e Esquiva são reações, uma por
+        rodada: a <strong style={{ color }}>Esquiva</strong> entra no lugar da Defesa como DT
+        daquele ataque, e o <strong style={{ color }}>Bloqueio</strong> abate o próprio valor
+        do dano que passou.
       </p>
     </div>
   );
@@ -4282,20 +4647,25 @@ function FichaAnimalAntiga({ animal, color }) {
 
 /* Uma linha de golpe ou habilidade. Os botões só aparecem no animal escolhido
    e rolam com a ficha da forma animal: o dado e o bônus do animal, mais nada. */
-function AcaoAnimal({ acao, animal, fichaAnimal, color }) {
+function AcaoAnimal({ acao, animal, fichaAnimal, color, golpe }) {
   return (
     <div className="rounded-md px-2.5 py-2" style={{ background: '#120d20', border: `1px solid ${V.border}` }}>
       <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{acao.nome}</p>
       <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{acao.descricao}</p>
+      {acao.resiste && (
+        <LinhaResistencia texto={`O alvo resiste com ${acao.resiste}, e metade do dano passa mesmo assim.`}
+          color={color} dt={dtDoGolpe(animal, acao)} />
+      )}
       {fichaAnimal && (
         <BotoesDeRolagem char={fichaAnimal} color={color} nome={`${animal.nome} — ${acao.nome}`}
-          dano={acao.descricao} pericia={periciaDoTexto(acao.descricao)} />
+          dano={acao.descricao} pericia={periciaDoTexto(acao.descricao)}
+          rotuloRolagem={golpe ? 'Dano' : 'Rolar'} />
       )}
     </div>
   );
 }
 
-function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, onAlternar, onChangeAtual }) {
+function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, semNivel, onAlternar, onChangeAtual }) {
   const [aberto, setAberto] = useState(false);
   const expandido = escolhido || aberto;
   const fichaAnimal = escolhido ? fichaDaFormaAnimal(char, animal) : null;
@@ -4308,7 +4678,9 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, o
       <div className="flex items-start gap-2 p-2.5">
         {podeAlternar && (
           <button onClick={onAlternar} disabled={bloqueado}
-            title={escolhido ? 'Desfazer o laço com este animal' : bloqueado ? 'Seu nível já não comporta mais animais' : 'Criar laço com este animal'}
+            title={escolhido ? 'Desfazer o laço com este animal'
+              : semNivel ? `Você precisa ser nível ${animal.nivelMin} para se enlaçar a este animal`
+              : bloqueado ? 'Seu nível já não comporta mais animais' : 'Criar laço com este animal'}
             className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 disabled:opacity-30"
             style={{ background: escolhido ? color : 'transparent', border: `1px solid ${color}` }}>
             {escolhido ? <Check size={13} style={{ color: '#0d0a16' }} /> : <Plus size={13} style={{ color }} />}
@@ -4324,12 +4696,17 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, o
           </p>
           <p className="text-xs mt-0.5" style={{ fontFamily: F.mono, color: V.muted }}>
             vida {animal.vida} · conexão {conexaoMax} · {animal.custoPorTurno} de sanidade por turno
+            {animal.nivelMin ? ` · nível ${animal.nivelMin}+` : ''}
           </p>
         </button>
       </div>
 
       {expandido && (
         <div className="px-2.5 pb-2.5">
+          <p className="text-xs mb-2 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>
+            Para entrar nesta forma, passe num teste de <strong style={{ color }}>Ágape DT {dtParaTransformar(animal)}</strong>.
+            Enquanto estiver nela, gaste {animal.custoPorTurno} de sanidade por turno.
+          </p>
           <div className="flex flex-wrap gap-1.5 mb-2">
             {Object.entries(animal.concede || {}).map(([attr, delta]) => (
               <span key={attr} className="text-xs rounded-full px-2 py-0.5"
@@ -4375,7 +4752,7 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, o
 
           <p className="text-xs uppercase tracking-widest mt-2 mb-1" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Golpes</p>
           <div className="space-y-1.5">
-            {animal.golpes.map((g) => <AcaoAnimal key={g.nome} acao={g} animal={animal} fichaAnimal={fichaAnimal} color={color} />)}
+            {animal.golpes.map((g) => <AcaoAnimal key={g.nome} acao={g} animal={animal} fichaAnimal={fichaAnimal} color={color} golpe />)}
           </div>
           <p className="text-xs uppercase tracking-widest mt-2.5 mb-1" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Habilidades</p>
           <div className="space-y-1.5">
@@ -4394,6 +4771,10 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
   const limite = limiteDeAnimais(char);
   const idsEscolhidos = escolhidos.map((a) => a.id);
   const disponiveis = animaisDoTipo(char).filter((a) => !idsEscolhidos.includes(a.id));
+  /* Quando nada está liberado ainda, a aba diz em que nível o primeiro abre. */
+  const niveisFechados = disponiveis.filter((a) => !animalLiberado(a, char)).map((a) => a.nivelMin);
+  const proximoNivel = disponiveis.some((a) => animalLiberado(a, char)) || !niveisFechados.length
+    ? null : Math.min(...niveisFechados);
   const passou = escolhidos.length > limite;
 
   const alternar = (animal) => {
@@ -4446,7 +4827,10 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
           )}
 
           {escolhidos.length === 0 ? (
-            <p className="text-xs italic mb-4" style={{ color: '#6f6291', fontFamily: F.body }}>Nenhum animal escolhido ainda.</p>
+            <p className="text-xs italic mb-4" style={{ color: '#6f6291', fontFamily: F.body }}>
+              Nenhum animal escolhido ainda.
+              {proximoNivel ? ` O primeiro animal ao seu alcance abre no nível ${proximoNivel}: até lá, o seu laço ainda está sendo procurado.` : ''}
+            </p>
           ) : (
             <div className="space-y-2 mb-4">
               {escolhidos.map((a) => (
@@ -4468,7 +4852,8 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
                 <div className="space-y-2">
                   {disponiveis.map((a) => (
                     <CardAnimal key={a.id} animal={a} char={char} color={color}
-                      podeAlternar bloqueado={escolhidos.length >= limite} onAlternar={() => alternar(a)} />
+                      podeAlternar bloqueado={escolhidos.length >= limite || !animalLiberado(a, char)}
+                      semNivel={!animalLiberado(a, char)} onAlternar={() => alternar(a)} />
                   ))}
                 </div>
               )}
@@ -4532,7 +4917,7 @@ function BotaoRolar({ onRolar, color, titulo, compacto, rotulo }) {
 /* Botões de uma arma, habilidade ou feitiço. São dois papéis diferentes e por
    isso dois botões: o teste diz se acertou, o dano diz o quanto doeu. Cada um
    só aparece quando faz sentido — sem notação de dado, não há o que rolar. */
-function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico }) {
+function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico, armado, rotuloRolagem = 'Dano' }) {
   const notacao = lerNotacao(dano);
   const p = pericia ? PERICIAS.find((x) => x.nome.toLowerCase() === String(pericia).toLowerCase()) : null;
   const m = p ? modificadorDoTeste(char, p) : null;
@@ -4540,6 +4925,20 @@ function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico }) {
      máximo e a marca se apaga, para o golpe depois dele voltar ao normal. */
   const [critico, setCritico] = useState(false);
   if (!notacao && !m) return null;
+
+  /* Em arma, o que acerta também machuca: soma o atributo da perícia do ataque
+     e metade do nível. Sem isso a arma do nível 10 é a mesma do nível 1, e o
+     combate só cresce. Habilidade e feitiço não somam nada: lá o dado escrito
+     já é o efeito inteiro. */
+  const bonusDano = armado ? (m?.atributo || 0) + Math.floor(nivelDaFicha(char) / 2) : 0;
+  const modDano = notacao ? notacao.modificador + bonusDano : 0;
+  const textoDano = notacao
+    ? `${notacao.qtd}d${notacao.faces}${modDano ? ` ${modDano > 0 ? '+' : '−'} ${Math.abs(modDano)}` : ''}`
+    : '';
+  const maximoDano = notacao ? notacao.qtd * notacao.faces + modDano : 0;
+  const detalheDano = bonusDano
+    ? `${p ? abrevAttr(p.atributo) + ' +' + (m?.atributo || 0) + ' · ' : ''}nível +${Math.floor(nivelDaFicha(char) / 2)}`
+    : null;
 
   return (
     <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -4557,13 +4956,13 @@ function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico }) {
       )}
       {notacao && (
         <BotaoRolar color={critico ? '#e0577a' : color}
-          rotulo={critico ? `Dano crítico · ${danoMaximo(notacao)}` : `Dano · ${notacao.texto}`}
-          titulo={critico ? `O último ataque foi crítico: este dano sai no máximo (${danoMaximo(notacao)})` : `Rolar ${notacao.texto}`}
+          rotulo={critico ? `${rotuloRolagem} crítico · ${maximoDano}` : `${rotuloRolagem} · ${textoDano}`}
+          titulo={critico ? `O último ataque foi crítico: este dano sai no máximo (${maximoDano})` : `Rolar ${textoDano}`}
           onRolar={async () => {
             const r = await rolarNoServidor({
-              /* Sem detalhe: a notação já aparece no histórico, ao lado dos dados. */
-              qtd: notacao.qtd, faces: notacao.faces, modificador: notacao.modificador,
-              categoria: 'dano', rotulo: `${nome} — dano`, char, critico,
+              qtd: notacao.qtd, faces: notacao.faces, modificador: modDano,
+              categoria: 'dano', rotulo: `${nome} — ${rotuloRolagem.toLowerCase()}`,
+              detalhe: detalheDano, char, critico,
             });
             setCritico(false);
             return r;
@@ -4703,8 +5102,8 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
               {it.resistencia && <LinhaResistencia texto={it.resistencia} color={color} dt={dtDeResistencia?.(it)} />}
               {char && (
                 <BotoesDeRolagem char={char} color={color} nome={it.nome}
-                  dano={descricoes?.[it.id] || it.descricao}
-                  pericia={periciaDeLancamento} />
+                  dano={it.dano !== undefined ? it.dano : (descricoes?.[it.id] || it.descricao)}
+                  pericia={periciaDeLancamento} rotuloRolagem="Rolar" />
               )}
             </div>
           ))}
@@ -4984,7 +5383,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             </div>
           )}
           {tab === 'habilidades' && (
-            <ListaConteudo titulo="Habilidades" Icon={Flame} ids={char.habilidades}
+            <ListaConteudo titulo="Habilidades" Icon={Flame} ids={habilidadesDaFicha(char)}
               catalogo={catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char)}
               color={origin.cor} vazio="Nenhuma habilidade escolhida." char={char} />
           )}
@@ -4992,7 +5391,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             /* Deuses: uma lista só, juntando o que foi criado como habilidade
                e como feitiço, para não dividir o poder divino em duas abas. */
             <ListaConteudo titulo="Poderes Divinos" Icon={Flame}
-              ids={[...(char.habilidades || []), ...idsDeFeiticos(char.feiticos)]}
+              ids={[...habilidadesDaFicha(char), ...idsDeFeiticos(char.feiticos)]}
               catalogo={[...catalogoDe(contentIndex, 'habilidades', HABILIDADES_CATALOGO, char), ...catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)]}
               color={origin.cor} vazio="Nenhum poder divino criado ainda." char={char} />
           )}
@@ -5013,7 +5412,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                   qualquer que seja o feitiço ou a evolução. A perícia de resistência mostrada em cada
                   um é a do alvo, não a sua, e a <strong style={{ color: origin.cor }}>DT</strong> ao lado dela
                   já vem pronta: {DT_BASE_RITUAL} mais 1 a cada {DEGRAU_DT} níveis mágicos seus e mais 1 a cada
-                  {' '}{DEGRAU_DT} níveis do feitiço.
+                  {' '}{DEGRAU_DT_FEITICO} níveis do feitiço.
                 </p>
                 <p className="text-xs leading-relaxed mt-1.5" style={{ color: V.muted, fontFamily: F.body }}>
                   A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>.
@@ -5032,6 +5431,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               onSalvarAnimais={(animais) => onSaveEdit({ ...char, animais }, { silencioso: true })}
               onChangeAtual={canEdit ? alterarAtual : undefined} />
           )}
+          {tab === 'mecanicas' && <ListaMecanicas cor={origin.cor} />}
           {tab === 'condicoes' && <ListaCondicoes cor={origin.cor} />}
           {tab === 'inventario' && (
             <div>
@@ -5049,6 +5449,9 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                         <span className="text-sm shrink-0" style={{ fontFamily: F.mono, color: V.muted }}>×{it.quantidade}</span>
                       </div>
                       {it.descricao && <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.descricao}</p>}
+                      {canEdit && lerNotacao(it.descricao) && (
+                        <BotoesDeRolagem char={char} color={origin.cor} nome={it.nome} dano={it.descricao} rotuloRolagem="Rolar" />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -5138,6 +5541,7 @@ export default function App() {
   if (screen === 'create') return <CreateWizard account={account} tipoFicha={novoTipo} onSave={handleSaveDraft} onCancel={() => setScreen('dashboard')} />;
   if (screen === 'dicionarios') return <DicionariosScreen onBack={() => setScreen('dashboard')} inicial={dicionarioInicial} />;
   if (screen === 'condicoes') return <CondicoesScreen onBack={() => setScreen('dashboard')} />;
+  if (screen === 'mecanicas') return <MecanicasScreen onBack={() => setScreen('dashboard')} />;
   if (screen === 'sheet' && viewingChar) {
     return <SheetScreen char={viewingChar} account={account} onBack={() => setScreen('dashboard')} onDelete={handleDelete} onSaveEdit={handleSaveDraft} />;
   }
@@ -5151,6 +5555,7 @@ export default function App() {
       }}
       onOpen={(c) => { setViewingChar(c); setScreen('sheet'); }} onLogout={handleLogout}
       onDicionarios={() => { setDicionarioInicial('geral'); setScreen('dicionarios'); }}
-      onCondicoes={() => setScreen('condicoes')} />
+      onCondicoes={() => setScreen('condicoes')}
+      onMecanicas={() => setScreen('mecanicas')} />
   );
 }
