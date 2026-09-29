@@ -860,6 +860,8 @@ const ITENS_CATALOGO = [
     descricao: 'Queima por uma noite; enquanto acesa, você não sente sono nem fome.' },
   { id: 'ite_frasco_tinta_emprestada', nome: 'Frasco de tinta emprestada', classe: 'mago', peso: 2,
     descricao: 'Guarda 10 da sua mana e pode ser dado para outro mago para uso posterior. Enche uma vez por sessão. Você perde 10 de mana para enchê-lo e o item só é gasto ao ser entregue a outro mago.' },
+  { id: 'ite_baralho_mortos', nome: 'Baralho dos Mortos', classe: 'mago', peso: 1,
+    descricao: 'Cartas de bordas queimadas que ninguém se lembra de ter comprado. É o requisito para conjurar o feitiço de mesmo nome: sem ele na mão, não há o que embaralhar.' },
   { id: 'ite_pena_asa_negra', nome: 'Pena de asa negra', classe: 'mago', nivelMin: 'negro', peso: 2,
     descricao: 'Uma vez por sessão, conjure um feitiço sem gastar sanidade.' },
 
@@ -1084,7 +1086,7 @@ const HABILIDADES_CATALOGO = [
   { id: 'hab_sorte_furada', nome: 'Sorte Furada', classe: 'pirata', subdivisaoId: 'predileto_mares',
     descricao: 'Quando você erraria um ataque, pode rolar de novo. O destino cobra o favor: o próximo teste do inimigo contra você também melhora. Gasta 7 de sanidade.' },
   { id: 'hab_santa_covardia', nome: 'Santa Covardia', classe: 'pirata',
-    descricao: 'Você insulta o inimigo e, dependendo, pode deixá-lo paralisado por uma rodada. Quanto mais o insulto fizer sentido, mais chances de deixar o alvo atordoado. Roleplay é sempre bem-vindo. Gasta 5 de sanidade mesmo se a tentativa falhar.' },
+    descricao: 'Você insulta o inimigo e, dependendo, pode deixá-lo IMÓVEL por uma rodada. Quanto mais o insulto fizer sentido, mais chance de o alvo ficar IMÓVEL. Roleplay é sempre bem-vindo. Gasta 5 de sanidade mesmo se a tentativa falhar.' },
   { id: 'hab_porao_sem_fundo', nome: 'Porão sem fundo', classe: 'pirata',
     descricao: 'Você aprendeu a amarrar, pendurar e enfiar coisa em cada vão do casaco, da bota e do cinto. Sua carga máxima é o dobro da de qualquer outra pessoa. Passivo, sem custo, e já vem com você.' },
 
@@ -1509,6 +1511,7 @@ const FEITICOS_CATALOGO = [
       'Em vez de uma runa pequena no chão, você cria uma esfera inteira no ambiente, ao redor do alvo. Se ele sair da área, toma 4d10 de dano. Gasta 10 de mana.',
     ] },
   { id: 'fei_baralho_mortos', nome: 'Baralho dos Mortos', nivelMin: 40,
+    nota: 'Requisito: é preciso estar com o item Baralho dos Mortos no seu inventário.',
     descricao: 'Ao conjurar, você embaralha o destino e revela uma carta. Gaste 10 de sanidade e role 1d20 para saber o que vem.',
     tabela: [
       { carta: '1–2 · O Enforcado', efeito: 'Você inverte sua própria dor em poder. Causa 2d8 de dano, mas perde 1d4 de vida.' },

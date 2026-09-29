@@ -173,7 +173,8 @@ Vagas: `2 + ⌊nível mágico ÷ 10⌋`.
 
 **Feitiço com tabela**: o campo opcional `tabela` ([{ carta, efeito }]) desenha
 uma tabela no card, na escolha e na ficha. Hoje só o **Baralho dos Mortos**
-(nível 40) usa: ele rola 1d20 e lê a carta.
+(nível 40) usa: ele rola 1d20 e lê a carta, e exige o item de mesmo nome no
+inventário (o requisito está no campo `nota`).
 Todo feitiço é lançado com **Dicionário mental**. Mana só é gasta em rituais.
 
 **DT para resistir** = `12 + ⌊nível mágico do personagem ÷ 10⌋ + ⌊nível do feitiço ÷ 5⌋`.
