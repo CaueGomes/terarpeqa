@@ -266,6 +266,10 @@ do catálogo da mestra.
   busca nos catálogos; a busca de Doente é só em maiúsculas, porque "plantas
   doentes" aparece numa habilidade. Em ira e Enfeitiçado saem com **Controle
   seus demônios**, que antes não era usada por nada.
+- **Dicionários** (`DICIONARIOS`): cada seção tem `titulo` e `paragrafos`, e
+  pode ter `subsecoes` ([{ titulo, paragrafos }]) quando o texto pede um bloco
+  por assunto. Hoje só "Religião e Fé", no dicionário geral, usa: um bloco por
+  deus.
 - Personagem tem **foto** e **foto da marca** (a marca é quadrada, o retrato é
   redondo).
 - Todo peso de catálogo já foi somado em 1 (não existe mais "sem peso").

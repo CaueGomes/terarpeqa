@@ -293,6 +293,40 @@ const DICIONARIOS = [
           `Cada personalidade e forma de governar está escrita no dicionário de cada classe.`,
         ],
       },
+      {
+        titulo: 'Religião e Fé',
+        paragrafos: [
+          `A religião não ocupa um lugar central nesse universo, mas segue viva no cotidiano de muitos povos, sobretudo nos reinos de Karzaron e Împera.`,
+        ],
+        subsecoes: [
+          {
+            titulo: 'Împera',
+            paragrafos: [
+              `Grande parte dos cidadãos de prata, assim como a família real, é devota da deusa Împera. Em seu reino, igrejas foram erguidas para louvar aquela que os criou. Uma vez por semana, a própria deusa desce à igreja principal para abençoar seu povo com palavras de fé e submissão.`,
+              `A fé não é uma imposição, mas o poder de Împera e seus feitos são tamanhos que muitos escolhem rezar a ela por livre devoção.`,
+            ],
+          },
+          {
+            titulo: 'Karzaron',
+            paragrafos: [
+              `No reino de Karzaron, embora haja muitos ateus, o rei ainda conta com uma legião de seguidores. Ao contrário dos demais deuses, ninguém jamais o viu pessoalmente, e talvez por isso mesmo seu nome esteja presente em incontáveis histórias e estudos.`,
+              `A sociedade mágica se divide quanto à origem de seu poder. Uma parte acredita que a magia que carrega dentro de si foi concedida pelo deus e, por gratidão, dirige a ele suas preces. A outra rejeita essa ideia: para ela, nenhum deus concedeu magia alguma, e é preciso confiar em si mesmo em vez de se apegar a falsas esperanças.`,
+            ],
+          },
+          {
+            titulo: 'Âncore',
+            paragrafos: [
+              `No reino de Âncore, a fé nunca encontrou espaço. O que outros povos entregam aos deuses, seu povo sempre investiu no que é carnal: a coragem, a força, os treinos e os laços entre as pessoas. Por isso não há registro de igrejas em lugar algum do reino, nem na superfície, nem no fundo do mar.`,
+            ],
+          },
+          {
+            titulo: 'Melôdia',
+            paragrafos: [
+              `No reino de Melôdia, sempre houve algo humano demais na deusa para que seus filhos a enxergassem como alguém a ser louvado. Eles a conhecem em suas falhas e afetos, e é difícil se ajoelhar diante de quem se parece tanto com eles.`,
+            ],
+          },
+        ],
+      },
     ],
   },
 
@@ -2516,6 +2550,17 @@ function DicionariosScreen({ onBack, inicial }) {
                     }}>{sec.titulo}</h3>
                     {sec.paragrafos.map((par, i) => (
                       <p key={i} className="text-sm mb-3" style={{ fontFamily: F.body, color: '#d5d5da', lineHeight: 1.75 }}>{par}</p>
+                    ))}
+                    {/* Seção com blocos internos, como um deus por vez. */}
+                    {(sec.subsecoes || []).map((sub) => (
+                      <div key={sub.titulo} className="mb-4">
+                        <h4 className="mb-1.5" style={{ fontFamily: F.display, color: cor, fontWeight: 700, fontSize: '0.95rem' }}>
+                          {sub.titulo}
+                        </h4>
+                        {sub.paragrafos.map((par, i) => (
+                          <p key={i} className="text-sm mb-3" style={{ fontFamily: F.body, color: '#d5d5da', lineHeight: 1.75 }}>{par}</p>
+                        ))}
+                      </div>
                     ))}
                   </section>
                 ))}
