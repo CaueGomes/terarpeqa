@@ -380,6 +380,15 @@ const DICIONARIOS = [
         ],
       },
       {
+        titulo: 'Trupe Marítima',
+        paragrafos: [
+          `Quando um tritão ou sereia faz dezoito anos, uma opção é se inscrever para a Trupe Marítima, que nada mais é do que as três criaturas do mar mais fortes do reino se juntando a Âncore para proteger as cidades e os cidadãos de qualquer tipo de ameaça. Expedições são mensais e podem variar de possíveis guerras a outras criaturas do mar ou uma simples patrulha de reconhecimento.`,
+          `Para ser digno de participar da Trupe Marítima, é preciso se inscrever nos testes físicos e de agilidade que ocorrem semanalmente, para que você possa ser qualificado a participar do Panteão Anual, que nada mais é do que uma luta corpo a corpo contra Âncore em pessoa.`,
+          `Você não necessariamente precisa vencer o deus para ser digno da Trupe (afinal de contas, poucas criaturas do mar foram sequer capazes de encostar nele), mas precisa provar seu sangue dentro daquela batalha, o suficiente para Âncore te aprovar e te substituir por algum dos membros atuais da Trupe.`,
+          `Nem todo Panteão Anual possui um digno, e muitos membros da Trupe chegam a passar décadas sem serem substituídos.`,
+        ],
+      },
+      {
         titulo: 'Eventos de Final de Semana',
         paragrafos: [
           `Âncore sempre gostou muito de festas e um pouco de baderna, então nada melhor que os eventos de final de semana para animar os nervos de sereias e tritões que ficaram a semana inteira caçando e trabalhando em comércios.`,
@@ -1074,6 +1083,8 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Depois de sofrer dano, seu próximo ataque causa dano extra. Gasta 7 de sanidade.' },
   { id: 'hab_sorte_furada', nome: 'Sorte Furada', classe: 'pirata', subdivisaoId: 'predileto_mares',
     descricao: 'Quando você erraria um ataque, pode rolar de novo. O destino cobra o favor: o próximo teste do inimigo contra você também melhora. Gasta 7 de sanidade.' },
+  { id: 'hab_santa_covardia', nome: 'Santa Covardia', classe: 'pirata',
+    descricao: 'Você insulta o inimigo e, dependendo, pode deixá-lo paralisado por uma rodada. Quanto mais o insulto fizer sentido, mais chances de deixar o alvo atordoado. Roleplay é sempre bem-vindo. Gasta 5 de sanidade mesmo se a tentativa falhar.' },
   { id: 'hab_porao_sem_fundo', nome: 'Porão sem fundo', classe: 'pirata',
     descricao: 'Você aprendeu a amarrar, pendurar e enfiar coisa em cada vão do casaco, da bota e do cinto. Sua carga máxima é o dobro da de qualquer outra pessoa. Passivo, sem custo, e já vem com você.' },
 
@@ -1463,6 +1474,12 @@ const FEITICOS_CATALOGO = [
       'Você abre uma fenda mais grossa agora. Causa 3d12 de dano e gasta 6 de mana.',
       'Você abre uma cratera, pegando todos os alvos em um raio grande. Aliados também podem ser afetados e a cratera nunca se desfaz. Causa 4d10 de dano e gasta 9 de mana.',
     ] },
+  { id: 'fei_sangria_arcana', resistencia: 'Resiste com Resistência, recebendo metade do dano.', nome: 'Sangria Arcana', nivelMin: 20,
+    descricao: 'Você convoca a força de seu deus por alguns segundos e um corte invisível se abre na pele do alvo, como se o próprio espaço ao redor dele cortasse, causando 1d12 de dano por 3 de mana.',
+    evolucoes: [
+      'Você convoca a força de seu deus por alguns segundos e um corte invisível se abre na pele do alvo, como se o próprio espaço ao redor dele cortasse, causando 1d12 de dano por 3 de mana.',
+      'Por 6 de mana, você ainda dá 1d12 de dano, mas deixa o alvo em SANGRANDO.',
+    ] },
   { id: 'fei_desossar', nome: 'Desossar', nivelMin: 25,
     descricao: 'Você retira temporariamente uma parte do seu corpo e passa a controlá-la. O efeito dura 1d100 de minutos (1d100 para dezenas e 1d10 para unidades de minutos) e, se a parte do seu corpo não retornar a tempo ou for atacada, você perde ela permanentemente. Se for uma parte vital, como um coração ou pulmão, você pode ou não morrer com um teste de Resistência DT 20. 1 parte do corpo por vez e gasta 8 de mana.',
     evolucoes: [
@@ -1484,6 +1501,27 @@ const FEITICOS_CATALOGO = [
       'O fogo te protege. Essa evolução pode ser usada como reação a algum ataque por 8 de mana, colocando fogo no alvo por uma rodada, que recebe 2d10 de dano como reação, mas não te impede de tomar o ataque dele.',
       'Você pode usar essa evolução para pegar fogo em seu corpo inteiro, virando um fogaréu ambulante que bota fogo em tudo que toca. O simples ato de encostar em algo causa 2d12 de dano e gasta 8 de mana.',
     ] },
+  { id: 'fei_armadilha_runica', resistencia: 'Resiste com Percepção para não pisar nela.', nome: 'Armadilha Rúnica', nivelMin: 35,
+    descricao: 'Você desenha uma marca arcana no chão, parecida com a sua marca na pele, e quem pisar nela recebe um dano explosivo de 2d12. Só pode ser pisada uma vez, e quem passar perto faz um teste de Percepção DT 12 para desviar. Pode atingir aliados também. Gasta 5 de mana para invocar.',
+    evolucoes: [
+      'Você desenha uma marca arcana no chão, parecida com a sua marca na pele, e quem pisar nela recebe um dano explosivo de 2d12. Só pode ser pisada uma vez, e quem passar perto faz um teste de Percepção DT 12 para desviar. Pode atingir aliados também. Gasta 5 de mana para invocar.',
+      'A DT para não pisar na armadilha sobe de 12 para 15 e o dano, de 2d12 para 3d10. Gasta 8 de mana.',
+      'Em vez de uma runa pequena no chão, você cria uma esfera inteira no ambiente, ao redor do alvo. Se ele sair da área, toma 4d10 de dano. Gasta 10 de mana.',
+    ] },
+  { id: 'fei_baralho_mortos', nome: 'Baralho dos Mortos', nivelMin: 40,
+    descricao: 'Ao conjurar, você embaralha o destino e revela uma carta. Gaste 10 de sanidade e role 1d20 para saber o que vem.',
+    tabela: [
+      { carta: '1–2 · O Enforcado', efeito: 'Você inverte sua própria dor em poder. Causa 2d8 de dano, mas perde 1d4 de vida.' },
+      { carta: '3–4 · A Torre', efeito: 'Colapso violento e instável. Causa 3d10 de dano em área, mas atinge também quem estiver perto de você.' },
+      { carta: '5–6 · A Morte', efeito: 'Um toque direto e certeiro. Causa 2d10 de dano, ignorando parte da defesa do alvo.' },
+      { carta: '7–8 · O Eremita', efeito: 'Um sussurro solitário que rouba força aos poucos. Causa 1d6 de dano por 3 turnos.' },
+      { carta: '9–10 · O Diabo', efeito: 'Um pacto sujo com a própria magia. Causa 4d6 de dano, mas gasta o dobro de sanidade.' },
+      { carta: '11–12 · A Roda da Fortuna', efeito: 'O destino decide por você. Role 1d10: acima de 5, dano dobrado; abaixo, dano pela metade. Você pega outra carta no processo.' },
+      { carta: '13–14 · A Sacerdotisa', efeito: 'Um segredo revelado dói mais do que deveria. Causa 2d8 de dano, mas só se o alvo estiver escondendo algo, a critério da mestra.' },
+      { carta: '15–16 · O Sol', efeito: 'Mesmo na necromancia, a luz queima. Causa 3d8, e o dobro contra mortos-vivos ou espíritos.' },
+      { carta: '17–18 · A Estrela', efeito: 'Um brilho fraco, mas certeiro: não falha. Causa 2d6 de dano.' },
+      { carta: '19–20 · O Julgamento', efeito: 'A carta mais rara. Causa 5d10 de dano puro, mas você não pode conjurar necromancia de novo até o próximo descanso longo.' },
+    ] },
   { id: 'fei_escudo_totemico', nome: 'Escudo Totêmico', nivelMin: 40,
     descricao: 'Um totem se acende em algum lugar do ambiente e, enquanto ninguém quebrá-lo, você recebe metade de todos os danos. Você gasta 6 de mana e pode usar este escudo em um aliado, sacrificando sua proteção.' },
   { id: 'fei_lorde_metal', resistencia: 'Resiste com Velocidade de reação, tomando metade do dano.', nome: 'Lorde Metal', nivelMin: 45,
@@ -1494,11 +1532,11 @@ const FEITICOS_CATALOGO = [
       'Você agora pode mover todos os objetos do recinto, ignorando seu tamanho, desde que seja feito de metal. Gasta 10 de mana e o dano de objetos considerados grandes ou enormes é de 4d12 de dano.',
     ] },
   { id: 'fei_homunculo', nome: 'Invocando o Homúnculo', nivelMin: 50,
-    descricao: 'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d12 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
+    descricao: 'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
     evolucoes: [
-      'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d12 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
-      'Você cria 3 aliados agora, um pouco maiores por 7 de mana. Eles causam 2d10 de dano por ataque. Cada um tem 15 de vida e te obedecem cegamente.',
-      'Você cria um monstro de carne, sangue e raiva. Ela é quase um brutamonte, causando 2d12 + 10 por ataque por 10 de mana. Ela tem 35 de vida, mas não te obedece muito bem.',
+      'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
+      'Você cria 3 aliados agora, um pouco maiores por 7 de mana. Eles causam 2d6 de dano por ataque. Cada um tem 13 de vida e te obedecem cegamente.',
+      'Você cria um monstro de carne, sangue e raiva. Ela é quase um brutamonte, causando 2d10 + 6 por ataque por 10 de mana. Ela tem 35 de vida, mas não te obedece muito bem.',
     ] },
   { id: 'fei_erratum', resistencia: 'Resiste com Volição, tomando metade do dano.', nome: 'Erratum', nivelMin: 55,
     descricao: 'Você declara uma condenação curta contra um alvo. Ele sofre 3d12 de dano, e o dobro disso se já estiver ferido. Gasta 8 de mana.' },
@@ -1923,10 +1961,28 @@ const detalhesDeFeiticos = (lista) =>
     return mapa;
   }, {});
 
+/* Alguns feitiços rolam numa tabela em vez de ter evolução: o Baralho dos
+   Mortos é o primeiro. A tabela vem no campo `tabela` e aparece inteira no
+   card, porque é ela que o jogador precisa ler na hora de conjurar. */
+function TabelaDoFeitico({ tabela, color }) {
+  return (
+    <div className="mt-2 space-y-1">
+      {tabela.map((linha) => (
+        <p key={linha.carta} className="text-xs leading-relaxed flex gap-2" style={{ fontFamily: F.body, color: V.muted }}>
+          <span className="shrink-0" style={{ fontFamily: F.mono, color, minWidth: '8.5rem' }}>{linha.carta}</span>
+          <span>{linha.efeito}</span>
+        </p>
+      ))}
+    </div>
+  );
+}
+
 /* Nem todo feitiço evolui. Quem não evolui não mostra seletor, vale sempre uma
    vaga e ganha um aviso no fim da descrição. */
 const AVISO_SEM_EVOLUCAO = 'Esse feitiço não tem evoluções disponíveis.';
-const temEvolucoes = (f) => Array.isArray(f?.evolucoes) && f.evolucoes.length === 3;
+/* Quase todo feitiço evolui em três, mas a Sangria Arcana só tem duas: o que
+   conta é ter mais de uma, não ser exatamente três. */
+const temEvolucoes = (f) => Array.isArray(f?.evolucoes) && f.evolucoes.length > 1;
 
 /* Na ficha, o feitiço é descrito pela evolução que o mago escolheu. */
 function descricoesDeFeiticos(lista, catalogo) {
@@ -2469,230 +2525,6 @@ function DicionariosScreen({ onBack, inicial }) {
   );
 }
 
-/* ---------- mecânicas ----------
-   O livro de regras dentro do site. Os números vêm das constantes, nunca
-   digitados aqui: mudar a regra no código muda o texto junto. */
-function secoesDeMecanicas() {
-  const grau = (i) => `${TIERS[i].nome} +${TIERS[i].bonus}`;
-  const faixa = (g) => FAIXAS_DE_TREINO.find((f) => f.grauMaximo === g)?.doNivel;
-  return [
-    {
-      titulo: 'Como se rola um teste',
-      paragrafos: [
-        'Todo teste do jogo é um d20 somado ao atributo da perícia e ao que ela já tem de treino e de outros bônus. ' +
-        'É esse número que aparece na coluna Teste da sua ficha, e é ele que o botão de rolagem usa.',
-        'A DT é o número que você precisa alcançar ou passar. Quem define é a mestra, com duas exceções que a ficha já ' +
-        'calcula: atacar alguém usa a Defesa do alvo como DT, e resistir a um ritual de mago usa a DT que aparece no feitiço.',
-      ],
-      itens: [
-        'DT 10 é rotina: quem treinou passa quase sempre.',
-        'DT 15 é o padrão: mais ou menos três em cada cinco para quem treinou.',
-        'DT 20 é façanha: só especialista de nível alto passa com regularidade.',
-        'Não existe vantagem, desvantagem nem reteste comum. Reteste só vem de habilidade.',
-      ],
-    },
-    {
-      titulo: 'Atributos',
-      paragrafos: [
-        `Intelecto, Psique, Físico e Motoras começam em 0 e vão até ${ATTR_MAX}. Você recebe ` +
-        `${PONTOS_ATRIBUTO_INICIAIS} pontos no nível 1, mais 1 nos níveis 3, 5, 7 e 9, e 2 no nível 10.`,
-      ],
-      itens: [
-        `Físico dá ${GANHO_POR_ATRIBUTO} de vida por ponto e aumenta o quanto você carrega.`,
-        `Psique dá ${GANHO_POR_ATRIBUTO} de sanidade por ponto.`,
-        `Motoras dá ${MULTIPLICADOR_MOTORAS_DEFESA} de Defesa e 1 de Esquiva por ponto.`,
-        'Intelecto não dá recurso nenhum: ele aparece nos testes das perícias dele.',
-        'O atributo também entra no dano das suas armas, junto com metade do seu nível.',
-      ],
-    },
-    {
-      titulo: 'Níveis',
-      paragrafos: [
-        `Todo personagem tem nível de 1 a ${NIVEL_CLASSE_MAX}, e quem sobe o número é a mestra: não existe experiência. ` +
-        `Cada nível soma vida e sanidade conforme a classe, dá mais degraus de perícia e libera graus de treino mais altos.`,
-        `O mago tem também o nível mágico, de ${NIVEL_MIN} a ${NIVEL_MAX}, que decide quais feitiços ele alcança, ` +
-        `quantas vagas tem, quanta mana carrega e quão difícil é resistir aos rituais dele.`,
-      ],
-    },
-    {
-      titulo: 'Perícias',
-      paragrafos: [
-        `São ${PERICIAS.length} perícias em quatro graus: ${grau(0)}, ${grau(1)}, ${grau(2)} e ${grau(3)}. ` +
-        `Subir uma perícia um grau custa um degrau, e você tem 4 degraus no nível 1 e mais 2 por nível.`,
-        `O nível também limita até onde dá para subir: até o ${faixa(2) - 1} o máximo é ${TIERS[1].nome}, ` +
-        `do ${faixa(2)} ao ${faixa(3) - 1} abre o ${TIERS[2].nome}, e do ${faixa(3)} em diante o ${TIERS[3].nome}. ` +
-        `A escolha acima do teto fica guardada: ao subir de nível o bônus volta sozinho.`,
-        'As perícias que a sua classe dá já vêm no Treinado e não custam degrau.',
-      ],
-    },
-    {
-      titulo: 'Vida, sanidade e mana',
-      paragrafos: [
-        'A vida vem da classe, do nível, da subclasse e do seu Físico. A sanidade vem dos mesmos lugares, com o Psique ' +
-        'no lugar do Físico, mais a reserva de habilidades. A mana é só do mago e vale o nível mágico dele.',
-        `A reserva de habilidades é a parte da sanidade que existe porque as suas habilidades custam: o sistema pega as ` +
-        `${HABILIDADES_NA_RESERVA} habilidades mais caras que você pode ter e reserva ${USOS_DE_HABILIDADE_POR_CENA} usos ` +
-        `da média delas. Por isso a sua sanidade máxima muda quando a subclasse muda.`,
-      ],
-      itens: [
-        'Sanidade paga habilidade. Mana paga ritual. Vida é o que sobra quando você erra a conta.',
-        'Uma noite inteira de descanso devolve vida, sanidade, mana e a conexão dos animais. O botão Restaurar faz isso na ficha.',
-      ],
-    },
-    {
-      titulo: 'Quando a sanidade chega a zero',
-      paragrafos: [
-        'Você cai inconsciente na hora, onde estiver. Acorda ao fim da cena com a condição Depressivo, que só sai com ' +
-        'ajuda de um aliado, e com metade da sanidade de volta depois de uma noite inteira de descanso.',
-        'Enquanto estiver em zero, você não usa habilidade nenhuma: não há com o que pagar.',
-      ],
-    },
-    {
-      titulo: 'Defesa, Bloqueio e Esquiva',
-      paragrafos: [
-        'A Defesa é passiva e vale o tempo todo: ela é a DT de quem ataca você. Bloqueio e Esquiva são reações, e você ' +
-        'só usa uma por rodada.',
-      ],
-      itens: [
-        `Defesa = base da sua classe e subclasse + Motoras + equipamento. Quem ataca você precisa alcançar esse número.`,
-        `Esquiva = ${BASE_ESQUIVA} + Motoras + o treino de Velocidade de reação + equipamento. Ao usar, ela entra no lugar ` +
-        `da Defesa como DT daquele ataque.`,
-        `Bloqueio = o bônus de Resistência contado ${MULTIPLICADOR_BLOQUEIO} vezes + equipamento. Ao usar, ele abate o ` +
-        `próprio valor do dano que passou.`,
-      ],
-    },
-    {
-      titulo: 'Atacar e causar dano',
-      paragrafos: [
-        'Atacar é um teste comum: cada arma diz qual perícia usa, e a DT é a Defesa do alvo. O dano é o dado da arma ' +
-        'somado ao atributo daquela perícia e a metade do seu nível, arredondada para baixo.',
-        `Crítico é coisa de arma: quando o d20 do ataque sai ${CRITICO_MINIMO} ou mais, sem contar nenhum bônus, o próximo ` +
-        `golpe seu sai no dano máximo, sem rolar. A ficha avisa que o crítico está armado e o servidor monta o valor.`,
-      ],
-    },
-    {
-      titulo: 'O que você carrega',
-      paragrafos: [
-        'A sua carga máxima é 4 mais o dobro do seu Físico. Cada arma, armadura e item tem um peso, e passar do limite ' +
-        'aparece em vermelho na ficha.',
-        'Pirata carrega o dobro: o Porão sem fundo já vem ligado na ficha dele.',
-      ],
-    },
-    {
-      titulo: 'Habilidades',
-      paragrafos: [
-        `Você tem ${HABILIDADES_INICIAIS} vagas de habilidade no nível 1 e ganha mais uma a cada dois níveis. ` +
-        `As habilidades que a sua classe dá de graça vêm marcadas com estrela, já ligadas, e não ocupam vaga.`,
-        'Quase toda habilidade custa sanidade, e o custo está escrito no próprio texto dela. Passiva é o que diz ' +
-        '"sem custo": vale o tempo todo, sem gastar nada.',
-      ],
-    },
-    {
-      titulo: 'Feitiços',
-      paragrafos: [
-        `Só o mago tem. O nível mágico libera quais feitiços você alcança e quantas vagas você tem: são 2 vagas mais 1 a ` +
-        `cada 10 níveis mágicos. A evolução escolhida é o que o feitiço ocupa: a I ocupa 1 vaga, a II ocupa 2 e a III ocupa 3.`,
-        `Todo feitiço é lançado com um teste de Dicionário mental. A mana só é gasta em ritual, e quando o feitiço permite ` +
-        `resistir, a DT é ${DT_BASE_RITUAL} mais 1 a cada ${DEGRAU_DT} níveis mágicos seus e mais 1 a cada ` +
-        `${DEGRAU_DT_FEITICO} níveis do feitiço. A ficha mostra essa DT pronta.`,
-      ],
-    },
-    {
-      titulo: 'Druida: o animal-laço',
-      paragrafos: [
-        'Quem tem laço natural escolhe um animal por nível de personagem. Quem tem laço místico escolhe um só, e cada ' +
-        'animal místico pede um nível mínimo para se enlaçar.',
-        `Para entrar na forma, passe num teste de Ágape: a DT é ${DT_BASE_ANIMAL} mais o que aquele animal cobra de ` +
-        `sanidade por turno. Enquanto estiver transformado, pague esse custo por turno da sua sanidade.`,
-      ],
-      itens: [
-        'Golpes e habilidades do animal gastam conexão, que é a barra própria dele, não a sua sanidade.',
-        'Na forma animal a sua ficha não conta: o teste é o dado mais o que o animal concede naquele atributo.',
-        `Cada golpe tem a sua DT de resistência, que é ${DT_BASE_ANIMAL} mais metade do que o golpe custa de conexão.`,
-        'Conexão em zero te expulsa da forma. Vida do animal em zero desfaz o laço para sempre.',
-      ],
-    },
-    {
-      titulo: 'Condições',
-      paragrafos: [
-        'Condição é um estado que um golpe, feitiço ou habilidade deixa em quem foi atingido: Cego, Sangrando, Em chamas ' +
-        'e as outras. Cada uma diz o que faz e como sair dela.',
-        'A lista inteira está na aba Condições, aqui do lado, e também no botão Condições do painel.',
-      ],
-    },
-    {
-      titulo: 'Fichas da mestra',
-      paragrafos: [
-        'Deus, inimigo e especial não seguem fórmula nenhuma: vida, sanidade e mana começam em zero e são digitadas, ' +
-        'os atributos não têm teto, as perícias ficam livres e não vem catálogo nenhum pronto.',
-        'Só a conta mestra cria e enxerga essas fichas, e o servidor recusa a gravação de quem não for ela.',
-      ],
-    },
-    {
-      titulo: 'O que o site faz por você',
-      paragrafos: [
-        'Os dados rolam no servidor, não no navegador: ninguém edita um resultado. A mestra vê o histórico da mesa ' +
-        'inteira; cada jogador vê só o que rolou.',
-        'A ficha calcula vida, sanidade, mana, as três defesas, a carga, as DTs dos rituais e dos animais, as vagas e os ' +
-        'limites. O que ela não faz é descontar recurso sozinha: sanidade, mana e conexão você move na mão, com as setas ' +
-        'de cada barra.',
-      ],
-    },
-  ];
-}
-
-function ListaMecanicas({ cor, tema }) {
-  const t = tema || { card: '#171029', borda: V.border, texto: V.text, suave: V.muted, apagado: '#6f6291' };
-  return (
-    <div>
-      <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: t.suave, fontFamily: F.body }}>
-        <ScrollText size={12} /> Mecânicas
-      </p>
-      <p className="text-xs leading-relaxed mb-3" style={{ color: t.apagado, fontFamily: F.body }}>
-        As regras do jogo, do jeito que a ficha calcula. Os números aqui saem do próprio sistema: se uma regra mudar,
-        este texto muda junto.
-      </p>
-      <div className="space-y-2">
-        {secoesDeMecanicas().map((s) => (
-          <div key={s.titulo} className="rounded-lg p-3" style={{ background: t.card, border: `1px solid ${t.borda}` }}>
-            <p className="text-sm" style={{ fontFamily: F.display, color: cor, fontWeight: 700, letterSpacing: '0.04em' }}>
-              {s.titulo.toUpperCase()}
-            </p>
-            {s.paragrafos.map((p) => (
-              <p key={p.slice(0, 24)} className="text-sm mt-1.5 leading-relaxed" style={{ fontFamily: F.body, color: t.texto }}>{p}</p>
-            ))}
-            {s.itens && (
-              <div className="mt-1.5 space-y-1">
-                {s.itens.map((i) => (
-                  <p key={i.slice(0, 24)} className="text-sm leading-relaxed flex gap-2" style={{ fontFamily: F.body, color: t.texto }}>
-                    <span style={{ color: cor }}>·</span><span>{i}</span>
-                  </p>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* A mesma lista, aberta pelo painel, para consultar fora de uma ficha. */
-function MecanicasScreen({ onBack }) {
-  return (
-    <div className="min-h-screen w-full" style={{ background: G.bg }}>
-      <style>{FONTS}</style>
-      <div className="max-w-2xl mx-auto px-6 py-8">
-        <button onClick={onBack} className="flex items-center gap-1.5 text-sm mb-6 hover:opacity-80" style={{ color: G.muted, fontFamily: F.body }}>
-          <ArrowLeft size={14} /> Voltar
-        </button>
-        <ListaMecanicas cor={V.brand}
-          tema={{ card: G.surface, borda: G.border, texto: G.text, suave: G.muted, apagado: G.muted }} />
-      </div>
-    </div>
-  );
-}
-
 /* ---------- condições ----------
    Estados que golpes, feitiços e habilidades deixam em quem é atingido. Os
    textos são os da mestra, só com a redação acertada. "Aparece em" não é
@@ -2804,7 +2636,7 @@ function CondicoesScreen({ onBack }) {
   );
 }
 
-function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios, onCondicoes, onMecanicas }) {
+function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios, onCondicoes }) {
   /* A mestra ganha uma aba por tipo de ficha; os jogadores nem veem isso. */
   const [aba, setAba] = useState('jogadores');
   const abaAtiva = account.isMaster ? aba : 'jogadores';
@@ -2834,10 +2666,6 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
             <button onClick={onDicionarios} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
               style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
               <BookOpen size={14} /> Dicionários
-            </button>
-            <button onClick={onMecanicas} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
-              style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
-              <ScrollText size={14} /> Mecânicas
             </button>
             <button onClick={onCondicoes} className="flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
               style={{ color: G.muted, fontFamily: F.body, border: `1px solid ${G.border}` }}>
@@ -4033,7 +3861,7 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vaga
         {ativo && !bloqueado && onEvolucao && temEvolucoes(f) && (
           <div className="flex items-center gap-1.5 px-2.5 pb-2.5 flex-wrap">
             <span className="text-xs mr-1" style={{ fontFamily: F.body, color: V.muted }}>Evolução</span>
-            {[1, 2, 3].map((n) => {
+            {f.evolucoes.map((_, i) => i + 1).map((n) => {
               const sel = evolucao === n;
               return (
                 <button key={n} onClick={() => onEvolucao(f.id, n)}
@@ -4064,6 +3892,7 @@ function SeletorFeiticos({ nivelMagico, selecionados, onToggle, onEvolucao, vaga
             ) : (
               <>
                 <p className="text-xs leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{f.descricao}</p>
+                {f.tabela && <TabelaDoFeitico tabela={f.tabela} color={color} />}
                 <p className="text-xs leading-relaxed mt-1.5" style={{ fontFamily: F.body, color: '#6f6291' }}>{AVISO_SEM_EVOLUCAO}</p>
               </>
             )}
@@ -4516,9 +4345,7 @@ function abasDaFicha(char) {
   /* O druida carrega a ficha do animal-laço junto com a dele. */
   if (char.originId === 'druida') base.push({ id: 'animal', nome: 'Animal' });
   base.push({ id: 'inventario', nome: 'Inventário' });
-  /* Mecânicas e Condições são consulta: ficam em toda ficha, para ninguém
-     precisar sair da mesa para lembrar uma regra. */
-  base.push({ id: 'mecanicas', nome: 'Mecânicas' });
+  /* Condições é consulta: fica em toda ficha, para ninguém sair da mesa. */
   base.push({ id: 'condicoes', nome: 'Condições' });
   return base;
 }
@@ -5096,6 +4923,7 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
                   {descricoes?.[it.id] || it.descricao}
                 </p>
               )}
+              {it.tabela && <TabelaDoFeitico tabela={it.tabela} color={color} />}
               {it.nota && (
                 <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.nota}</p>
               )}
@@ -5431,7 +5259,6 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               onSalvarAnimais={(animais) => onSaveEdit({ ...char, animais }, { silencioso: true })}
               onChangeAtual={canEdit ? alterarAtual : undefined} />
           )}
-          {tab === 'mecanicas' && <ListaMecanicas cor={origin.cor} />}
           {tab === 'condicoes' && <ListaCondicoes cor={origin.cor} />}
           {tab === 'inventario' && (
             <div>
@@ -5541,7 +5368,6 @@ export default function App() {
   if (screen === 'create') return <CreateWizard account={account} tipoFicha={novoTipo} onSave={handleSaveDraft} onCancel={() => setScreen('dashboard')} />;
   if (screen === 'dicionarios') return <DicionariosScreen onBack={() => setScreen('dashboard')} inicial={dicionarioInicial} />;
   if (screen === 'condicoes') return <CondicoesScreen onBack={() => setScreen('dashboard')} />;
-  if (screen === 'mecanicas') return <MecanicasScreen onBack={() => setScreen('dashboard')} />;
   if (screen === 'sheet' && viewingChar) {
     return <SheetScreen char={viewingChar} account={account} onBack={() => setScreen('dashboard')} onDelete={handleDelete} onSaveEdit={handleSaveDraft} />;
   }
@@ -5555,7 +5381,6 @@ export default function App() {
       }}
       onOpen={(c) => { setViewingChar(c); setScreen('sheet'); }} onLogout={handleLogout}
       onDicionarios={() => { setDicionarioInicial('geral'); setScreen('dicionarios'); }}
-      onCondicoes={() => setScreen('condicoes')}
-      onMecanicas={() => setScreen('mecanicas')} />
+      onCondicoes={() => setScreen('condicoes')} />
   );
 }

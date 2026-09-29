@@ -164,9 +164,16 @@ ataque; o **Bloqueio** abate o próprio valor do dano que passou.
 Ficha sem classe (deus, inimigo) usa a base 10 do `BALANCO_PADRAO`.
 
 ### Feitiços
-24 feitiços, 15 com **evoluções I, II e III**; os outros mostram "Esse feitiço
-não tem evoluções disponíveis". A evolução escolhida é o custo em vagas
-(I=1, II=2, III=3). Vagas: `2 + ⌊nível mágico ÷ 10⌋`.
+27 feitiços, 17 com **evoluções**; os outros mostram "Esse feitiço não tem
+evoluções disponíveis". Quase todos evoluem em três, mas a **Sangria Arcana só
+tem duas**: por isso `temEvolucoes` aceita qualquer array com mais de uma, e os
+botões de evolução vêm do tamanho do array, não de [1,2,3] fixo. A evolução
+escolhida é o custo em vagas (I=1, II=2, III=3).
+Vagas: `2 + ⌊nível mágico ÷ 10⌋`.
+
+**Feitiço com tabela**: o campo opcional `tabela` ([{ carta, efeito }]) desenha
+uma tabela no card, na escolha e na ficha. Hoje só o **Baralho dos Mortos**
+(nível 40) usa: ele rola 1d20 e lê a carta.
 Todo feitiço é lançado com **Dicionário mental**. Mana só é gasta em rituais.
 
 **DT para resistir** = `12 + ⌊nível mágico do personagem ÷ 10⌋ + ⌊nível do feitiço ÷ 5⌋`.
@@ -258,9 +265,6 @@ do catálogo da mestra.
   busca nos catálogos; a busca de Doente é só em maiúsculas, porque "plantas
   doentes" aparece numa habilidade. Em ira e Enfeitiçado saem com **Controle
   seus demônios**, que antes não era usada por nada.
-- **Mecânicas** (`secoesDeMecanicas`): aba em toda ficha e botão no painel, com
-  as regras inteiras explicadas. Os números vêm das constantes, nunca digitados
-  no texto: mudar a regra muda a aba junto.
 - Personagem tem **foto** e **foto da marca** (a marca é quadrada, o retrato é
   redondo).
 - Todo peso de catálogo já foi somado em 1 (não existe mais "sem peso").
@@ -352,6 +356,9 @@ código**, não no banco. Expiração de banco não afeta nada disso.
   12/09/2026; antes era × 2).
 - No Bloqueio, só a **Resistência** dobra; equipamento e outros entram cheios.
 - Banco: recomeçar de graça em vez de pagar para resgatar os dados perdidos.
+- A **aba de Mecânicas** existiu em 26/09/2026 e foi removida a pedido em
+  29/09/2026. As regras continuam no CLAUDE.md e nos dois PDFs de análise, na
+  área de trabalho do usuário.
 - O crítico continua valendo para o **golpe seguinte**, não para o que acertou.
   A análise de 26/09/2026 ofereceu trocar e a decisão foi manter.
 - Em 26/09/2026 o usuário mandou aplicar **todas** as sugestões daquela análise:
