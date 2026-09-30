@@ -164,12 +164,21 @@ ataque; o **Bloqueio** abate o próprio valor do dano que passou.
 Ficha sem classe (deus, inimigo) usa a base 10 do `BALANCO_PADRAO`.
 
 ### Feitiços
-27 feitiços, 17 com **evoluções**; os outros mostram "Esse feitiço não tem
+29 feitiços, 19 com **evoluções**; os outros mostram "Esse feitiço não tem
 evoluções disponíveis". Quase todos evoluem em três, mas a **Sangria Arcana só
 tem duas**: por isso `temEvolucoes` aceita qualquer array com mais de uma, e os
 botões de evolução vêm do tamanho do array, não de [1,2,3] fixo. A evolução
 escolhida é o custo em vagas (I=1, II=2, III=3).
 Vagas: `2 + ⌊nível mágico ÷ 10⌋`.
+
+**Dano de feitiço cresce com o nível mágico** (29/09/2026): o feitiço marcado
+com `escala: true` soma `⌊nível mágico ÷ 10⌋` ao dano, do mesmo jeito que a arma
+soma metade do nível. São 13 hoje. Ficam de fora **Espírito incandescente** e
+**Forjador Mortífero**, que só emprestam dados para o ataque de outra pessoa (e
+aquele ataque já soma o nível da arma), e o **Baralho dos Mortos**, cujo dado
+sorteia a carta. Sem isso não havia curva nenhuma: a correlação entre nível do
+feitiço e dano era 0,21 — um feitiço de nível 20 batia igual a um de nível 80.
+Quem soma é a prop `bonusMagico` do botão, e a aba de feitiços mostra o valor.
 
 **Feitiço com tabela**: o campo opcional `tabela` ([{ carta, efeito }]) desenha
 uma tabela no card, na escolha e na ficha. Hoje só o **Baralho dos Mortos**
@@ -194,9 +203,10 @@ só uma sugestão. Botões ao lado de cada perícia, arma, habilidade e feitiço
 Armas têm dois botões: teste e dano.
 
 **Dano de arma** = dado + atributo da perícia do ataque + ⌊nível ÷ 2⌋
-(desde 26/09/2026). Habilidade, feitiço, item e golpe de animal **não** somam
-nada: lá o dado escrito já é o efeito inteiro. Quem soma é o botão, com a prop
-`armado`; o rótulo do botão é "Dano" em arma e "Rolar" no resto.
+(desde 26/09/2026). **Feitiço de dano** soma ⌊nível mágico ÷ 10⌋ (desde
+29/09/2026, prop `bonusMagico`). Habilidade, item e golpe de animal **não**
+somam nada: lá o dado escrito já é o efeito inteiro. Quem soma é o botão, com as
+props `armado` e `bonusMagico`; o rótulo é "Dano" em arma e "Rolar" no resto.
 
 **Crítico** (só armas): dado bruto do ataque ≥ **18**, sem atributo nem bônus,
 faz o golpe seguinte sair no **dano máximo** — cada dado no valor mais alto, sem
@@ -366,6 +376,13 @@ código**, não no banco. Expiração de banco não afeta nada disso.
   área de trabalho do usuário.
 - O crítico continua valendo para o **golpe seguinte**, não para o que acertou.
   A análise de 26/09/2026 ofereceu trocar e a decisão foi manter.
+- A análise dos feitiços de 29/09/2026 foi aplicada inteira: escala por nível
+  mágico, Fome de Karzaron (a I devolvia 13 de mana custando 10 — agora devolve
+  um quarto do dano, e a III subiu de 6 para 12 de mana), Herdeiro de chamas
+  (II por 6, III em 3d12), Frênesi III (30 de mana fixos viraram metade do nível
+  mágico), Pulso Arcano II (mantém o IMÓVEL) e dois feitiços de dano no topo,
+  **Capítulo Final** (85) e **Tinta Viva** (95), que eu escrevi — o texto deles é
+  meu, não do usuário, e pode ser reescrito à vontade.
 - Em 26/09/2026 o usuário mandou aplicar **todas** as sugestões daquela análise:
   dano com atributo, Motoras×1, atributo valendo 8, vagas de habilidade, nível
   mínimo nos animais místicos, régua de bônus, DT de ritual nova, sanidade zero,

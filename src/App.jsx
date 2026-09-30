@@ -1492,7 +1492,7 @@ const FEITICOS_CATALOGO = [
     evolucoes: [
       'Você ainda não teve que sobreviver a muitas coisas, então o desespero da batalha te dá 10 de mana em troca de 15 pontos de sanidade.',
       'Agora você pode trocar 20 de sanidade por 15 de mana.',
-      'Agora você troca miseráveis 8 de sanidade por 30 de mana. Essa evolução do feitiço tem uso limitado em 3 vezes por sessão.',
+      'Agora você troca miseráveis 8 de sanidade por mana igual à metade do seu nível mágico, arredondada para baixo. Essa evolução do feitiço tem uso limitado em 3 vezes por sessão.',
     ] },
   { id: 'fei_deixe_me_vencer', nome: 'Deixe-me vencer desta vez', nivelMin: 10,
     descricao: 'Você pode refazer um teste à sua escolha, jogando novamente seus dados sem nenhuma punição. Gasta 4 de mana.' },
@@ -1503,14 +1503,14 @@ const FEITICOS_CATALOGO = [
       'Agora animais pequenos como baratas, ratos e até mesmo formigas falam sua versão da história, à suas maneiras, por 4 de mana.',
       'Objetos, estruturas e animais agora possuem a lucidez de um gênio. Eles te contam as últimas cenas acontecidas à sua frente com clareza, até mesmo sabendo informações como nomes e sentimentos por 10 de mana.',
     ] },
-  { id: 'fei_rachadura', resistencia: 'Resiste com Velocidade de reação, recebendo metade do dano.', nome: 'Rachadura', nivelMin: 20,
+  { id: 'fei_rachadura', escala: true, resistencia: 'Resiste com Velocidade de reação, recebendo metade do dano.', nome: 'Rachadura', nivelMin: 20,
     descricao: 'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Velocidade de reação ou cai e sofre 2d10 de dano. Gasta 4 de mana.',
     evolucoes: [
       'Você abre uma fenda fina no chão sob os pés do alvo. Ele resiste com Velocidade de reação ou cai e sofre 2d10 de dano. Gasta 4 de mana.',
       'Você abre uma fenda mais grossa agora. Causa 3d12 de dano e gasta 6 de mana.',
       'Você abre uma cratera, pegando todos os alvos em um raio grande. Aliados também podem ser afetados e a cratera nunca se desfaz. Causa 4d10 de dano e gasta 9 de mana.',
     ] },
-  { id: 'fei_sangria_arcana', resistencia: 'Resiste com Resistência, recebendo metade do dano.', nome: 'Sangria Arcana', nivelMin: 20,
+  { id: 'fei_sangria_arcana', escala: true, resistencia: 'Resiste com Resistência, recebendo metade do dano.', nome: 'Sangria Arcana', nivelMin: 20,
     descricao: 'Você convoca a força de seu deus por alguns segundos e um corte invisível se abre na pele do alvo, como se o próprio espaço ao redor dele cortasse, causando 1d12 de dano por 3 de mana.',
     evolucoes: [
       'Você convoca a força de seu deus por alguns segundos e um corte invisível se abre na pele do alvo, como se o próprio espaço ao redor dele cortasse, causando 1d12 de dano por 3 de mana.',
@@ -1523,21 +1523,21 @@ const FEITICOS_CATALOGO = [
       'Você agora pode retirar mais de uma parte do corpo de uma vez. Ainda gasta 8 de mana por parte do corpo retirada.',
       'Sua alma passa a agir como uma parte do seu corpo, e você pode separá-los. Ao retirar a alma, seu corpo fica vulnerável pelo tempo que fica sem a alma. Você não é invisível, mas pode atravessar estruturas e não recebe dano na forma de alma. Gasta 14 de mana e você fica fora por 1d100 de minutos. Se não retornar a tempo, seu corpo apodrece e você não pode mais voltar.',
     ] },
-  { id: 'fei_costureiro_morte', nome: 'Costureiro da morte', nivelMin: 30,
+  { id: 'fei_costureiro_morte', escala: true, nome: 'Costureiro da morte', nivelMin: 30,
     descricao: 'Você fecha ferimentos com fios de luz, devolvendo 2d8 de vida a um alvo. Gasta 5 de mana. Não funciona duas vezes na mesma ferida.',
     evolucoes: [
       'Você fecha ferimentos com fios de luz, devolvendo 2d8 de vida a um alvo. Gasta 5 de mana. Não funciona duas vezes na mesma ferida.',
       'Você devolve 3d10 de vida por 7 de mana.',
       'Você devolve 5d10 de vida por 10 de mana.',
     ] },
-  { id: 'fei_herdeiro_chamas', resistencia: 'Resiste com Instrumento físico, recebendo metade do dano.', nota: 'Para sustentar esse efeito você gasta 4 de mana por rodada e se você receber um ataque enquanto mantém a magia sustentada a DT é de Dicionário mental igual a metade do dano tomado.', nome: 'Herdeiro de chamas', nivelMin: 35,
+  { id: 'fei_herdeiro_chamas', escala: true, resistencia: 'Resiste com Instrumento físico, recebendo metade do dano.', nota: 'Para sustentar esse efeito você gasta 4 de mana por rodada e se você receber um ataque enquanto mantém a magia sustentada a DT é de Dicionário mental igual a metade do dano tomado.', nome: 'Herdeiro de chamas', nivelMin: 35,
     descricao: 'Evolução natural de Espírito incandescente: agora o fogo obedece forma. Você molda uma parede, um caminho ou uma corrente de fogo. Gasta 6 de mana e causa 1d12 + 5 de dano.',
     evolucoes: [
       'Evolução natural de Espírito incandescente: agora o fogo obedece forma. Você molda uma parede, um caminho ou uma corrente de fogo. Gasta 6 de mana e causa 1d12 + 5 de dano.',
-      'O fogo te protege. Essa evolução pode ser usada como reação a algum ataque por 8 de mana, colocando fogo no alvo por uma rodada, que recebe 2d10 de dano como reação, mas não te impede de tomar o ataque dele.',
-      'Você pode usar essa evolução para pegar fogo em seu corpo inteiro, virando um fogaréu ambulante que bota fogo em tudo que toca. O simples ato de encostar em algo causa 2d12 de dano e gasta 8 de mana.',
+      'O fogo te protege. Essa evolução pode ser usada como reação a algum ataque por 6 de mana, colocando fogo no alvo por uma rodada, que recebe 2d10 de dano como reação, mas não te impede de tomar o ataque dele.',
+      'Você pode usar essa evolução para pegar fogo em seu corpo inteiro, virando um fogaréu ambulante que bota fogo em tudo que toca. O simples ato de encostar em algo causa 3d12 de dano e gasta 8 de mana.',
     ] },
-  { id: 'fei_armadilha_runica', resistencia: 'Resiste com Percepção para não pisar nela.', nome: 'Armadilha Rúnica', nivelMin: 35,
+  { id: 'fei_armadilha_runica', escala: true, resistencia: 'Resiste com Percepção para não pisar nela.', nome: 'Armadilha Rúnica', nivelMin: 35,
     descricao: 'Você desenha uma marca arcana no chão, parecida com a sua marca na pele, e quem pisar nela recebe um dano explosivo de 2d12. Só pode ser pisada uma vez, e quem passar perto faz um teste de Percepção DT 12 para desviar. Pode atingir aliados também. Gasta 5 de mana para invocar.',
     evolucoes: [
       'Você desenha uma marca arcana no chão, parecida com a sua marca na pele, e quem pisar nela recebe um dano explosivo de 2d12. Só pode ser pisada uma vez, e quem passar perto faz um teste de Percepção DT 12 para desviar. Pode atingir aliados também. Gasta 5 de mana para invocar.',
@@ -1561,27 +1561,27 @@ const FEITICOS_CATALOGO = [
     ] },
   { id: 'fei_escudo_totemico', nome: 'Escudo Totêmico', nivelMin: 40,
     descricao: 'Um totem se acende em algum lugar do ambiente e, enquanto ninguém quebrá-lo, você recebe metade de todos os danos. Você gasta 6 de mana e pode usar este escudo em um aliado, sacrificando sua proteção.' },
-  { id: 'fei_lorde_metal', resistencia: 'Resiste com Velocidade de reação, tomando metade do dano.', nome: 'Lorde Metal', nivelMin: 45,
+  { id: 'fei_lorde_metal', escala: true, resistencia: 'Resiste com Velocidade de reação, tomando metade do dano.', nome: 'Lorde Metal', nivelMin: 45,
     descricao: 'Mova todos os objetos de metal no recinto. Você pode usar como arma ou simplesmente mudá-lo de lugar. Você não pode mover objetos maiores do que o tamanho de sua mão, e só pode mover um por vez. Objetos dão 2d6 + 2 de dano. Gasta 4 de mana por objeto.',
     evolucoes: [
       'Mova todos os objetos de metal no recinto. Você pode usar como arma ou simplesmente mudá-lo de lugar. Você não pode mover objetos maiores do que o tamanho de sua mão, e só pode mover um por vez. Objetos dão 2d6 + 2 de dano. Gasta 4 de mana por objeto.',
       'Você agora move todos os objetos pequenos e médios do recinto, podendo usar todos como arma. A cada 2 objetos, o dano é de 2d10. Cada 1, 1d12. Gasta 6 de mana.',
       'Você agora pode mover todos os objetos do recinto, ignorando seu tamanho, desde que seja feito de metal. Gasta 10 de mana e o dano de objetos considerados grandes ou enormes é de 4d12 de dano.',
     ] },
-  { id: 'fei_homunculo', nome: 'Invocando o Homúnculo', nivelMin: 50,
+  { id: 'fei_homunculo', escala: true, nome: 'Invocando o Homúnculo', nivelMin: 50,
     descricao: 'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
     evolucoes: [
       'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
       'Você cria 3 aliados agora, um pouco maiores por 7 de mana. Eles causam 2d6 de dano por ataque. Cada um tem 13 de vida e te obedecem cegamente.',
       'Você cria um monstro de carne, sangue e raiva. Ela é quase um brutamonte, causando 2d10 + 6 por ataque por 10 de mana. Ela tem 35 de vida, mas não te obedece muito bem.',
     ] },
-  { id: 'fei_erratum', resistencia: 'Resiste com Volição, tomando metade do dano.', nome: 'Erratum', nivelMin: 55,
+  { id: 'fei_erratum', escala: true, resistencia: 'Resiste com Volição, tomando metade do dano.', nome: 'Erratum', nivelMin: 55,
     descricao: 'Você declara uma condenação curta contra um alvo. Ele sofre 3d12 de dano, e o dobro disso se já estiver ferido. Gasta 8 de mana.' },
-  { id: 'fei_pulso_arcano', resistencia: 'Resiste com Resistência, recebendo metade do dano.', nome: 'Pulso Arcano', nivelMin: 60,
+  { id: 'fei_pulso_arcano', escala: true, resistencia: 'Resiste com Resistência, recebendo metade do dano.', nome: 'Pulso Arcano', nivelMin: 60,
     descricao: 'Você leva ondas de choque do chão até seu alvo, que fica imóvel por 1 rodada. Você gasta 6 de mana.',
     evolucoes: [
       'Você leva ondas de choque do chão até seu alvo, que fica imóvel por 1 rodada. Você gasta 6 de mana.',
-      'Esse pulso vira um raio agora, deixando marcas de eletricidade em seu corpo. Esse pulso agora dá 2d10 de dano, mas não deixa o alvo imóvel. Gasta 6 de mana.',
+      'Esse pulso vira um raio agora, deixando marcas de eletricidade em seu corpo. Esse pulso agora dá 2d10 de dano e ainda deixa o alvo IMÓVEL por 1 rodada. Gasta 6 de mana.',
       'Você deixa todos os alvos a uma distância média de você imóveis por uma rodada. Gasta 8 de mana.',
     ] },
   { id: 'fei_forjador_mortifero', nome: 'Forjador Mortífero', nivelMin: 65,
@@ -1593,14 +1593,14 @@ const FEITICOS_CATALOGO = [
     ] },
   { id: 'fei_equilibrio_sanguineo', nome: 'Equilíbrio sanguíneo', nivelMin: 70,
     descricao: 'Escolha dois alvos e faça com que seus níveis de vida fiquem equilibrados, somando seus pontos e dividindo entre os dois. Você gasta 5 de mana e ambos os alvos podem tentar resistir com um teste de Resistência.' },
-  { id: 'fei_fome_karzaron', resistencia: 'Resiste com Velocidade de reação, tomando metade do dano.', nome: 'Fome de Karzaron', nivelMin: 75,
-    descricao: 'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 4d12 de dano, e você recupera metade desse valor em mana. Gasta 10 de mana.',
+  { id: 'fei_fome_karzaron', escala: true, resistencia: 'Resiste com Velocidade de reação, tomando metade do dano.', nome: 'Fome de Karzaron', nivelMin: 75,
+    descricao: 'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 4d12 de dano, e você recupera um quarto desse valor em mana. Gasta 10 de mana.',
     evolucoes: [
-      'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 4d12 de dano, e você recupera metade desse valor em mana. Gasta 10 de mana.',
+      'Uma boca escura se abre atrás do alvo e arranca um pedaço do que ele é. Causa 4d12 de dano, e você recupera um quarto desse valor em mana. Gasta 10 de mana.',
       'Um braço demoníaco inteiro é chamado por você, e ele te protege da metade dos danos tomados por 3 rodadas, também podendo dar ataques que causam 2d12 de dano. Gasta 10 de mana.',
-      'Olhos demoníacos surgem no nada — alguns dizem que do inferno — e tira 6d12 de sanidade do alvo. Gasta 6 de mana.',
+      'Olhos demoníacos surgem no nada — alguns dizem que do inferno — e tira 6d12 de sanidade do alvo. Gasta 12 de mana.',
     ] },
-  { id: 'fei_brincando_morcego', nome: 'Brincando de morcego', nivelMin: 80,
+  { id: 'fei_brincando_morcego', escala: true, nome: 'Brincando de morcego', nivelMin: 80,
     descricao: 'Você fica de cabeça para baixo no ponto mais alto do recinto por 3 rodadas, atacando de cima e recuperando metade do dano causado em vida. Seus ataques são sombras indetectáveis (não podem ser esquivados) que causam 2d8 de dano. Gasta 5 de mana mas seu corpo não fica indetectável como seus ataques.',
     evolucoes: [
       'Você fica de cabeça para baixo no ponto mais alto do recinto por 3 rodadas, atacando de cima e recuperando metade do dano causado em vida. Seus ataques são sombras indetectáveis (não podem ser esquivados) que causam 2d8 de dano. Gasta 5 de mana mas seu corpo não fica indetectável como seus ataques.',
@@ -1614,6 +1614,13 @@ const FEITICOS_CATALOGO = [
       'Você se transforma em uma pessoa viva por 1d20 de horas ao invés de minutos, imitando-a perfeitamente. Você gasta mana equivalente a unidade de horas que você permanece sob efeito do feitiço. A pessoa precisa estar viva para você imitá-la e memórias da pessoa vão surgindo aos poucos, mas não são verossímeis a todo momento. Elas podem te enganar.',
       'As pessoas não precisam estar vivas para você imitá-las, mas você precisa ter visto seu corpo em algum momento da sua vida (o corpo morto, ou a pessoa antes dela morrer). Você determina se quer ficar com o corpo por 1d20 de minutos ou 1d20 de horas, sendo o cálculo de mana gasta equivalente as outras evoluções. Memórias ainda surgem do receptáculo, e elas são verdadeiras, mas só surgem com o uso de horas da marionete, não funciona em minutos.',
     ] },
+  { id: 'fei_capitulo_final', escala: true, resistencia: 'Resiste com Volição, tomando metade do dano.', nome: 'Capítulo Final', nivelMin: 85,
+    descricao: 'Você arranca uma página do destino do alvo e a queima na frente dele. Ele sofre 5d12 de dano e esquece a última coisa que fez. Gasta 12 de mana.',
+    evolucoes: [
+      'Você arranca uma página do destino do alvo e a queima na frente dele. Ele sofre 5d12 de dano e esquece a última coisa que fez. Gasta 12 de mana.',
+      'A página agora leva embora o que estava escrito nela: o alvo sofre 6d12 de dano e perde o próximo turno. Gasta 14 de mana.',
+      'Você arranca o capítulo inteiro. Todos os alvos à sua frente sofrem 6d12 de dano e nenhum deles pode reagir nesta rodada. Gasta 18 de mana.',
+    ] },
   { id: 'fei_permita_me_deus', nome: 'Permissão de Mago', nivelMin: 90,
     descricao: 'Um aliado à sua escolha recebe +5 em todos os testes, e não pode ser morto ou derrubado, por 3 rodadas. Gasta 10 de mana. Se ele usar isso pra matar alguém, você faz um teste de Resistência com DT 20. Se falhar, você também morre.' },
   { id: 'fei_ultimas_palavras', nome: 'Faço disso minhas últimas palavras', nivelMin: 90,
@@ -1624,6 +1631,13 @@ const FEITICOS_CATALOGO = [
       'Você move uma coisa grande: um rio, uma montanha, uma rua alguns quilômetros. Gasta 40 de mana e leva uma noite inteira sem ações. Quando amanhecer, o mundo é diferente e ninguém sabe explicar por quê.',
       'Você agora move uma cidade inteira por 60 de mana. Você leva um dia e uma noite inteira.',
       'Você move um país inteiro, mudando o mapa mundi à sua mercê. Demora uma semana e gasta 80 de mana.',
+    ] },
+  { id: 'fei_tinta_viva', escala: true, resistencia: 'Resiste com Resistência, tomando metade do dano.', nome: 'Tinta Viva', nivelMin: 95,
+    descricao: 'A tinta da sua marca escorre da pele e ganha vontade própria. Ela agarra o alvo e o corta de dentro para fora, causando 6d12 de dano. Gasta 16 de mana.',
+    evolucoes: [
+      'A tinta da sua marca escorre da pele e ganha vontade própria. Ela agarra o alvo e o corta de dentro para fora, causando 6d12 de dano. Gasta 16 de mana.',
+      'A tinta tem sede agora. O alvo sofre 8d12 de dano e fica SANGRANDO. Gasta 20 de mana.',
+      'A tinta não volta para a sua pele: ela fica no chão da cena e escolhe sozinha quem cortar. Todos os alvos à sua escolha sofrem 6d12 de dano, e você fica sem a sua marca até o próximo descanso longo. Gasta 26 de mana.',
     ] },
   { id: 'fei_senhor_quatro_mundos', nome: 'Senhor dos quatro mundos', nivelMin: 'negro',
     descricao: 'Você se teleporta livremente para todos os lugares em que já esteve ou conhece, independente do reino. Cada viagem custa 5 de mana.' },
@@ -1667,6 +1681,18 @@ function dtParaResistir(char, feitico) {
     + Math.floor(nivelMagicoDaFicha(char) / DEGRAU_DT)
     + Math.floor(nivelDoFeitico(feitico) / DEGRAU_DT_FEITICO);
 }
+
+/* ---------- dano de feitiço que cresce com o nível mágico ----------
+   A arma passou a somar ⌊nível ÷ 2⌋ em 26/09/2026, o feitiço não somava nada, e
+   o resultado era um catálogo sem curva nenhuma: a Rachadura (nível 20) fazia o
+   mesmo dano que o Brincando de morcego (nível 80). Agora o feitiço marcado com
+   `escala` soma 1 de dano a cada 10 níveis mágicos de quem lança. Fica de fora
+   quem só empresta dados para o ataque de outra pessoa — Espírito incandescente
+   e Forjador Mortífero —, porque aquele ataque é uma arma e já soma o nível
+   dela, e fica de fora o Baralho dos Mortos, cujo dado sorteia a carta. */
+const DEGRAU_DANO_MAGICO = 10;
+const bonusDanoMagico = (char, feitico) =>
+  (feitico?.escala ? Math.floor(nivelMagicoDaFicha(char) / DEGRAU_DANO_MAGICO) : 0);
 
 function motivoBloqueio(feitico) {
   return feitico.nivelMin === 'negro'
@@ -4792,7 +4818,7 @@ function BotaoRolar({ onRolar, color, titulo, compacto, rotulo }) {
 /* Botões de uma arma, habilidade ou feitiço. São dois papéis diferentes e por
    isso dois botões: o teste diz se acertou, o dano diz o quanto doeu. Cada um
    só aparece quando faz sentido — sem notação de dado, não há o que rolar. */
-function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico, armado, rotuloRolagem = 'Dano' }) {
+function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico, armado, bonusMagico = 0, rotuloRolagem = 'Dano' }) {
   const notacao = lerNotacao(dano);
   const p = pericia ? PERICIAS.find((x) => x.nome.toLowerCase() === String(pericia).toLowerCase()) : null;
   const m = p ? modificadorDoTeste(char, p) : null;
@@ -4803,16 +4829,20 @@ function BotoesDeRolagem({ char, color, nome, dano, pericia, comCritico, armado,
 
   /* Em arma, o que acerta também machuca: soma o atributo da perícia do ataque
      e metade do nível. Sem isso a arma do nível 10 é a mesma do nível 1, e o
-     combate só cresce. Habilidade e feitiço não somam nada: lá o dado escrito
-     já é o efeito inteiro. */
-  const bonusDano = armado ? (m?.atributo || 0) + Math.floor(nivelDaFicha(char) / 2) : 0;
+     combate só cresce. Feitiço de dano soma o `bonusMagico` pelo mesmo motivo,
+     pelo nível mágico de quem lança. Habilidade, item e golpe de animal não
+     somam nada: lá o dado escrito já é o efeito inteiro. */
+  const bonusArma = armado ? (m?.atributo || 0) + Math.floor(nivelDaFicha(char) / 2) : 0;
+  const bonusDano = bonusArma + bonusMagico;
   const modDano = notacao ? notacao.modificador + bonusDano : 0;
   const textoDano = notacao
     ? `${notacao.qtd}d${notacao.faces}${modDano ? ` ${modDano > 0 ? '+' : '−'} ${Math.abs(modDano)}` : ''}`
     : '';
   const maximoDano = notacao ? notacao.qtd * notacao.faces + modDano : 0;
   const detalheDano = bonusDano
-    ? `${p ? abrevAttr(p.atributo) + ' +' + (m?.atributo || 0) + ' · ' : ''}nível +${Math.floor(nivelDaFicha(char) / 2)}`
+    ? [armado && p ? `${abrevAttr(p.atributo)} +${m?.atributo || 0}` : null,
+      armado ? `nível +${Math.floor(nivelDaFicha(char) / 2)}` : null,
+      bonusMagico ? `nível mágico +${bonusMagico}` : null].filter(Boolean).join(' · ')
     : null;
 
   return (
@@ -4947,7 +4977,7 @@ function LinhaResistencia({ texto, color, dt }) {
 
 /* `detalhes` é um mapa id → texto curto, usado para mostrar a evolução do
    feitiço ao lado do nome sem mexer no catálogo. */
-function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes, char, periciaDeLancamento, dtDeResistencia }) {
+function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, descricoes, char, periciaDeLancamento, dtDeResistencia, bonusDeDano }) {
   const itens = (ids || []).map((id) => catalogo.find((x) => x.id === id)).filter(Boolean);
   return (
     <div className="mb-5">
@@ -4979,7 +5009,8 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
               {char && (
                 <BotoesDeRolagem char={char} color={color} nome={it.nome}
                   dano={it.dano !== undefined ? it.dano : (descricoes?.[it.id] || it.descricao)}
-                  pericia={periciaDeLancamento} rotuloRolagem="Rolar" />
+                  pericia={periciaDeLancamento} rotuloRolagem="Rolar"
+                  bonusMagico={bonusDeDano ? bonusDeDano(it) : 0} />
               )}
             </div>
           ))}
@@ -5291,7 +5322,10 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                   {' '}{DEGRAU_DT_FEITICO} níveis do feitiço.
                 </p>
                 <p className="text-xs leading-relaxed mt-1.5" style={{ color: V.muted, fontFamily: F.body }}>
-                  A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>.
+                  A mana só é gasta ao conjurar <strong style={{ color: origin.cor }}>rituais</strong>. Feitiço de
+                  dano soma <strong style={{ color: origin.cor }}>+{Math.floor(nivelMagicoDaFicha(char) / DEGRAU_DANO_MAGICO)}</strong> pelo
+                  seu nível mágico — 1 a cada {DEGRAU_DANO_MAGICO} níveis, como a arma soma metade do nível. O
+                  botão de rolagem já soma.
                 </p>
               </div>
               <ListaConteudo titulo="Conhecidos" Icon={Wand2} ids={idsDeFeiticos(char.feiticos)}
@@ -5299,7 +5333,8 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                 descricoes={descricoesDeFeiticos(char.feiticos, catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO))}
                 catalogo={catalogoDe(contentIndex, 'feiticos', FEITICOS_CATALOGO)} color={origin.cor} vazio="Nenhum feitiço conhecido."
                 char={char} periciaDeLancamento="Dicionário mental"
-                dtDeResistencia={(f) => dtParaResistir(char, f)} />
+                dtDeResistencia={(f) => dtParaResistir(char, f)}
+                bonusDeDano={(f) => bonusDanoMagico(char, f)} />
             </div>
           )}
           {tab === 'animal' && (
