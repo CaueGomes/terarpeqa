@@ -46,8 +46,13 @@ npx vite --port 5173 &
   Um único serviço serve a API e os arquivos estáticos de `dist/`.
 - **Banco**: `DATABASE_URL` aceita dois formatos.
   - `pglite:./.pgdata` → Postgres dentro do próprio processo (desenvolvimento).
-  - `postgres://...` → Postgres de verdade (produção, Render).
+  - `postgres://...` → Postgres de verdade (produção, **Neon**).
 - **Deploy**: Render, descrito em `render.yaml` (Blueprint). Plano gratuito.
+  **O banco não está no Blueprint**: desde 01/10/2026 ele é um projeto do Neon,
+  criado à mão, e o `DATABASE_URL` fica só no painel do Render (Environment),
+  marcado como `sync: false`. Tirar esse `sync: false` ou devolver um bloco
+  `databases:` ao `render.yaml` faria o Render apontar para um banco dele de
+  novo — que é justamente o que expira.
 - **Produção**: https://terarpeqa.onrender.com — hiberna após 15 min parado, e
   o primeiro acesso depois disso demora cerca de 1 minuto.
 
@@ -286,7 +291,20 @@ do catálogo da mestra.
 
 ---
 
-## Banco de dados: o que já deu errado
+## Banco de dados
+
+**Hoje a produção é o Neon** (projeto `terarpeqa`, região `us-west-2`, a mesma
+costa do serviço do Render). Migrado em 01/10/2026 justamente por causa do que
+está logo abaixo. O plano grátis do Neon **não expira**: ele desliga a
+computação depois de 5 minutos parado e acorda sozinho na consulta seguinte, e
+a documentação é explícita em dizer que estourar limite suspende, mas não apaga
+dado. São 0,5 GB de armazenamento — o banco inteiro da mesa tem 16 KB.
+
+A migração foi backup → restaurar no Neon → trocar o `DATABASE_URL` no painel do
+Render, com os scripts que já existiam. O histórico de rolagens não vai no
+backup (só contas e `kv`), e estava vazio nos dois lados na hora da troca.
+
+### O que deu errado antes
 
 **O Postgres gratuito do Render expira.** Aconteceu em 10/09/2026 com o banco
 criado em 20/08/2026 — antes dos 30 dias que eu havia estimado — e levou as
@@ -316,8 +334,11 @@ Não carregam o `.env` de propósito: ele aponta para o banco local, e carregá-
 faria o usuário achar que salvou a produção tendo salvo um banco vazio.
 `backups/` está no `.gitignore` (o arquivo tem hash de senha e todas as fichas).
 
+A URL a usar nos dois scripts é a connection string do Neon, do painel do Neon.
+Ela é uma senha: não colar em lugar que vire histórico público.
+
 O catálogo do jogo — feitiços, habilidades, armas, dicionários — vive **no
-código**, não no banco. Expiração de banco não afeta nada disso.
+código**, não no banco. Perder o banco não afeta nada disso.
 
 ---
 

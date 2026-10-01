@@ -1,8 +1,11 @@
-databases:
-  - name: terarpeqa-db
-    databaseName: terarpeqa
-    plan: free
-
+# O banco não é mais do Render. Desde 01/10/2026 o Postgres é o Neon, criado
+# fora deste Blueprint, porque o banco grátis do Render expira e apaga os dados
+# (aconteceu em 10/09/2026) e o do Neon não: ele só suspende a computação.
+#
+# Por isso não existe mais bloco `databases:` aqui, e o DATABASE_URL vem do
+# painel do Render, em Environment. O `sync: false` é o que diz ao Blueprint
+# "esse valor é do painel, não encoste" — sem ele, o endereço antigo voltaria
+# sozinho na próxima sincronização.
 services:
   - type: web
     name: terarpeqa
@@ -14,9 +17,7 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: terarpeqa-db
-          property: connectionString
+        sync: false
       - key: SESSION_SECRET
         generateValue: true
       - key: NODE_ENV
