@@ -300,6 +300,12 @@ computação depois de 5 minutos parado e acorda sozinho na consulta seguinte, e
 a documentação é explícita em dizer que estourar limite suspende, mas não apaga
 dado. São 0,5 GB de armazenamento — o banco inteiro da mesa tem 16 KB.
 
+A conexão **verifica o certificado TLS** (`rejectUnauthorized: true`), o que só
+ficou possível com o Neon: o Render assinava o próprio certificado. Se um dia o
+banco for um servidor com certificado próprio, `DATABASE_SSL_INSECURE=1` no
+painel desliga a verificação sem precisar de deploy. Conferido com uma
+autoridade falsa: com ela o driver recusa a conexão, sem ela conecta.
+
 A migração foi backup → restaurar no Neon → trocar o `DATABASE_URL` no painel do
 Render, com os scripts que já existiam. O histórico de rolagens não vai no
 backup (só contas e `kv`), e estava vazio nos dois lados na hora da troca.

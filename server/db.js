@@ -27,11 +27,18 @@ async function criarPool() {
     return { query: (text, params) => db.query(text, params) };
   }
 
-  // Render, Neon e Supabase exigem TLS. Em localhost, desliga.
+  /* TLS. Em localhost desliga; fora dele, verifica o certificado de verdade.
+     Era `rejectUnauthorized: false` enquanto o banco era o do Render, que
+     assina o próprio certificado; o Neon usa autoridade pública, então a
+     verificação passa. Se um dia o banco for um servidor com certificado
+     próprio, `DATABASE_SSL_INSECURE=1` volta ao comportamento antigo sem
+     precisar mexer no código nem subir deploy. */
   const isLocal = /localhost|127\.0\.0\.1/.test(url);
+  const semVerificar = process.env.DATABASE_SSL_INSECURE === '1';
+  if (semVerificar && !isLocal) console.warn('[db] TLS sem verificar o certificado (DATABASE_SSL_INSECURE=1).');
   return new Pool({
     connectionString: url,
-    ssl: isLocal ? false : { rejectUnauthorized: false },
+    ssl: isLocal ? false : { rejectUnauthorized: !semVerificar },
     max: 5,
   });
 }
