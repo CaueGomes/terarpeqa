@@ -138,7 +138,7 @@ const TIPOS_ANIMAL = [
   { id: 'mistico', nome: 'Animal místico', desc: 'Seu uso é muito restrito, e seu laço é complexo, assim como seu ser.' },
   { id: 'natural', nome: 'Animal natural', desc: 'Você não possui restrições quanto ao seu uso, e pode escolher mais de um. Animais naturais exigem menos de seu corpo e mente.' },
 ];
-const NOTA_ANIMAL = 'Escolha o tipo do seu laço. Os animais vêm prontos na aba Animal da ficha: com laço natural você escolhe um animal por nível de personagem, com laço místico escolhe um só.';
+const NOTA_ANIMAL = 'Escolha o tipo do seu laço. Os animais vêm prontos e você escolhe os seus na etapa seguinte: com laço natural, um animal por nível de personagem; com laço místico, um só.';
 
 const TIPOS_AGUA = [
   { id: 'sereia', nome: 'Sereia', desc: 'Seu canto é como de um deus, pode pegar os desprevenidos no pulo.', pericias: ['compostura', 'volicao'] },
@@ -1230,6 +1230,82 @@ function habilidadesAutomaticas(char) {
 }
 
 /* O que a ficha mostra: o que a classe deu mais o que a pessoa escolheu. */
+/* ---------- poderes de classe, liberados por nível ----------
+   Guerreiro e criatura do mar ganham um poder a cada dois níveis. Eles NÃO
+   ocupam vaga de habilidade e não entram no catálogo de habilidades de
+   propósito: a reserva de sanidade é a média das três habilidades mais caras
+   da classe, e poder caro aqui dentro inflaria a sanidade de todo mundo.
+
+   O preço sai do texto, como o custo de sanidade das habilidades já sai:
+   "Acumula 8 de ira" e "Custa 15 de vida" são lidos por regex. Mudar o preço é
+   reescrever a frase, não mexer em código.
+
+   Guerreiro paga em IRA, que é a única barra do jogo que ENCHE em vez de
+   esvaziar: cada poder empurra o ponteiro para cima, e barra cheia joga o
+   guerreiro na condição EM IRA. Criatura do mar paga com a própria vida, e o
+   último contrato cobra vida PERMANENTE: o máximo cai e não volta. */
+const PODERES_POR_NIVEL = {
+  guerreiro: [
+    { nivel: 1, nome: 'Sangue quente',
+      descricao: 'Você deixa a raiva subir e para de tentar segurar. Até o fim da cena, todos os seus ataques corpo a corpo causam 1d6 de dano a mais. Acumula 4 de ira.' },
+    { nivel: 3, nome: 'Couro grosso',
+      descricao: 'A dor chega mais devagar quando você está com raiva. Por 3 rodadas, todo dano físico que você recebe cai pela metade. Acumula 6 de ira.' },
+    { nivel: 5, nome: 'Dois tempos',
+      descricao: 'Você bate antes de pensar, e bate de novo. Nesta rodada você ataca duas vezes com a mesma arma. Acumula 8 de ira.' },
+    { nivel: 7, nome: 'Nada me derruba',
+      descricao: 'Enquanto durar, ninguém tira você do lugar. Por 3 rodadas você recebe +5 de Defesa e não pode ser derrubado, empurrado nem ficar IMÓVEL. Acumula 10 de ira.' },
+    { nivel: 9, nome: 'A fúria é a arma',
+      descricao: 'Você para de medir o golpe. Seu próximo ataque sai no dano máximo e ignora o Bloqueio do alvo. Acumula 12 de ira.' },
+  ],
+  sereia: [
+    { nivel: 1, nome: 'Maré de sal',
+      descricao: 'O sal sobe na sua pele e o mar cobra a conta na hora. Nesta rodada, seus ataques causam 1d8 de dano a mais. Custa 5 de vida.' },
+    { nivel: 3, nome: 'Fôlego emprestado',
+      descricao: 'Âncore segura o seu fôlego por você. Por 3 rodadas, você não pode ser reduzido abaixo de 1 de vida. Custa 10 de vida.' },
+    { nivel: 5, nome: 'Dobra da onda',
+      descricao: 'A onda bate duas vezes no mesmo lugar. Seu próximo ataque causa o dobro do dano rolado. Custa 15 de vida.' },
+    { nivel: 7, nome: 'O mar cobra',
+      descricao: 'Você puxa a ferida de um aliado para dentro de você. Cure 4d10 de vida em um aliado à sua escolha. Custa 20 de vida.' },
+    { nivel: 9, nome: 'Promessa de Âncore',
+      descricao: 'Você devolve alguém que o mar já tinha levado. Um aliado morto nesta cena volta com metade da vida. Custa 15 de vida permanente: o seu máximo cai e não volta mais.' },
+  ],
+};
+
+/* Como cada classe chama a sua moeda e o que a aba explica. */
+const PODERES_CLASSE = {
+  guerreiro: {
+    aba: 'Ira', titulo: 'Habilidades de ira', cor: '#e0577a',
+    texto: 'A ira começa em zero e sobe: cada habilidade de ira empurra o ponteiro para cima em troca do que ela faz. Com a barra cheia você entra na condição EM IRA e deixa de escolher quem ataca. A barra zera no fim da cena, ou quando a condição passa.',
+  },
+  sereia: {
+    aba: 'Contratos', titulo: 'Contratos de vida', cor: '#5fb7c9',
+    texto: 'O mar não empresta de graça. Cada contrato é pago com a sua própria vida, descontada na hora da barra. O último cobra vida permanente: o seu máximo cai e não volta com descanso nenhum.',
+  },
+};
+
+const poderesDaClasse = (char) => (fichaLivre(char) ? [] : PODERES_POR_NIVEL[char?.originId] || []);
+const poderLiberado = (poder, char) => nivelDaFicha(char) >= poder.nivel;
+
+/* "Acumula 8 de ira" e "Custa 15 de vida (permanente)" saem do próprio texto. */
+const ganhoDeIra = (texto) => Number((texto || '').match(/acumula\s+(\d{1,3})\s+de\s+ira/i)?.[1]) || 0;
+function custoDeVidaDoPoder(texto) {
+  const m = (texto || '').match(/custa\s+(\d{1,3})\s+de\s+vida(\s+permanente)?/i);
+  return m ? { valor: Number(m[1]), permanente: !!m[2] } : null;
+}
+
+/* A barra de ira: 10 de base e mais 3 por ponto de Físico ou de Psique. Psique
+   entra porque é o que segura a fúria — quem despeja tudo em Físico tem a
+   barra curta e perde o controle antes. */
+const IRA_BASE = 10;
+const IRA_POR_ATRIBUTO = 3;
+function iraMaxima(char) {
+  if (fichaLivre(char) || char?.originId !== 'guerreiro') return 0;
+  const a = char.attributes || {};
+  return IRA_BASE + IRA_POR_ATRIBUTO * ((a.fisico || 0) + (a.psique || 0));
+}
+/* Diferente das outras barras, a ira começa VAZIA: null aqui é zero, não cheio. */
+const iraAtual = (char) => Math.max(0, Number(char?.atual?.ira) || 0);
+
 function habilidadesDaFicha(char) {
   const automaticas = habilidadesAutomaticas(char);
   return [...automaticas, ...(char?.habilidades || []).filter((id) => !automaticas.includes(id))];
@@ -1350,7 +1426,7 @@ const ANIMAIS_CATALOGO = [
     ] },
 
   /* ===== MÍSTICOS ===== */
-  { id: 'ani_ashvara', tipo: 'mistico', nivelMin: 3, nome: 'Ashvara', especie: 'Fênix', vida: 90,
+  { id: 'ani_ashvara', tipo: 'mistico', nome: 'Ashvara', especie: 'Fênix', vida: 90,
     concede: { psique: 5, intelecto: 4 }, custoPorTurno: 8,
     golpes: [
       { nome: 'Pluma incandescente', resiste: 'Velocidade de reação', descricao: '5d12 de dano e aplica EM CHAMAS, teste de Coordenação motora. Gasta 15 de conexão.' },
@@ -1361,7 +1437,7 @@ const ANIMAIS_CATALOGO = [
       { nome: 'Calor que cura', descricao: 'Cura 3d20 de vida em todos os aliados próximos. Teste de Ágape DT 18. Gasta 20 de conexão.' },
       { nome: 'Dessa vez não', descricao: 'Garante um acerto em qualquer teste. Gasta 13 de conexão.' },
     ] },
-  { id: 'ani_verthaz', tipo: 'mistico', nivelMin: 9, nome: 'Verthaz', especie: 'Dragão', vida: 140,
+  { id: 'ani_verthaz', tipo: 'mistico', nome: 'Verthaz', especie: 'Dragão', vida: 140,
     concede: { fisico: 6, intelecto: 4, motoras: -2 }, custoPorTurno: 10,
     golpes: [
       { nome: 'Sopro', resiste: 'Resistência', descricao: '8d20 de dano num cone amplo, teste de Volição. Gasta 25 de conexão.' },
@@ -1372,7 +1448,7 @@ const ANIMAIS_CATALOGO = [
       { nome: 'Presença de dragão', descricao: 'Todos os inimigos testam Volição DT 20 ou ficam DESNORTEADOS por 2 rodadas. Gasta 18 de conexão.' },
       { nome: 'Ganância', descricao: 'Você sabe onde está o objeto mais valioso num raio enorme. Teste de Esprit de Corps DT 16. Gasta 10 de conexão.' },
     ] },
-  { id: 'ani_isilme', tipo: 'mistico', nivelMin: 5, nome: 'Isilme', especie: 'Unicórnio', vida: 80,
+  { id: 'ani_isilme', tipo: 'mistico', nome: 'Isilme', especie: 'Unicórnio', vida: 80,
     concede: { psique: 6, motoras: 4 }, custoPorTurno: 9,
     golpes: [
       { nome: 'Chifre verdadeiro', resiste: 'Volição', descricao: '4d12 de dano, e o dobro contra quem já mentiu para você nesta cena, teste de Império interior. Gasta 18 de conexão.' },
@@ -1382,7 +1458,7 @@ const ANIMAIS_CATALOGO = [
       { nome: 'Só os dignos', descricao: 'Escolha uma pessoa. Ela não pode mentir na sua frente por uma cena. Teste de Ágape DT 22. Gasta 22 de conexão.' },
       { nome: 'Passo sobre água', descricao: 'Você e o grupo caminham sobre qualquer superfície líquida. Sem teste. Gasta 12 de conexão.' },
     ] },
-  { id: 'ani_grohm', tipo: 'mistico', nivelMin: 10, nome: 'Grohm', especie: 'Golem de pedra viva', vida: 200,
+  { id: 'ani_grohm', tipo: 'mistico', nome: 'Grohm', especie: 'Golem de pedra viva', vida: 200,
     concede: { fisico: 8, motoras: -4, intelecto: -2 }, custoPorTurno: 10,
     golpes: [
       { nome: 'Punho de montanha', resiste: 'Resistência', descricao: '12d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de conexão.' },
@@ -1392,7 +1468,7 @@ const ANIMAIS_CATALOGO = [
       { nome: 'Inabalável', descricao: 'Não pode ser derrubado, empurrado, nem afetado por IMÓVEL ou EM IRA pelo resto do combate. Ativar a habilidade custa 12 de conexão.' },
       { nome: 'Muralha', descricao: 'Você se torna parede: nenhum inimigo passa por você por 3 rodadas, mas você não pode atacar, só ser atacado. Gasta 24 de conexão.' },
     ] },
-  { id: 'ani_yssen', tipo: 'mistico', nivelMin: 7, nome: 'Yssen', especie: 'Quimera', vida: 160,
+  { id: 'ani_yssen', tipo: 'mistico', nome: 'Yssen', especie: 'Quimera', vida: 160,
     concede: { fisico: 5, motoras: 5, psique: -3 }, custoPorTurno: 7,
     golpes: [
       { nome: 'Três bocas', resiste: 'Velocidade de reação', descricao: '2d12 de dano três vezes, cada uma num alvo diferente, teste de Fúria de sangue. Gasta 14 de conexão.' },
@@ -1408,7 +1484,6 @@ const ANIMAIS_CATALOGO = [
    místico. Sem tipo escolhido ainda, nenhum. */
 /* O animal místico agora pede nível de personagem: o Grohm com 200 de vida
    não podia estar disponível na primeira sessão. */
-const animalLiberado = (animal, char) => !animal?.nivelMin || nivelDaFicha(char) >= animal.nivelMin;
 
 function limiteDeAnimais(char) {
   if (char?.subdivisaoAnimalTipo === 'natural') return nivelDaFicha(char);
@@ -1952,7 +2027,10 @@ function computeRecursos(char) {
 
   const vidaClasse = classe.vidaBase + classe.vidaPorNivel * degraus;
   const vidaBonusLore = char.recursos?.vidaBonusLore || 0;
-  const vidaMax = vidaClasse + sub.vida + (char.attributes.fisico * GANHO_POR_ATRIBUTO) + vidaNivel + vidaBonusLore;
+  /* Contrato de vida da criatura do mar: o que foi pago em vida permanente
+     some do máximo e não volta com descanso nenhum. Nunca abaixo de 1. */
+  const vidaPerdida = char.recursos?.vidaPerdida || 0;
+  const vidaMax = Math.max(1, vidaClasse + sub.vida + (char.attributes.fisico * GANHO_POR_ATRIBUTO) + vidaNivel + vidaBonusLore - vidaPerdida);
 
   /* A reserva é o que as habilidades da subdivisão cobram; sem ela, quem tem
      habilidade cara ficaria sem poder usá-la duas vezes na mesma cena. */
@@ -1966,7 +2044,7 @@ function computeRecursos(char) {
   const manaMax = char.originId === 'mago' ? nivelMagico : null;
 
   return {
-    vidaMax, sanidadeMax, manaMax, vidaNivel, sanidadeNivel, reservaSan,
+    vidaMax, sanidadeMax, manaMax, iraMax: iraMaxima(char), vidaPerdida, vidaNivel, sanidadeNivel, reservaSan,
     nivel, vidaClasse, sanClasse, subVida: sub.vida, subSanidade: sub.sanidade,
   };
 }
@@ -2047,14 +2125,16 @@ const AVISO_SEM_EVOLUCAO = 'Esse feitiço não tem evoluções disponíveis.';
    conta é ter mais de uma, não ser exatamente três. */
 const temEvolucoes = (f) => Array.isArray(f?.evolucoes) && f.evolucoes.length > 1;
 
-/* Na ficha, o feitiço é descrito pela evolução que o mago escolheu. */
+/* Na ficha, o feitiço aparece com TODAS as evoluções até a que o mago
+   escolheu: quem pegou a III também sabe a I e a II, e é justamente por isso
+   que a III custa três vagas. Quem não evolui continua um texto só. */
 function descricoesDeFeiticos(lista, catalogo) {
   return (lista || []).reduce((mapa, f) => {
     const id = feiticoId(f);
     const item = (catalogo || []).find((x) => x.id === id);
     if (!id || !item) return mapa;
     mapa[id] = temEvolucoes(item)
-      ? item.evolucoes[feiticoEvolucao(f) - 1]
+      ? item.evolucoes.slice(0, feiticoEvolucao(f)).map((texto, i) => ({ rotulo: `Evolução ${'I'.repeat(i + 1)}`, texto }))
       : `${item.descricao} ${AVISO_SEM_EVOLUCAO}`;
     return mapa;
   }, {});
@@ -2621,7 +2701,7 @@ const CONDICOES = [
   { id: 'em_chamas', nome: 'Em chamas', busca: /\bem chamas\b/iu,
     efeito: 'Recebe 1d10 de dano a cada rodada na condição. Para apagar o fogo, precisa gastar uma ação de movimento inteira e passar num teste de Coordenação motora DT 15, ou se molhar.' },
   { id: 'em_ira', nome: 'Em ira', busca: /\bem ira\b/iu,
-    efeito: 'Perde o controle sobre quem ataca. A cada rodada, deve atacar a criatura mais próxima, aliada ou não, e recebe +1d10 de dano em todos os ataques, mas sofre −10 em Defesa, Bloqueio e Esquiva. Não pode usar habilidades que exijam raciocínio, nem recuar. Para sair, precisa passar num teste de Controle seus demônios DT 20 no início de cada rodada. Guerreiros só saem depois de matar ou desmaiar alguém, ou de serem mortos ou desmaiados.' },
+    efeito: 'Perde o controle sobre quem ataca. A cada rodada, deve atacar a criatura mais próxima, aliada ou não, e recebe +1d10 de dano em todos os ataques, mas sofre −10 em Defesa, Bloqueio e Esquiva. Não pode usar habilidades que exijam raciocínio, nem recuar. Para não atacar um aliado, precisa passar num teste de Controle seus demônios DT 20 antes do ataque. Guerreiros só saem depois da condição de matar ou desmaiar alguém, ou de serem mortos ou desmaiados.' },
   { id: 'enfeiticado', nome: 'Enfeitiçado', busca: /\benfeitiç(?:ad[oa]s?|ar)\b/iu,
     efeito: 'Obedece a quem lançou o efeito e considera essa pessoa um aliado, ainda que se lembre de tudo depois. Não ataca quem o enfeitiçou e cumpre ordens diretas dentro do razoável: não se mata, mas machuca quem mandarem machucar. Para sair, precisa passar num teste de Volição ou de Controle seus demônios DT 20 ao final de cada rodada. Sofrer dano de quem o enfeitiçou rompe a condição na hora.' },
   { id: 'exausto', nome: 'Exausto', busca: /\bexaust(?:[oa]s?|ão)\b/iu,
@@ -2710,7 +2790,221 @@ function CondicoesScreen({ onBack }) {
   );
 }
 
-function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios, onCondicoes }) {
+/* ---------- inimigos prontos ----------
+   Fichas fechadas para a mestra não precisar montar nada no meio da sessão. O
+   botão de criar inimigo à mão continua onde estava: isto aqui é atalho, não
+   substituição.
+
+   A vida foi calibrada pelo dano real do sistema, não no chute: um grupo de 4
+   personagens de nível 5 entrega perto de 50 de dano por rodada (arma de
+   mediana 13,5 + atributo 3 + metade do nível, acertando em 70% das vezes).
+   Daí saem as categorias — NPC cai em 1 ou 2 rodadas, boss médio em 3 ou 4,
+   boss forte em 5 ou 6, boss final em 7 ou 8. Grupo maior ou de nível mais
+   alto derruba mais rápido; é só subir de categoria.
+
+   A Defesa é o número cheio que vai aparecer na ficha: a fábrica desconta a
+   base 10 e as Motoras sozinha. */
+const CATEGORIAS_INIMIGO = [
+  { id: 'npc', nome: 'NPC', frase: 'Cai em 1 ou 2 rodadas. Capanga, guarda, bicho de estrada.' },
+  { id: 'medio', nome: 'Boss médio', frase: 'Aguenta 3 ou 4 rodadas. Chefe de cena, fim de capítulo curto.' },
+  { id: 'forte', nome: 'Boss forte', frase: 'Aguenta 5 ou 6 rodadas. Precisa de plano, não só de dado.' },
+  { id: 'final', nome: 'Boss final', frase: 'Aguenta 7 ou 8 rodadas. Fecha arco, e o grupo sai marcado.' },
+];
+
+/* attrs: [intelecto, psique, físico, motoras] · armas: [nome, dano, perícia do teste] */
+const INIMIGOS_PRONTOS = [
+  /* ===== NPC ===== */
+  { id: 'inm_salteador', cat: 'npc', nome: 'Salteador de estrada', vida: 45, sanidade: 20, defesa: 12, attrs: [0, 0, 2, 2],
+    pericias: { instrumento_fisico: 1, velocidade_reacao: 1 },
+    historia: 'Espera na curva onde a mata fecha. Trabalha em bando, foge sozinho.',
+    armas: [['Faca cega', '2d6', 'Instrumento físico'], ['Pedrada', '1d8', 'Coordenação motora']],
+    habilidades: [['Corre quando apanha', 'Ao chegar à metade da vida, gasta a ação para fugir da cena. Se estiver cercado, ataca com desespero: 1d6 de dano a mais.']] },
+  { id: 'inm_guarda_prata', cat: 'npc', nome: 'Guarda de prata', vida: 60, sanidade: 26, defesa: 14, attrs: [1, 1, 2, 1],
+    pericias: { instrumento_fisico: 1, resistencia: 1, autoridade: 1 },
+    historia: 'Uniforme de Împera, escudo brasonado. Não negocia, mas obedece a ordens em voz alta.',
+    armas: [['Lança de guarda', '2d8', 'Instrumento físico'], ['Escudo na cara', '1d10', 'Guerra']],
+    habilidades: [['Formação', 'Enquanto houver outro guarda de pé na cena, os dois recebem +2 de Defesa.']] },
+  { id: 'inm_marujo', cat: 'npc', nome: 'Marujo amotinado', vida: 55, sanidade: 18, defesa: 13, attrs: [0, 1, 2, 2],
+    pericias: { instrumento_fisico: 1, furia_sangue: 1 },
+    historia: 'Virou contra o próprio capitão e agora não tem para onde voltar.',
+    armas: [['Sabre enferrujado', '2d8', 'Instrumento físico'], ['Garrafa quebrada', '1d8', 'Coordenação motora']],
+    habilidades: [['Bebida ruim', 'Começa a cena DESNORTEADO, mas causa 1d6 de dano a mais enquanto estiver nessa condição.']] },
+  { id: 'inm_acolito', cat: 'npc', nome: 'Acólito de Karzaron', vida: 50, sanidade: 34, defesa: 12, attrs: [2, 2, 0, 1],
+    pericias: { dicionario_mental: 2, volicao: 1 },
+    historia: 'Marca pequena, ambição grande. Aprendeu três feitiços e acha que já basta.',
+    armas: [['Tinta ácida', '2d6', 'Dicionário mental'], ['Cajado curto', '1d10', 'Instrumento físico']],
+    habilidades: [['Corte invisível', 'Causa 2d8 de dano a um alvo à distância. O alvo resiste com Resistência DT 14 e toma metade. Duas vezes por cena.']] },
+
+  /* ===== BOSS MÉDIO ===== */
+  { id: 'inm_capitao_guarda', cat: 'medio', nome: 'Capitão da guarda de Împera', vida: 160, sanidade: 40, defesa: 16, attrs: [2, 2, 3, 2],
+    pericias: { instrumento_fisico: 2, resistencia: 2, autoridade: 2, velocidade_reacao: 1 },
+    historia: 'Subiu de posto matando. Fala pouco e manda a tropa entrar na frente.',
+    armas: [['Espada de ofício', '3d8', 'Instrumento físico'], ['Chute de bota', '2d6', 'Guerra']],
+    habilidades: [['Avançar', 'Uma vez por rodada, manda um aliado atacar fora do turno dele.'],
+      ['Nenhum passo atrás', 'Ao cair à metade da vida, recebe +3 de Defesa e deixa de poder ser empurrado até o fim da cena.']] },
+  { id: 'inm_contramestre', cat: 'medio', nome: 'Contramestre do Olho Torto', vida: 150, sanidade: 44, defesa: 15, attrs: [2, 3, 3, 2],
+    pericias: { instrumento_fisico: 2, drama: 2, cest_la_vie: 2 },
+    historia: 'Manca de uma perna e ri disso antes de você rir. Nunca luta sem uma saída pronta.',
+    armas: [['Alfanje', '3d8', 'Instrumento físico'], ['Pistola de um tiro', '3d10', 'Coordenação motora']],
+    habilidades: [['Pólvora no chão', 'Espalha pólvora numa área. Quem passar por ela recebe 3d10 e fica EM CHAMAS. Uma vez por cena.'],
+      ['A tripulação ouve', 'Chama 2 marujos amotinados para a cena. Uma vez por cena.']] },
+  { id: 'inm_lobo_mestre', cat: 'medio', nome: 'Lobo-mestre de Melôdia', vida: 175, sanidade: 30, defesa: 15, attrs: [1, 2, 4, 3],
+    pericias: { instrumento_fisico: 2, logica: 2, velocidade_reacao: 2 },
+    historia: 'Grande demais para ser lobo, atento demais para ser bicho. A floresta abre caminho quando ele anda.',
+    armas: [['Mordida que trava', '3d10', 'Instrumento físico'], ['Patada', '2d8', 'Guerra']],
+    habilidades: [['Rasgo fundo', 'O alvo da mordida fica SANGRANDO. O alvo resiste com Resistência DT 15.'],
+      ['Matilha', 'Enquanto tiver mais da metade da vida, ataca duas vezes por rodada.']] },
+  { id: 'inm_escriba', cat: 'medio', nome: 'Escriba renegado', vida: 150, sanidade: 60, defesa: 15, attrs: [4, 3, 1, 2],
+    pericias: { dicionario_mental: 3, savoir_faire: 2, volicao: 2 },
+    historia: 'Copiou o que não devia e apagou o próprio nome dos registros para não ser achado.',
+    armas: [['Pena de aço', '2d10', 'Dicionário mental'], ['Página que corta', '3d6', 'Savoir-faire']],
+    habilidades: [['Erratum menor', 'Declara uma condenação curta: 3d12 de dano, e o dobro se o alvo já estiver ferido. O alvo resiste com Volição DT 17. Uma vez por cena.'],
+      ['Reescreve o chão', 'Troca dois alvos de lugar na cena. Eles resistem com Velocidade de reação DT 16.']] },
+
+  /* ===== BOSS FORTE ===== */
+  { id: 'inm_cavaleiro_prata', cat: 'forte', nome: 'Cavaleiro de prata', vida: 300, sanidade: 60, defesa: 18, attrs: [2, 3, 5, 3],
+    pericias: { instrumento_fisico: 3, resistencia: 3, limiar_dor: 3, autoridade: 2 },
+    historia: 'Armadura inteira, rosto que ninguém viu. Dizem que Împera o abençoou e que ele não dorme desde então.',
+    armas: [['Montante', '4d10', 'Instrumento físico'], ['Manopla', '3d8', 'Guerra']],
+    habilidades: [['Juramento de prata', 'Enquanto tiver um aliado de pé, reduz pela metade todo dano recebido.'],
+      ['Golpe de sentença', 'Um ataque que sai no dano máximo e ignora o Bloqueio. Uma vez por cena.'],
+      ['Não ajoelha', 'Imune a ser derrubado, empurrado ou ficar IMÓVEL.']] },
+  { id: 'inm_serpente_canal', cat: 'forte', nome: 'Serpente do canal fundo', vida: 270, sanidade: 50, defesa: 17, attrs: [1, 3, 5, 4],
+    pericias: { instrumento_fisico: 3, velocidade_reacao: 3, doenca: 2 },
+    historia: 'Vive onde a água fica preta. Cresceu comendo o que afundou dos naufrágios, inclusive gente.',
+    armas: [['Bote', '4d10', 'Instrumento físico'], ['Cauda', '3d10', 'Coordenação motora']],
+    habilidades: [['Peçonha', 'O alvo da mordida fica DOENTE. O alvo resiste com Resistência DT 18.'],
+      ['Engole', 'Agarra um alvo de tamanho médio ou menor, que fica IMÓVEL e recebe 2d10 por rodada até se soltar com Instrumento físico DT 18.'],
+      ['Volta para a água', 'Mergulha e some. Na rodada seguinte, ataca de outro ponto com vantagem.']] },
+  { id: 'inm_mago_negro', cat: 'forte', nome: 'Mago negro exilado', vida: 250, sanidade: 90, defesa: 17, attrs: [5, 4, 1, 3],
+    pericias: { dicionario_mental: 3, volicao: 3, savoir_faire: 3, logica: 2 },
+    historia: 'Marca preta até o pescoço. Foi expulso de Karzaron por um motivo que ninguém repete em voz alta.',
+    armas: [['Fome menor', '4d12', 'Dicionário mental'], ['Pulso arcano', '2d10', 'Dicionário mental']],
+    habilidades: [['Boca escura', 'Causa 4d12 de dano e recupera um quarto disso em mana. O alvo resiste com Velocidade de reação DT 20.'],
+      ['Homúnculos', 'Cria 3 aliados de carne com 13 de vida, que causam 2d6 por ataque.'],
+      ['Tinta final', 'Uma vez por sessão: causa 60 de dano a um alvo, sem resistência possível, e não conjura mais nada nesta cena.']] },
+  { id: 'inm_coletor_marcas', cat: 'forte', nome: 'O Coletor de marcas', vida: 290, sanidade: 70, defesa: 18, attrs: [4, 4, 3, 3],
+    pericias: { esprit_de_corps: 3, dicionario_mental: 3, drama: 3, apotheca: 2 },
+    historia: 'Arranca a marca da pele de quem mata e costura na própria. Tem braços que não são dele.',
+    armas: [['Agulha curva', '3d12', 'Apotheca'], ['Braço emprestado', '4d8', 'Instrumento físico']],
+    habilidades: [['Costura roubada', 'Usa uma habilidade de classe de um personagem que ele já matou nesta campanha. A mestra escolhe qual.'],
+      ['Arranca a marca', 'O alvo perde o acesso às próprias habilidades por 2 rodadas. Resiste com Volição DT 19.'],
+      ['Pele emendada', 'Cura 4d10 toda vez que derruba alguém.']] },
+
+  /* ===== BOSS FINAL ===== */
+  { id: 'inm_almirante_afogados', cat: 'final', nome: 'Almirante dos Afogados', vida: 420, sanidade: 100, defesa: 19, attrs: [3, 5, 5, 4],
+    pericias: { instrumento_fisico: 3, autoridade: 3, resistencia: 3, volicao: 3 },
+    historia: 'Afundou com a frota inteira e voltou com ela. A água escorre dele e nunca seca.',
+    armas: [['Âncora de abordagem', '5d10', 'Instrumento físico'], ['Maré de sal', '4d12', 'Volição']],
+    habilidades: [['A frota sobe', 'Chama 4 marujos afogados com 40 de vida, que causam 2d8. Duas vezes por cena.'],
+      ['Pulmão cheio de mar', 'Um alvo começa a se afogar em terra firme: 3d10 por rodada até passar em Resistência DT 20.'],
+      ['Não se afoga duas vezes', 'A primeira vez que chegaria a zero de vida, volta com metade da vida. Uma vez por cena.'],
+      ['Ordem do fundo', 'Todos os alvos na cena fazem Volição DT 20 ou ficam ENFEITIÇADOS por 1 rodada.']] },
+  { id: 'inm_primeira_marca', cat: 'final', nome: 'A Primeira Marca', vida: 450, sanidade: 120, defesa: 20, attrs: [5, 5, 4, 4],
+    pericias: { dicionario_mental: 3, volicao: 3, esprit_de_corps: 3, logica: 3 },
+    historia: 'A marca que Karzaron desenhou antes de aprender a desenhar. Ela andou sozinha e aprendeu sozinha.',
+    armas: [['Traço que não apaga', '5d12', 'Dicionário mental'], ['Risco em branco', '4d10', 'Volição']],
+    habilidades: [['Apaga o nome', 'Um alvo esquece quem é por 2 rodadas: sofre −10 em todos os testes. Resiste com Volição DT 21.'],
+      ['Desenha de novo', 'Cura 6d10 e some uma condição qualquer de si mesma. Três vezes por cena.'],
+      ['Tinta viva', 'Causa 6d12 de dano e deixa o alvo SANGRANDO. Resiste com Resistência DT 21.'],
+      ['Capítulo final', 'Todos os alvos à frente tomam 6d12 e não podem reagir nesta rodada. Uma vez por cena.']] },
+  { id: 'inm_grande_besta', cat: 'final', nome: 'Grande Besta de Melôdia', vida: 400, sanidade: 80, defesa: 19, attrs: [2, 4, 6, 5],
+    pericias: { instrumento_fisico: 3, agape: 3, velocidade_reacao: 3, limiar_dor: 3 },
+    historia: 'Melôdia criou e não conseguiu desfazer. Dorme embaixo da floresta e acorda quando alguém corta demais.',
+    armas: [['Pata que derruba', '5d12', 'Instrumento físico'], ['Bote de chifre', '4d12', 'Guerra']],
+    habilidades: [['Rachar o chão', 'Todos na cena fazem Velocidade de reação DT 20 ou caem e ficam IMÓVEIS por 1 rodada.'],
+      ['A floresta ajuda', 'Recupera 5d10 de vida no início de cada rodada enquanto estiver em terreno natural.'],
+      ['Urro', 'Todos fazem Controle seus demônios DT 20 ou ficam EM IRA por 2 rodadas.'],
+      ['Couro de séculos', 'Reduz em 10 todo dano recebido de armas.']] },
+  { id: 'inm_arauto_karzaron', cat: 'final', nome: 'Arauto de Karzaron', vida: 430, sanidade: 140, defesa: 20, attrs: [6, 5, 3, 4],
+    pericias: { dicionario_mental: 3, savoir_faire: 3, volicao: 3, drama: 3 },
+    historia: 'Fala pela boca do deus que ninguém nunca viu. Diz que veio só entregar um recado.',
+    armas: [['Palavra de Karzaron', '5d12', 'Dicionário mental'], ['Mão de tinta', '4d12', 'Instrumento físico']],
+    habilidades: [['O recado', 'No início da cena, anuncia como um dos personagens vai morrer. Se acontecer do jeito anunciado, ele cura 10d10.'],
+      ['Sem resistência', 'Uma vez por cena, um efeito dele não pode ser resistido de jeito nenhum.'],
+      ['Chuva de marcas', 'Todos tomam 4d12 de dano de sanidade. Resistem com Volição DT 22.'],
+      ['Ele não estava aqui', 'Some da cena por 1 rodada e volta com 5d10 de vida de volta. Duas vezes por cena.']] },
+];
+
+/* Expande o modelo acima numa ficha de inimigo pronta para salvar. A Defesa do
+   modelo é o número cheio: aqui ela vira o ajuste que falta, já descontadas a
+   base 10 da ficha sem classe e as Motoras. */
+function fichaDeInimigo(modelo, owner) {
+  const [intelecto, psique, fisico, motoras] = modelo.attrs;
+  const item = (nome, extra) => ({ id: `${modelo.id}_${nome.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`, nome, peso: 0, escopo: 'inimigo', createdAt: Date.now(), ...extra });
+  const armas = (modelo.armas || []).map(([nome, dano, teste]) => item(nome, { dano, teste, descricao: '' }));
+  const habilidades = (modelo.habilidades || []).map(([nome, descricao]) => item(nome, { descricao }));
+
+  return {
+    ...blankDraft(owner, 'inimigo'),
+    name: modelo.nome,
+    historia: modelo.historia || '',
+    attributes: { intelecto, psique, fisico, motoras },
+    pericias: { ...(modelo.pericias || {}) },
+    recursosLivres: { vidaMax: modelo.vida, sanidadeMax: modelo.sanidade, manaMax: modelo.mana || 0 },
+    defesas: { equipamento: 0, defesaOutros: modelo.defesa - BALANCO_PADRAO.defesaBase - motoras, bloqueioOutros: 0, esquivaOutros: 0 },
+    custom: { armas, armaduras: [], habilidades },
+    armas: armas.map((a) => a.id),
+    habilidades: habilidades.map((h) => h.id),
+  };
+}
+
+
+/* Lista dos inimigos prontos, separada por categoria. Cada linha vira uma
+   ficha de inimigo de verdade: depois de criada, a mestra edita à vontade. */
+function CatalogoDeInimigos({ cor, onUsar }) {
+  const [aberto, setAberto] = useState(false);
+  const [criando, setCriando] = useState(null);
+
+  return (
+    <div className="rounded-xl mb-4" style={{ background: G.surface, border: `1px solid ${G.border}` }}>
+      <button onClick={() => setAberto(!aberto)} className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left">
+        <span className="text-sm flex items-center gap-2" style={{ fontFamily: F.body, color: G.text, fontWeight: 600 }}>
+          <Swords size={14} style={{ color: cor }} /> Inimigos prontos
+        </span>
+        <span className="text-xs flex items-center gap-1.5" style={{ fontFamily: F.body, color: G.muted }}>
+          {INIMIGOS_PRONTOS.length} fichas fechadas
+          <ChevronDown size={13} style={{ transform: aberto ? 'rotate(180deg)' : 'none' }} />
+        </span>
+      </button>
+      {aberto && (
+        <div className="px-4 pb-4">
+          <p className="text-xs leading-relaxed mb-3" style={{ fontFamily: F.body, color: G.muted }}>
+            A vida de cada categoria foi calibrada pelo dano real do sistema: um grupo de 4
+            no nível 5 entrega perto de 50 por rodada. Usar um deles cria uma ficha normal,
+            que você edita como qualquer outra.
+          </p>
+          {CATEGORIAS_INIMIGO.map((c) => (
+            <div key={c.id} className="mb-3">
+              <p className="text-xs uppercase tracking-widest" style={{ fontFamily: F.body, color: cor }}>{c.nome}</p>
+              <p className="text-xs mb-1.5" style={{ fontFamily: F.body, color: G.muted }}>{c.frase}</p>
+              <div className="space-y-1.5">
+                {INIMIGOS_PRONTOS.filter((i) => i.cat === c.id).map((i) => (
+                  <div key={i.id} className="rounded-lg px-3 py-2 flex items-center justify-between gap-3"
+                    style={{ background: '#171029', border: `1px solid ${G.border}` }}>
+                    <div className="min-w-0">
+                      <p className="text-sm" style={{ fontFamily: F.body, color: G.text }}>{i.nome}</p>
+                      <p className="text-xs" style={{ fontFamily: F.mono, color: G.muted }}>
+                        vida {i.vida} · sanidade {i.sanidade} · Defesa {i.defesa}
+                      </p>
+                    </div>
+                    <button onClick={async () => { setCriando(i.id); await onUsar(i); setCriando(null); }}
+                      disabled={!!criando} className="text-xs rounded-lg px-2.5 py-1.5 shrink-0 disabled:opacity-50"
+                      style={{ background: cor, color: '#111', fontFamily: F.body, fontWeight: 600 }}>
+                      {criando === i.id ? 'Criando…' : 'Usar'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDicionarios, onCondicoes, onUsarInimigo }) {
   /* A mestra ganha uma aba por tipo de ficha; os jogadores nem veem isso. */
   const [aba, setAba] = useState('jogadores');
   const abaAtiva = account.isMaster ? aba : 'jogadores';
@@ -2774,6 +3068,8 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
           </button>
         </div>
 
+        {abaAtiva === 'inimigo' && <CatalogoDeInimigos cor={corAba} onUsar={onUsarInimigo} />}
+
         {loading ? (
           <div className="flex items-center gap-2 py-16 justify-center" style={{ color: G.muted }}>
             <Loader2 size={18} className="animate-spin" /> Carregando fichas…
@@ -2821,9 +3117,16 @@ const STEPS = ['Classe', 'Origem', 'Herança', 'Perfil', 'Atributos', 'Perícias
    NOME do passo, não pelo índice — assim as listas podem divergir sem risco. */
 function stepsDaFicha(draft) {
   const tipo = tipoMestre(draft);
-  if (!tipo) return STEPS;
-  if (tipo.escolheClasse) return ['Classe', 'Herança', 'Perfil', 'Atributos', 'Perícias', 'Poderes', 'Revisão'];
-  return ['Perfil', 'Atributos', 'Perícias', 'Poderes', 'Revisão'];
+  const passos = !tipo ? [...STEPS]
+    : tipo.escolheClasse ? ['Classe', 'Herança', 'Perfil', 'Atributos', 'Perícias', 'Poderes', 'Revisão']
+    : ['Perfil', 'Atributos', 'Perícias', 'Poderes', 'Revisão'];
+  /* O druida escolhe os animais-laço aqui, e não só depois de salvar a ficha.
+     A etapa entra depois de Perícias porque o laço natural dá um animal por
+     nível de personagem, e o nível é escolhido lá atrás, em Atributos. */
+  if (draft?.originId === 'druida' && draft?.subdivisaoAnimalTipo) {
+    passos.splice(passos.indexOf('Perícias') + 1, 0, 'Animais');
+  }
+  return passos;
 }
 
 function Stepper({ step, origin, steps = STEPS }) {
@@ -4174,7 +4477,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
         </div>
       )}
 
-      <div className={`grid grid-cols-1 ${der.manaMax !== null ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-3 mb-6 mt-4`}>
+      <div className={`grid grid-cols-1 ${der.manaMax !== null || der.iraMax ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-3 mb-6 mt-4`}>
         {onChangeAtual ? (
           <>
             <BarraAjustavel label="Vida" atual={valorAtual(char, 'vida', der.vidaMax)} max={der.vidaMax}
@@ -4185,12 +4488,17 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
               <BarraAjustavel label="Mana" atual={valorAtual(char, 'mana', der.manaMax)} max={der.manaMax}
                 color="#8FB4F5" onChange={(v) => onChangeAtual('mana', v)} />
             )}
+            {der.iraMax > 0 && (
+              <BarraAjustavel label="Ira" atual={iraAtual(char)} max={der.iraMax}
+                color="#ff8a3d" onChange={(v) => onChangeAtual('ira', v)} />
+            )}
           </>
         ) : (
           <>
             <ProgressBar value={valorAtual(char, 'vida', der.vidaMax)} max={der.vidaMax} color="#e0577a" label="Vida" />
             <ProgressBar value={valorAtual(char, 'sanidade', der.sanidadeMax)} max={der.sanidadeMax} color="#caa24a" label="Sanidade" />
             {der.manaMax !== null && <ProgressBar value={valorAtual(char, 'mana', der.manaMax)} max={der.manaMax} color="#8FB4F5" label="Mana" />}
+            {der.iraMax > 0 && <ProgressBar value={iraAtual(char)} max={der.iraMax} color="#ff8a3d" label="Ira" />}
           </>
         )}
       </div>
@@ -4286,8 +4594,8 @@ function blankDraft(owner, tipoFicha = null) {
     attributes: { intelecto: base, psique: base, fisico: base, motoras: base },
     recursosLivres: { vidaMax: 0, sanidadeMax: 0, manaMax: 0 },
     custom: { armas: [], armaduras: [], habilidades: [] },
-    pericias: {}, periciasOutros: {}, recursos: { vidaBonusLore: 0, sanidadeBonusLore: 0 },
-    atual: { vida: null, sanidade: null, mana: null },
+    pericias: {}, periciasOutros: {}, recursos: { vidaBonusLore: 0, sanidadeBonusLore: 0, vidaPerdida: 0 },
+    atual: { vida: null, sanidade: null, mana: null, ira: 0 },
     defesas: { equipamento: 0, defesaOutros: 0, bloqueioOutros: 0, esquivaOutros: 0 },
     armas: [], armaduraId: null, feiticos: [], habilidades: [], inventario: [],
     editedByMaster: false, editedAt: null, createdAt: null,
@@ -4295,7 +4603,7 @@ function blankDraft(owner, tipoFicha = null) {
 }
 
 function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
-  const [step, setStep] = useState(0);
+  const [stepBruto, setStep] = useState(0);
   const [draft, setDraft] = useState(blankDraft(account.username, tipoFicha));
   const [saving, setSaving] = useState(false);
   const [content, setContent] = useState({ ...conteudoVazio(), loading: true });
@@ -4325,6 +4633,7 @@ function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
   };
 
   const steps = stepsDaFicha(draft);
+  const step = Math.min(stepBruto, steps.length - 1);
   const passo = steps[step];
   const ultimo = step >= steps.length - 1;
   const tipo = tipoMestre(draft);
@@ -4369,6 +4678,10 @@ function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
               {passo === 'Perfil' && <StepPerfil draft={draft} setDraft={setDraft} origin={origin} comNome={nomeNoPerfil} />}
               {passo === 'Atributos' && <StepAtributos draft={draft} setDraft={setDraft} origin={origin} />}
               {passo === 'Perícias' && <StepPericias draft={draft} setDraft={setDraft} origin={origin} />}
+              {passo === 'Animais' && (
+                <AbaAnimais char={draft} color={origin ? origin.cor : V.brand} podeEditar
+                  onSalvarAnimais={(animais) => setDraft((d) => ({ ...d, animais }))} />
+              )}
               {(passo === 'Equipamento' || passo === 'Poderes') && <StepEquipamento draft={draft} setDraft={setDraft} origin={origin} account={account} content={content} onCreateContent={createContent} />}
               {passo === 'Revisão' && <CharacterSheetBody char={draft} contentIndex={content} />}
             </div>
@@ -4415,6 +4728,10 @@ function abasDaFicha(char) {
   } else {
     base.push({ id: 'habilidades', nome: 'Habilidades' });
     if (char.originId === 'mago') base.push({ id: 'feiticos', nome: 'Feitiços' });
+  }
+  /* Ira do guerreiro e contratos de vida da criatura do mar. */
+  if (!fichaLivre(char) && PODERES_CLASSE[char.originId]) {
+    base.push({ id: 'poderes_classe', nome: PODERES_CLASSE[char.originId].aba });
   }
   /* O druida carrega a ficha do animal-laço junto com a dele. */
   if (char.originId === 'druida') base.push({ id: 'animal', nome: 'Animal' });
@@ -4566,7 +4883,7 @@ function AcaoAnimal({ acao, animal, fichaAnimal, color, golpe }) {
   );
 }
 
-function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, semNivel, onAlternar, onChangeAtual }) {
+function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, onAlternar, onChangeAtual }) {
   const [aberto, setAberto] = useState(false);
   const expandido = escolhido || aberto;
   const fichaAnimal = escolhido ? fichaDaFormaAnimal(char, animal) : null;
@@ -4580,7 +4897,6 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, s
         {podeAlternar && (
           <button onClick={onAlternar} disabled={bloqueado}
             title={escolhido ? 'Desfazer o laço com este animal'
-              : semNivel ? `Você precisa ser nível ${animal.nivelMin} para se enlaçar a este animal`
               : bloqueado ? 'Seu nível já não comporta mais animais' : 'Criar laço com este animal'}
             className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 disabled:opacity-30"
             style={{ background: escolhido ? color : 'transparent', border: `1px solid ${color}` }}>
@@ -4597,7 +4913,6 @@ function CardAnimal({ animal, char, color, escolhido, podeAlternar, bloqueado, s
           </p>
           <p className="text-xs mt-0.5" style={{ fontFamily: F.mono, color: V.muted }}>
             vida {animal.vida} · conexão {conexaoMax} · {animal.custoPorTurno} de sanidade por turno
-            {animal.nivelMin ? ` · nível ${animal.nivelMin}+` : ''}
           </p>
         </button>
       </div>
@@ -4672,10 +4987,6 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
   const limite = limiteDeAnimais(char);
   const idsEscolhidos = escolhidos.map((a) => a.id);
   const disponiveis = animaisDoTipo(char).filter((a) => !idsEscolhidos.includes(a.id));
-  /* Quando nada está liberado ainda, a aba diz em que nível o primeiro abre. */
-  const niveisFechados = disponiveis.filter((a) => !animalLiberado(a, char)).map((a) => a.nivelMin);
-  const proximoNivel = disponiveis.some((a) => animalLiberado(a, char)) || !niveisFechados.length
-    ? null : Math.min(...niveisFechados);
   const passou = escolhidos.length > limite;
 
   const alternar = (animal) => {
@@ -4730,7 +5041,6 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
           {escolhidos.length === 0 ? (
             <p className="text-xs italic mb-4" style={{ color: '#6f6291', fontFamily: F.body }}>
               Nenhum animal escolhido ainda.
-              {proximoNivel ? ` O primeiro animal ao seu alcance abre no nível ${proximoNivel}: até lá, o seu laço ainda está sendo procurado.` : ''}
             </p>
           ) : (
             <div className="space-y-2 mb-4">
@@ -4753,8 +5063,7 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
                 <div className="space-y-2">
                   {disponiveis.map((a) => (
                     <CardAnimal key={a.id} animal={a} char={char} color={color}
-                      podeAlternar bloqueado={escolhidos.length >= limite || !animalLiberado(a, char)}
-                      semNivel={!animalLiberado(a, char)} onAlternar={() => alternar(a)} />
+                      podeAlternar bloqueado={escolhidos.length >= limite} onAlternar={() => alternar(a)} />
                   ))}
                 </div>
               )}
@@ -4771,6 +5080,88 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ---------- aba de poderes de classe (ira e contratos) ----------
+   Uma aba só serve as duas classes: o que muda é a moeda. O guerreiro ganha a
+   barra de ira junto; a criatura do mar paga da vida que já está na ficha. */
+function AbaPoderesDeClasse({ char, color, onChangeVidaPerdida }) {
+  const info = PODERES_CLASSE[char.originId];
+  const poderes = poderesDaClasse(char);
+  if (!info || poderes.length === 0) return null;
+  const cor = info.cor || color;
+  const max = iraMaxima(char);
+  const atual = iraAtual(char);
+  const cheia = max > 0 && atual >= max;
+  const perdida = char.recursos?.vidaPerdida || 0;
+
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+        <Flame size={12} /> {info.titulo}
+      </p>
+      <p className="text-xs leading-relaxed mb-3" style={{ color: '#6f6291', fontFamily: F.body }}>
+        {info.texto} Você ganha uma a cada dois níveis, e elas não ocupam vaga de habilidade.
+      </p>
+
+      {max > 0 && (
+        <div className="mb-3">
+          <p className="text-xs" style={{ fontFamily: F.mono, color: V.muted }}>
+            Barra de ira: {atual} de {max} — {IRA_BASE} + {IRA_POR_ATRIBUTO} × (Físico {char.attributes?.fisico || 0} + Psique {char.attributes?.psique || 0}).
+            Ela fica no painel da ficha, junto com vida e sanidade.
+          </p>
+          {cheia && (
+            <p className="text-xs mt-1 flex items-start gap-1.5" style={{ color: '#e0577a', fontFamily: F.body }}>
+              <AlertCircle size={12} className="shrink-0 mt-0.5" />
+              <span>Barra cheia: você entra na condição EM IRA. Veja a aba de Condições.</span>
+            </p>
+          )}
+        </div>
+      )}
+
+      {char.originId === 'sereia' && (
+        <div className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between gap-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
+          <div className="min-w-0">
+            <p className="text-sm" style={{ fontFamily: F.body, color: V.text }}>Vida permanente perdida</p>
+            <p className="text-xs" style={{ fontFamily: F.body, color: V.muted }}>Sai do seu máximo e não volta com descanso.</p>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {onChangeVidaPerdida && (
+              <button onClick={() => onChangeVidaPerdida(Math.max(0, perdida - 5))}
+                className="w-6 h-6 rounded-md text-sm" style={{ color: cor, border: `1px solid ${V.border}`, fontFamily: F.mono }}>−</button>
+            )}
+            <span style={{ fontFamily: F.mono, color: perdida ? '#e0577a' : V.muted, minWidth: '2rem', textAlign: 'center' }}>{perdida}</span>
+            {onChangeVidaPerdida && (
+              <button onClick={() => onChangeVidaPerdida(perdida + 5)}
+                className="w-6 h-6 rounded-md text-sm" style={{ color: cor, border: `1px solid ${V.border}`, fontFamily: F.mono }}>+</button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        {poderes.map((p) => {
+          const liberado = poderLiberado(p, char);
+          const ira = ganhoDeIra(p.descricao);
+          const vida = custoDeVidaDoPoder(p.descricao);
+          return (
+            <div key={p.nome} className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}`, opacity: liberado ? 1 : 0.45 }}>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{p.nome}</p>
+                <span className="text-xs shrink-0" style={{ fontFamily: F.mono, color: liberado ? cor : V.muted }}>
+                  {liberado
+                    ? (ira ? `+${ira} de ira` : vida ? `${vida.valor} de vida${vida.permanente ? ' permanente' : ''}` : '')
+                    : `nível ${p.nivel}`}
+                </span>
+              </div>
+              <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{p.descricao}</p>
+              {liberado && <BotoesDeRolagem char={char} color={cor} nome={p.nome} dano={p.descricao} rotuloRolagem="Rolar" />}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -4988,7 +5379,10 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
         <p className="text-xs italic" style={{ color: '#6f6291', fontFamily: F.body }}>{vazio}</p>
       ) : (
         <div className="space-y-2">
-          {itens.map((it) => (
+          {itens.map((it) => {
+            /* Feitiço com evolução vem como lista de blocos; o resto, texto. */
+            const blocos = Array.isArray(descricoes?.[it.id]) ? descricoes[it.id] : null;
+            return (
             <div key={it.id} className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{it.nome}</p>
@@ -4996,7 +5390,7 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
                   {[rotuloNivelFeitico(it), detalhes?.[it.id]].filter(Boolean).join(' · ')}
                 </span>
               </div>
-              {(descricoes?.[it.id] || it.descricao) && (
+              {!blocos && (descricoes?.[it.id] || it.descricao) && (
                 <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>
                   {descricoes?.[it.id] || it.descricao}
                 </p>
@@ -5006,14 +5400,29 @@ function ListaConteudo({ titulo, Icon, ids, catalogo, color, vazio, detalhes, de
                 <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.nota}</p>
               )}
               {it.resistencia && <LinhaResistencia texto={it.resistencia} color={color} dt={dtDeResistencia?.(it)} />}
-              {char && (
+              {blocos ? (
+                <div className="mt-2 space-y-2.5">
+                  {blocos.map((b) => (
+                    <div key={b.rotulo} className="rounded-md px-2.5 py-2" style={{ background: '#120d20', border: `1px solid ${V.border}` }}>
+                      <p className="text-xs" style={{ fontFamily: F.mono, color }}>{b.rotulo}</p>
+                      <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{b.texto}</p>
+                      {char && (
+                        <BotoesDeRolagem char={char} color={color} nome={`${it.nome} — ${b.rotulo.toLowerCase()}`}
+                          dano={b.texto} pericia={periciaDeLancamento} rotuloRolagem="Rolar"
+                          bonusMagico={bonusDeDano ? bonusDeDano(it) : 0} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : char && (
                 <BotoesDeRolagem char={char} color={color} nome={it.nome}
                   dano={it.dano !== undefined ? it.dano : (descricoes?.[it.id] || it.descricao)}
                   pericia={periciaDeLancamento} rotuloRolagem="Rolar"
                   bonusMagico={bonusDeDano ? bonusDeDano(it) : 0} />
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -5058,7 +5467,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
   };
 
   const restaurarTudo = async () => {
-    await onSaveEdit({ ...char, atual: { vida: null, sanidade: null, mana: null } }, { silencioso: true });
+    await onSaveEdit({ ...char, atual: { vida: null, sanidade: null, mana: null, ira: 0 } }, { silencioso: true });
   };
 
   const startEdit = () => { setEditDraft(char); setEditing(true); };
@@ -5342,6 +5751,10 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               onSalvarAnimais={(animais) => onSaveEdit({ ...char, animais }, { silencioso: true })}
               onChangeAtual={canEdit ? alterarAtual : undefined} />
           )}
+          {tab === 'poderes_classe' && (
+            <AbaPoderesDeClasse char={char} color={origin.cor}
+              onChangeVidaPerdida={canEdit ? ((v) => onSaveEdit({ ...char, recursos: { ...(char.recursos || {}), vidaPerdida: v } }, { silencioso: true })) : undefined} />
+          )}
           {tab === 'condicoes' && <ListaCondicoes cor={origin.cor} />}
           {tab === 'inventario' && (
             <div>
@@ -5464,6 +5877,7 @@ export default function App() {
       }}
       onOpen={(c) => { setViewingChar(c); setScreen('sheet'); }} onLogout={handleLogout}
       onDicionarios={() => { setDicionarioInicial('geral'); setScreen('dicionarios'); }}
-      onCondicoes={() => setScreen('condicoes')} />
+      onCondicoes={() => setScreen('condicoes')}
+      onUsarInimigo={(modelo) => handleSaveDraft(fichaDeInimigo(modelo, account.username))} />
   );
 }

@@ -201,6 +201,12 @@ O nível de cada feitiço também aparece nessa aba, não só na tela de ediçã
 `char.feiticos` guarda `{ id, evolucao }`; ficha antiga guarda só a string do id
 e é lida como evolução I.
 
+**As evoluções são cumulativas** (07/10/2026): quem escolhe a III também sabe a I
+e a II, e a aba de feitiços mostra as três, cada uma com o seu texto e os seus
+botões de teste e dano. É o que justifica a III custar três vagas.
+`descricoesDeFeiticos` devolve uma lista de `{ rotulo, texto }` quando o feitiço
+evolui, e `ListaConteudo` desenha um bloco por evolução.
+
 ### Rolagem de dados
 **Os dados rolam no servidor** (`POST /api/rolls`), nunca no navegador: numa
 mesa em que a mestra vê o histórico de todos, um total vindo do cliente seria
@@ -219,11 +225,43 @@ rolar (3d10 crítico = 30, mais o modificador). Quem monta esse valor é o
 servidor; o cliente só avisa que o golpe está crítico. A marca se apaga depois
 do dano.
 
+### Inimigos prontos
+`INIMIGOS_PRONTOS` tem 16 fichas fechadas em quatro categorias
+(`CATEGORIAS_INIMIGO`): NPC, boss médio, boss forte e boss final. O painel mostra
+o catálogo só na aba de Inimigos, e o botão de criar inimigo à mão **continua
+onde estava** — o catálogo é atalho, não substituição. `fichaDeInimigo` expande o
+modelo compacto numa ficha de verdade e `handleSaveDraft` salva.
+
+A vida foi calibrada pelo dano real: grupo de 4 no nível 5 entrega perto de 50
+por rodada (mediana 13,5 do dado + atributo 3 + metade do nível, acertando em
+70%). Daí NPC 45 a 60 de vida, médio 150 a 175, forte 250 a 300 e final 400 a
+450. A `defesa` do modelo é o número cheio; a fábrica desconta a base 10 e as
+Motoras e guarda o resto em `defesaOutros`.
+
 ### Fichas da mestra
 `tipoFicha` ∈ `deus`, `inimigo`, `especial`. Sem fórmula: vida, sanidade e mana
 nascem em 0 e são digitadas; atributos sem teto; as 23 perícias livres; nenhum
 catálogo pré-carregado. Deus funde habilidades e feitiços em "Poderes Divinos".
 Especial escolhe uma classe; deus e inimigo não têm classe.
+
+### Poderes de classe: Ira e Contrato de vida
+Guerreiro e criatura do mar ganham um poder a cada dois níveis (1, 3, 5, 7 e 9),
+em `PODERES_POR_NIVEL`. Eles **não ocupam vaga** e ficam fora de
+`HABILIDADES_CATALOGO` de propósito: a reserva de sanidade é a média das três
+habilidades mais caras da classe, e poder caro ali dentro inflaria a sanidade de
+todo mundo. O preço sai do texto, como o custo de sanidade já sai.
+
+**IRA** (só guerreiro): a única barra que **enche** em vez de esvaziar. Começa em
+zero — por isso usa `iraAtual`, e não `valorAtual`, que trata null como cheio.
+Máximo = `10 + 3 × (Físico + Psique)`. Psique entra porque é o que segura a
+fúria: quem despeja tudo em Físico tem barra curta e perde o controle antes.
+Barra cheia = condição **Em ira**. Zera no Restaurar. "Acumula N de ira" é lido
+por `ganhoDeIra`.
+
+**Contrato de vida** (só criatura do mar): não cria barra, cobra da vida. "Custa
+N de vida" e "Custa N de vida permanente" saem de `custoDeVidaDoPoder`. O
+permanente vai para `char.recursos.vidaPerdida`, que `computeRecursos` desconta
+do máximo (nunca abaixo de 1), e a aba tem o seletor de −5/+5.
 
 ### Habilidades: vagas e automáticas
 **Vagas** (`vagasDeHabilidade`): 2 no nível 1 e mais 1 a cada 2 níveis, 6 no
@@ -249,9 +287,11 @@ do catálogo da mestra.
 ### Outros
 - Druida tem aba **Animal** com os animais prontos do `ANIMAIS_CATALOGO`
   (10 naturais, 5 místicos). Laço natural escolhe **um animal por nível de
-  personagem**; laço místico escolhe **um só**, e cada místico pede um nível
-  mínimo (`nivelMin`): Ashvara 3, Isilme 5, Yssen 7, Verthaz 9, Grohm 10.
-  Antes um druida de nível 1 podia pegar o Grohm, com 200 de vida.
+  personagem**; laço místico escolhe **um só**. Os místicos tiveram nível mínimo
+  entre 26/09 e 07/10/2026 e o usuário pediu para tirar: hoje todos aparecem
+  selecionáveis desde o nível 1. A escolha é uma **etapa da criação da ficha**
+  (passo "Animais", depois de Perícias, porque o limite do laço natural depende
+  do nível escolhido em Atributos), e continua editável na aba Animal.
   **DT de Ágape para entrar na forma** = 10 + o custo por turno do animal.
   **DT de resistência de cada golpe** = 10 + metade do custo em conexão dele,
   e cada golpe diz com qual perícia o alvo resiste (campo `resiste`). A ficha guarda só os ids em
