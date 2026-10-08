@@ -3602,14 +3602,13 @@ function StepAtributos({ draft, setDraft, origin }) {
 
 /* Tabela de perícias no estilo CRIS: atributo, treino e bônus total.
    Perícias concedidas pela classe/subdivisão ficam travadas no mínimo Treinado. */
-function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly, podeRolar }) {
+function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly, podeRolar, duasColunas }) {
   const concedidas = periciasConcedidas(char);
   const [aberta, setAberta] = useState(null);
   const grade = podeRolar ? 'per-grid-rolar' : 'per-grid';
   const teto = grauMaximoDoNivel(char);
 
-  return (
-    <div>
+  const cabecalho = (
       <div className={`${grade} px-2 pb-2 mb-1 border-b`} style={{ borderColor: V.border }}>
         <span className="uppercase tracking-widest" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Perícia</span>
         <span className="per-dados uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Atrib</span>
@@ -3617,9 +3616,11 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly, p
         <span className="uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>Treino</span>
         <span className="uppercase tracking-widest text-center" style={{ fontSize: '10px', color: V.muted, fontFamily: F.body }}>{podeRolar ? 'Rolar' : 'Outros'}</span>
       </div>
+  );
 
-      {ATTRS.map((a) => (
-        <div key={a.key} className="mb-4">
+  /* Um grupo de atributo: o título e as perícias que caem nele. */
+  const grupo = (a) => (
+    <>
           <p className="text-xs font-semibold px-2 py-1.5" style={{ color, fontFamily: F.body }}>{a.nome}</p>
           {PERICIAS.filter((p) => p.atributo === a.key).map((p) => {
             const b = bonusDaPericia(char, p);
@@ -3688,8 +3689,31 @@ function TabelaPericias({ char, onChangeGrau, onChangeOutros, color, readOnly, p
               </React.Fragment>
             );
           })}
-        </div>
-      ))}
+    </>
+  );
+
+  /* Numa coluna só, as 23 perícias passavam de 1200px de altura e obrigavam a
+     rolar a tela inteira. Em duas colunas a tabela cabe junto com o resto da
+     ficha: cada metade leva dois grupos de atributo e repete o cabeçalho, para
+     a coluna da direita não ficar órfã dele. Só na ficha salva — na criação as
+     colunas têm campos de edição e ficariam estreitas demais. */
+  if (duasColunas) {
+    return (
+      <div className="grid gap-x-6 xl:grid-cols-2 items-start">
+        {[ATTRS.slice(0, 2), ATTRS.slice(2)].map((metade, i) => (
+          <div key={i}>
+            {cabecalho}
+            {metade.map((a) => <div key={a.key} className="mb-4">{grupo(a)}</div>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {cabecalho}
+      {ATTRS.map((a) => <div key={a.key} className="mb-4">{grupo(a)}</div>)}
     </div>
   );
 }
@@ -4414,7 +4438,12 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
    Ficha (revisão e visualização final)
    ============================================================ */
 
-function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
+/* `compacto` é o modo usado na aba Ficha: tira as listas que só repetem o
+   nome do que já aparece inteiro em outra aba (armas, habilidades, feitiços,
+   inventário) e as perícias treinadas, que agora estão do lado em tabela
+   cheia. A revisão da criação continua mostrando tudo, porque lá o resumo é
+   justamente o ponto. */
+function CharacterSheetBody({ char, contentIndex, onChangeAtual, compacto }) {
   const origin = originDaFicha(char);
   const der = computeRecursos(char);
   const mColor = markColor(origin, char);
@@ -4523,13 +4552,17 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
       {char.historia && (
         <div className="mb-4 rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
           <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><ScrollText size={12} /> História</p>
-          <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: V.text, fontFamily: F.body }}>{char.historia}</p>
+          {/* Na aba Ficha a história ganha teto e rola dentro da própria caixa:
+              uma história longa empurrava a tela inteira para baixo. Na revisão
+              da criação ela aparece inteira. */}
+          <p className={`text-sm leading-relaxed whitespace-pre-line${compacto ? ' max-h-24 overflow-y-auto pr-1' : ''}`}
+            style={{ color: V.text, fontFamily: F.body }}>{char.historia}</p>
         </div>
       )}
 
       {(() => {
         const treinadas = PERICIAS.filter((p) => grauDaPericia(char, p.id) > 0);
-        if (treinadas.length === 0) return null;
+        if (compacto || treinadas.length === 0) return null;
         return (
           <div className="mb-4">
             <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Star size={12} /> Perícias treinadas</p>
@@ -4547,7 +4580,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
         );
       })()}
 
-      {(char.armas?.length > 0 || habilidadesDaFicha(char).length > 0 || char.feiticos?.length > 0) && (
+      {!compacto && (char.armas?.length > 0 || habilidadesDaFicha(char).length > 0 || char.feiticos?.length > 0) && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           {char.armas?.length > 0 && (
             <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
@@ -4570,7 +4603,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual }) {
         </div>
       )}
 
-      {char.inventario?.length > 0 && (
+      {!compacto && char.inventario?.length > 0 && (
         <div className="rounded-lg p-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
           <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}><Backpack size={12} /> Inventário</p>
           {char.inventario.map((it) => (
@@ -4726,9 +4759,11 @@ function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
 /* A aba de Feitiços só existe para magos. Nos deuses, habilidades e feitiços
    se fundem numa aba só: Poderes Divinos. */
 function abasDaFicha(char) {
+  /* Perícias e Inventário não têm aba própria: medidos a 1440x900, cabiam
+     sobrando espaço, então foram para dentro de Ficha e de Combate. O que
+     continua em aba separada é o que estoura a tela sozinho. */
   const base = [
     { id: 'ficha', nome: 'Ficha' },
-    { id: 'pericias', nome: 'Perícias' },
     { id: 'combate', nome: 'Combate' },
   ];
   if (tipoMestre(char)?.poderesUnificados) {
@@ -4743,7 +4778,6 @@ function abasDaFicha(char) {
   }
   /* O druida carrega a ficha do animal-laço junto com a dele. */
   if (char.originId === 'druida') base.push({ id: 'animal', nome: 'Animal' });
-  base.push({ id: 'inventario', nome: 'Inventário' });
   /* Condições é consulta: fica em toda ficha, para ninguém sair da mesa. */
   base.push({ id: 'condicoes', nome: 'Condições' });
   return base;
@@ -5689,25 +5723,61 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
         </div>
 
         <div className="rounded-2xl p-6" style={{ background: V.surface, border: `1px solid ${V.border}` }}>
-          {tab === 'ficha' && <CharacterSheetBody char={char} contentIndex={contentIndex} onChangeAtual={canEdit ? alterarAtual : undefined} />}
-          {tab === 'pericias' && (
-            <div>
-              <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
-              <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-                Destreinado +0 · Treinado +2 · Veterano +4 · Expert +6. O botão de dado rola
-                <strong style={{ color: origin.cor }}> 1d20</strong> somando o número da coluna Teste,
-                que já inclui o atributo, o treino e os outros bônus.
-              </p>
-              <TabelaPericias char={char} color={origin.cor} readOnly podeRolar onChangeGrau={() => {}} />
-              <div className="mt-5 pt-4 border-t" style={{ borderColor: V.border }}>
-                <HistoricoRolagens account={account} color={origin.cor} compacto limite={6} />
+          {tab === 'ficha' && (
+            /* A tela que fica aberta a mesa inteira: de um lado quem o
+               personagem é e os números que a mestra pergunta toda hora
+               (barras, atributos, Defesa, Bloqueio, Esquiva), do outro as 23
+               perícias com os botões de rolar. Eram duas abas de 641px e
+               1294px; juntas, medem cerca de 700px e cabem sem rolar num
+               monitor comum. No celular as colunas empilham. */
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] items-start">
+              <div>
+                <CharacterSheetBody char={char} contentIndex={contentIndex} compacto
+                  onChangeAtual={canEdit ? alterarAtual : undefined} />
+                <PainelDefesas char={char} color={origin.cor} armadurasCustom={catalogoDe(contentIndex, 'armaduras', [], char)} />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>
+                <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+                  Destreinado +0 · Treinado +2 · Veterano +4 · Expert +6. O botão de dado rola
+                  <strong style={{ color: origin.cor }}> 1d20</strong> somando o número da coluna Teste,
+                  que já inclui o atributo, o treino e os outros bônus.
+                </p>
+                <TabelaPericias char={char} color={origin.cor} readOnly podeRolar duasColunas onChangeGrau={() => {}} />
               </div>
             </div>
           )}
           {tab === 'combate' && (
-            <div>
-              <PainelDefesas char={char} color={origin.cor} armadurasCustom={catalogoDe(contentIndex, 'armaduras', [], char)} />
+            /* Armas de um lado, mochila do outro: o inventário tinha 136px de
+               altura e uma aba inteira só para ele. */
+            <div className="grid gap-6 lg:grid-cols-2 items-start">
               <ListaArmas char={char} catalogo={catalogoDe(contentIndex, 'armas', ARMAS_CATALOGO, char)} color={origin.cor} />
+              <div>
+                <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
+                  <Backpack size={12} /> Inventário
+                </p>
+                {(char.inventario || []).length === 0 ? (
+                  <p className="text-xs italic" style={{ color: '#6f6291', fontFamily: F.body }}>Inventário vazio.</p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {char.inventario.map((it) => (
+                      <div key={it.id} className="rounded-lg px-3 py-2" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{it.nome}</span>
+                          <span className="text-sm shrink-0" style={{ fontFamily: F.mono, color: V.muted }}>×{it.quantidade}</span>
+                        </div>
+                        {it.descricao && <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.descricao}</p>}
+                        {canEdit && lerNotacao(it.descricao) && (
+                          <BotoesDeRolagem char={char} color={origin.cor} nome={it.nome} dano={it.descricao} rotuloRolagem="Rolar" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-5 pt-4 border-t" style={{ borderColor: V.border }}>
+                  <HistoricoRolagens account={account} color={origin.cor} compacto limite={6} />
+                </div>
+              </div>
             </div>
           )}
           {tab === 'habilidades' && (
@@ -5767,32 +5837,9 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             <AbaPoderesDeClasse char={char} color={origin.cor}
               onChangeVidaPerdida={canEdit ? ((v) => onSaveEdit({ ...char, recursos: { ...(char.recursos || {}), vidaPerdida: v } }, { silencioso: true })) : undefined} />
           )}
-          {tab === 'condicoes' && <ListaCondicoes cor={origin.cor} />}
-          {tab === 'inventario' && (
-            <div>
-              <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
-                <Backpack size={12} /> Inventário
-              </p>
-              {(char.inventario || []).length === 0 ? (
-                <p className="text-xs italic" style={{ color: '#6f6291', fontFamily: F.body }}>Inventário vazio.</p>
-              ) : (
-                <div className="space-y-1.5">
-                  {char.inventario.map((it) => (
-                    <div key={it.id} className="rounded-lg px-3 py-2" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{it.nome}</span>
-                        <span className="text-sm shrink-0" style={{ fontFamily: F.mono, color: V.muted }}>×{it.quantidade}</span>
-                      </div>
-                      {it.descricao && <p className="text-xs mt-1 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{it.descricao}</p>}
-                      {canEdit && lerNotacao(it.descricao) && (
-                        <BotoesDeRolagem char={char} color={origin.cor} nome={it.nome} dano={it.descricao} rotuloRolagem="Rolar" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          {/* Duas colunas cortam a lista pela metade na altura; ela ainda rola,
+              e é por isso que continua numa aba só dela. */}
+          {tab === 'condicoes' && <ListaCondicoes cor={origin.cor} colunas />}
         </div>
       </div>
     </div>

@@ -245,6 +245,36 @@ por rodada (mediana 13,5 do dado + atributo 3 + metade do nível, acertando em
 450. A `defesa` do modelo é o número cheio; a fábrica desconta a base 10 e as
 Motoras e guarda o resto em `defesaOutros`.
 
+### Abas da ficha
+Desde 08/10/2026 a ficha tem **menos abas, cada uma usando a largura**. A régua
+é: o que cabe na tela sem rolar entra junto; o que estoura continua em aba
+própria. Medido a 1440x900 com um guerreiro nível 10 cheio (história longa, 4
+habilidades, inventário, histórico com rolagens):
+
+| Aba | Conteúdo | Altura | Rola? |
+| --- | --- | --- | --- |
+| Ficha | identidade, barras, atributos, história, defesas **+ as 23 perícias** | 728px | não |
+| Combate | armas **+ inventário + histórico de rolagens** | 578px | não |
+| Habilidades | as habilidades inteiras | 501px | não |
+| Ira / Contratos | poderes de classe | 557px | não |
+| Condições | as 11 condições | 1534px | **sim** |
+
+O que tornou a fusão possível: `TabelaPericias` ganhou `duasColunas`, que
+divide os quatro grupos de atributo em duas colunas a partir do `xl` e repete
+o cabeçalho em cada uma — a tabela caiu de 1294px para 603px. Só na ficha
+salva: na criação as colunas têm campos de edição e ficariam estreitas demais.
+
+`CharacterSheetBody` ganhou `compacto`, usado só na aba Ficha: tira as listas
+que repetiam o nome do que já aparece inteiro em outra aba (armas,
+habilidades, feitiços, inventário) e as perícias treinadas, que agora estão em
+tabela cheia ao lado. A revisão da criação continua passando sem `compacto`,
+porque lá o resumo é o ponto. A história ganha teto de `max-h-24` com rolagem
+própria no modo compacto: uma história longa empurrava a página inteira.
+
+As defesas saíram de Combate e foram para a Ficha, ao lado das barras: Defesa,
+Bloqueio e Esquiva são o que a mesa mais pergunta, e agora estão na aba que
+abre por padrão.
+
 ### Fichas da mestra
 `tipoFicha` ∈ `deus`, `inimigo`, `especial`. Sem fórmula: vida, sanidade e mana
 nascem em 0 e são digitadas; atributos sem teto; as 23 perícias livres; nenhum
