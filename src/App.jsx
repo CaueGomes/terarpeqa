@@ -861,7 +861,7 @@ const ITENS_CATALOGO = [
   { id: 'ite_espelho_bolso', nome: 'Espelho de bolso', peso: 1,
     descricao: 'Olhar a esquina sem se expor: +3 em Percepção para observar alguém sem ser visto.' },
   { id: 'ite_sino_alarme', nome: 'Sino de alarme', peso: 1,
-    descricao: 'Amarrado numa porta ou num fio, acorda o grupo quando alguém passa. Ninguém surpreende o acampamento enquanto ele estiver armado.' },
+    descricao: 'Amarrado numa porta ou num fio, acorda o grupo quando alguém passa. Pode ser usado de maneiras mais criativas.' },
   { id: 'ite_pe_de_cabra', nome: 'Pé de cabra', peso: 2,
     descricao: 'Concede +3 em Instrumento físico para arrombar porta, tampa, grade ou caixa.' },
 
@@ -3284,7 +3284,7 @@ function StepHeranca({ draft, setDraft, origin }) {
             <span className="w-10 text-right text-sm" style={{ fontFamily: F.mono, color: V.text }}>{draft.subdivisaoNivel}</span>
           </div>
           <p className="text-xs" style={{ color: '#6f6291', fontFamily: F.body }}>
-            Todo mago nasce com um pouco de magia (mínimo 5). A marca escurece conforme o nível sobe, até ficar negra no 100. O nível mágico também enche a mana e define quantas vagas de feitiço você tem. A mana só é gasta ao conjurar rituais, e todo feitiço é lançado com um teste de Dicionário mental — por isso o mago já nasce treinado nela.
+            Todo mago nasce com um pouco de magia (mínimo 5). A marca escurece conforme o nível sobe, até ficar negra no 100. O nível mágico também enche a mana e define quantas vagas de feitiço você tem. A mana só é gasta ao conjurar magias, e todo feitiço é lançado com um teste de Dicionário mental.
           </p>
         </div>
       )}
@@ -3427,7 +3427,7 @@ function StepPerfil({ draft, setDraft, origin, comNome }) {
       <Field label="História">
         <textarea value={draft.historia} onChange={(e) => setDraft({ ...draft, historia: e.target.value })}
           className="w-full rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 resize-none" style={{ ...inputStyle, minHeight: '140px' }}
-          placeholder="De onde ele veio, como a marca apareceu, o que já viveu até aqui..." />
+          placeholder="Todos têm uma, e essa é sua. Pode ser um breve resumo." />
       </Field>
 
       {origin && !livre && <DicionarioInline classeId={origin.id} color={color} />}
@@ -3583,10 +3583,8 @@ function StepAtributos({ draft, setDraft, origin }) {
       </div>
       <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
         A classe e a subdivisão definem o ponto de partida, e cada nível soma o ganho da sua
-        classe. Guerreiro parte com mais vida e Defesa, mago com mais sanidade. A parcela de
-        habilidades é o que as suas custam de sanidade: dá para usar duas das mais comuns por
-        cena. A mestra ainda pode ajustar com bônus de lore depois.
-        {der.manaMax !== null && ' A mana só é gasta ao conjurar rituais.'}
+        classe. Guerreiro parte com mais vida e Defesa, mago com mais sanidade, por exemplo.
+        {der.manaMax !== null && ' A mana só é gasta ao conjurar magias.'}
       </p>
     </div>
   );
@@ -5029,6 +5027,10 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
             Transformar e manter a forma gastam a sua sanidade; golpes e habilidades gastam a
             conexão do animal. Conexão zerada te expulsa da forma, e vida zerada desfaz o laço
             para sempre.
+            {char.subdivisaoAnimalTipo === 'mistico' && (
+              <> Com animais místicos, toda rodada exige um teste de <strong style={{ color }}>Eletroquímica</strong>,
+              com uma DT que sobe gradativamente, para evitar a condição de Catástrofe.</>
+            )}
           </p>
 
           {passou && (
