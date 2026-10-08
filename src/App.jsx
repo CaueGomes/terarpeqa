@@ -4514,7 +4514,9 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual, compacto }) {
         </div>
       )}
 
-      <div className={`grid grid-cols-1 ${der.manaMax !== null || der.iraMax ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-3 mb-6 mt-4`}>
+      {/* Uma barra embaixo da outra na coluna estreita da aba Ficha; lado a
+          lado quando a ficha ocupa a largura toda, como na revisão da criação. */}
+      <div className={`grid grid-cols-1 ${compacto ? '' : (der.manaMax !== null || der.iraMax ? 'sm:grid-cols-3' : 'sm:grid-cols-2')} gap-3 mb-6 mt-4`}>
         {onChangeAtual ? (
           <>
             <BarraAjustavel label="Vida" atual={valorAtual(char, 'vida', der.vidaMax)} max={der.vidaMax}
@@ -4825,7 +4827,7 @@ function ListaArmas({ char, catalogo, color }) {
 }
 
 /* Painel de Defesa / Bloqueio / Esquiva, no formato da ficha do CRIS */
-function PainelDefesas({ char, color, armadurasCustom = [] }) {
+function PainelDefesas({ char, color, armadurasCustom = [], compacto }) {
   const d = computeDefesas(char, armadurasCustom);
   const armaduraEquipada = [...ARMADURAS_CATALOGO, ...armadurasCustom].find((a) => a.id === char.armaduraId);
   const Bloco = ({ titulo, valor, formula, destaque }) => (
@@ -4857,13 +4859,15 @@ function PainelDefesas({ char, color, armadurasCustom = [] }) {
           {armaduraEquipada.descricao && <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{armaduraEquipada.descricao}</p>}
         </div>
       )}
-      <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-        Defesa é o valor passivo: {d.defesaPartes.base} {char.originId ? 'da sua classe' : 'de base'} + Motoras +
-        equipamento. Ela é a DT de quem ataca você. Bloqueio e Esquiva são reações, uma por
-        rodada: a <strong style={{ color }}>Esquiva</strong> entra no lugar da Defesa como DT
-        daquele ataque, e o <strong style={{ color }}>Bloqueio</strong> abate o próprio valor
-        do dano que passou.
-      </p>
+      {!compacto && (
+        <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+          Defesa é o valor passivo: {d.defesaPartes.base} {char.originId ? 'da sua classe' : 'de base'} + Motoras +
+          equipamento. Ela é a DT de quem ataca você. Bloqueio e Esquiva são reações, uma por
+          rodada: a <strong style={{ color }}>Esquiva</strong> entra no lugar da Defesa como DT
+          daquele ataque, e o <strong style={{ color }}>Bloqueio</strong> abate o próprio valor
+          do dano que passou.
+        </p>
+      )}
     </div>
   );
 }
@@ -5734,7 +5738,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
               <div>
                 <CharacterSheetBody char={char} contentIndex={contentIndex} compacto
                   onChangeAtual={canEdit ? alterarAtual : undefined} />
-                <PainelDefesas char={char} color={origin.cor} armadurasCustom={catalogoDe(contentIndex, 'armaduras', [], char)} />
+                <PainelDefesas char={char} color={origin.cor} compacto armadurasCustom={catalogoDe(contentIndex, 'armaduras', [], char)} />
               </div>
               <div>
                 <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Perícias</p>

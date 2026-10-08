@@ -273,7 +273,15 @@ própria no modo compacto: uma história longa empurrava a página inteira.
 
 As defesas saíram de Combate e foram para a Ficha, ao lado das barras: Defesa,
 Bloqueio e Esquiva são o que a mesa mais pergunta, e agora estão na aba que
-abre por padrão.
+abre por padrão. No modo compacto elas não repetem o parágrafo que explica o
+que cada uma faz — era o que sobrava de altura para as barras empilharem.
+
+**Armadilha do `sm:` dentro de coluna estreita**: o breakpoint do Tailwind olha
+a largura da JANELA, não a do elemento. As barras com `sm:grid-cols-3` ficaram
+lado a lado e ilegíveis dentro da coluna de 304px da aba Ficha, porque numa
+tela de desktop o `sm:` dispara de qualquer jeito. Por isso o `compacto` tira
+as colunas em vez de confiar no breakpoint. Vale para qualquer grid novo que
+for parar numa coluna estreita.
 
 ### Fichas da mestra
 `tipoFicha` ∈ `deus`, `inimigo`, `especial`. Sem fórmula: vida, sanidade e mana
