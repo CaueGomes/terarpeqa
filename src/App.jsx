@@ -1785,6 +1785,16 @@ const ATTRS = [
 const abrevAttr = (key) => ATTRS.find((a) => a.key === key)?.abrev || '';
 const ATTR_BASE = 0, ATTR_MIN = 0, ATTR_MAX = 5;
 
+/* ---------- largura das telas ----------
+   O site nasceu preso em 896px, e a ficha em 672px: num monitor de 1600 isso
+   deixava de 44% a 58% da tela vazia, com tudo espremido no meio. Agora a
+   largura cresce por degraus — o celular usa a tela inteira, e no desktop
+   larga vai até 1152px. O que ganha espaço é o NÚMERO DE COLUNAS, não o
+   comprimento da linha: texto corrido continua curto de propósito, porque
+   linha longa demais cansa de ler. Por isso a coluna de texto do dicionário
+   tem o seu próprio teto, mesmo dentro de uma tela larga. */
+const TELA = 'w-full max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 py-8';
+
 /* ---------- perícias ---------- */
 const PERICIAS = [
   { id: 'logica', nome: 'Percepção', atributo: 'intelecto', desc: 'Deduza o mundo. Siga seus padrões.',
@@ -2594,7 +2604,7 @@ function DicionariosScreen({ onBack, inicial }) {
   return (
     <div className="min-h-screen w-full" style={{ background: G.bg }}>
       <style>{FONTS}</style>
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className={TELA}>
         <button onClick={onBack} className="flex items-center gap-1.5 text-sm mb-6 hover:opacity-80" style={{ color: G.muted, fontFamily: F.body }}>
           <ArrowLeft size={14} /> Voltar
         </button>
@@ -2630,8 +2640,8 @@ function DicionariosScreen({ onBack, inicial }) {
             </div>
           </div>
 
-          {/* texto */}
-          <div className="flex-1 min-w-0">
+          {/* texto — com teto próprio: tela larga não vira linha longa */}
+          <div className="flex-1 min-w-0 max-w-3xl">
             <div className="rounded-2xl p-5 sm:p-7" style={{ background: G.surface, border: `1px solid ${G.border}` }}>
               <div className="flex items-center gap-3 mb-1">
                 {origem ? (
@@ -2732,7 +2742,7 @@ function textosDosCatalogos() {
   return fontes;
 }
 
-function ListaCondicoes({ cor, tema }) {
+function ListaCondicoes({ cor, tema, colunas }) {
   const t = tema || { card: '#171029', borda: V.border, texto: V.text, suave: V.muted, apagado: '#6f6291' };
   const fontes = textosDosCatalogos();
   return (
@@ -2741,7 +2751,7 @@ function ListaCondicoes({ cor, tema }) {
         <HeartPulse size={12} /> Condições
       </p>
       <p className="text-xs leading-relaxed mb-3" style={{ color: t.apagado, fontFamily: F.body }}>{NOTA_CONDICOES}</p>
-      <div className="space-y-2">
+      <div className={colunas ? 'grid gap-2 lg:grid-cols-2 items-start' : 'space-y-2'}>
         {CONDICOES.map((c) => {
           const onde = [...new Set(fontes.filter((f) => c.busca.test(f.texto || '')).map((f) => f.origem))];
           return (
@@ -2779,11 +2789,11 @@ function CondicoesScreen({ onBack }) {
   return (
     <div className="min-h-screen w-full" style={{ background: G.bg }}>
       <style>{FONTS}</style>
-      <div className="max-w-2xl mx-auto px-6 py-8">
+      <div className={TELA}>
         <button onClick={onBack} className="flex items-center gap-1.5 text-sm mb-6 hover:opacity-80" style={{ color: G.muted, fontFamily: F.body }}>
           <ArrowLeft size={14} /> Voltar
         </button>
-        <ListaCondicoes cor={V.brand}
+        <ListaCondicoes cor={V.brand} colunas
           tema={{ card: G.surface, borda: G.border, texto: G.text, suave: G.muted, apagado: G.muted }} />
       </div>
     </div>
@@ -3015,7 +3025,7 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
   return (
     <div className="min-h-screen w-full" style={{ background: G.bg }}>
       <style>{FONTS}</style>
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className={TELA}>
         <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
           <div className="flex items-center gap-3">
             <Sigil size={38} glow={false} />
@@ -3090,7 +3100,7 @@ function Dashboard({ account, characters, loading, onNew, onOpen, onLogout, onDi
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {visiveis.map((c) => <CharacterCard key={c.id} char={c} onOpen={onOpen} showOwner={account.isMaster} />)}
           </div>
         )}
@@ -4653,7 +4663,7 @@ function CreateWizard({ account, onSave, onCancel, tipoFicha = null }) {
   return (
     <div className="min-h-screen w-full" style={{ background: V.bg }}>
       <style>{FONTS}</style>
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className={TELA}>
         <button onClick={onCancel} className="flex items-center gap-1.5 text-sm mb-6 hover:opacity-80" style={{ color: V.muted, fontFamily: F.body }}>
           <ArrowLeft size={14} /> Voltar ao painel
         </button>
@@ -5485,7 +5495,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
     return (
       <div className="min-h-screen w-full" style={{ background: V.bg }}>
         <style>{FONTS}</style>
-        <div className="max-w-2xl mx-auto px-6 py-8">
+        <div className={TELA}>
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => setEditing(false)} className="flex items-center gap-1.5 text-sm hover:opacity-80" style={{ color: V.muted, fontFamily: F.body }}>
               <X size={14} /> Cancelar edição
@@ -5647,7 +5657,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
   return (
     <div className="min-h-screen w-full" style={{ background: V.bg }}>
       <style>{FONTS}</style>
-      <div className="max-w-2xl mx-auto px-6 py-8">
+      <div className={TELA}>
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="flex items-center gap-1.5 text-sm hover:opacity-80" style={{ color: V.muted, fontFamily: F.body }}><ArrowLeft size={14} /> Painel</button>
           <div className="flex items-center gap-3">

@@ -42,6 +42,13 @@ npx vite --port 5173 &
 
 - **Front**: React + Vite, num arquivo só: `src/App.jsx` (~5.000 linhas).
   Estilo inline + Tailwind. Sem router: a navegação é estado (`screen`).
+  **Largura das telas**: todas usam a constante `TELA`, nunca um `max-w-` na
+  mão. Ela cresce por degraus — tela cheia no celular, 896px, 1152px no `xl` e
+  1280px no `2xl`. O site ficou travado em 896px (e a ficha em 672px) até
+  08/10/2026, o que num monitor de 1600 deixava quase metade da tela vazia.
+  Quem ganha espaço são as COLUNAS, não a linha de texto: o painel vai a três
+  fichas por linha no `xl`, as condições a duas, e a coluna de texto do
+  dicionário tem teto próprio (`max-w-3xl`) para a linha não esticar.
 - **API**: Express em `server/index.js`, Postgres em `server/db.js`.
   Um único serviço serve a API e os arquivos estáticos de `dist/`.
 - **Banco**: `DATABASE_URL` aceita dois formatos.
