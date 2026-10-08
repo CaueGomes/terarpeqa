@@ -2688,7 +2688,7 @@ const NOTA_CONDICOES = 'Golpes, feitiços e habilidades dizem quando aplicam uma
 
 const CONDICOES = [
   { id: 'catastrofe', nome: 'Catástrofe', busca: /\bcat[áa]strofe\b/iu,
-    efeito: 'Exclusiva de druidas com animal-laço místico. O animal toma o controle e o personagem é entregue temporariamente à mestra. Enquanto durar, o druida ataca o que estiver mais próximo, não distingue aliados de inimigos, não usa habilidades que exijam raciocínio e recebe +3d10 de dano em todos os ataques. Não pode ser enfeitiçado, acalmado nem convencido: o que age não é mais ele.' },
+    efeito: 'Exclusiva de druidas com animal-laço místico: na forma do animal, toda rodada exige um teste de Eletroquímica, com uma DT que sobe gradativamente, e quem falha cai nesta condição. O animal toma o controle e o personagem é entregue temporariamente à mestra. Enquanto durar, o druida ataca o que estiver mais próximo, não distingue aliados de inimigos, não usa habilidades que exijam raciocínio e recebe +3d10 de dano em todos os ataques. Não pode ser enfeitiçado, acalmado nem convencido: o que age não é mais ele.' },
   { id: 'cego', nome: 'Cego', busca: /\bcegos?\b/iu,
     efeito: 'Não enxerga. Ataques à distância sofrem −15 e ataques corpo a corpo, −10. Não pode ser alvo de efeitos visuais nem se beneficiar de nada que precise ser visto, e todo teste que dependa da visão falha automaticamente. Dura o que o efeito que a causou disser; sem duração definida, um teste de Velocidade de reação DT 20 ao final de cada rodada encerra a condição.' },
   { id: 'depressivo', nome: 'Depressivo', busca: /\bdepressiv[oa]s?\b/iu,
