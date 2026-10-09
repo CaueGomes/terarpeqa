@@ -319,6 +319,13 @@ que **dobra a carga** (a conta está em `pesoCarregado`). Elas aparecem com
 estrela no seletor e entram em `habilidadesDaFicha`, não em `char.habilidades`.
 
 ### Itens
+**Item trancado** (08/10/2026): o campo `bloqueado` guarda a mensagem que o
+jogador vê, e o item some do catálogo até a ficha ganhar o id em
+`char.desbloqueados`. O botão "Desbloquear" fica no seletor de itens, dentro
+da edição da ficha. Hoje só o **Baralho dos Mortos** usa — é a mestra que
+libera, em jogo. É diferente da trava de mago negro (`nivelMin: 'negro'`),
+que depende do nível e não de um clique.
+
 Item **sem `classe`** é geral e aparece para todo mundo (11 hoje: lampião,
 corda, pederneira...). O pirata é a classe de item: tem 19, entre os antigos e
 os novos (rede, armadilha de urso, pólvora, luneta, piche, gancho). Item com

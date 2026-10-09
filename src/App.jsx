@@ -894,7 +894,10 @@ const ITENS_CATALOGO = [
     descricao: 'Queima por uma noite; enquanto acesa, você não sente sono nem fome.' },
   { id: 'ite_frasco_tinta_emprestada', nome: 'Frasco de tinta emprestada', classe: 'mago', peso: 2,
     descricao: 'Guarda 10 da sua mana e pode ser dado para outro mago para uso posterior. Enche uma vez por sessão. Você perde 10 de mana para enchê-lo e o item só é gasto ao ser entregue a outro mago.' },
+  /* Trancado de propósito: é a mestra que libera, em jogo. O botão de
+     desbloquear está no seletor de itens e grava em char.desbloqueados. */
   { id: 'ite_baralho_mortos', nome: 'Baralho dos Mortos', classe: 'mago', peso: 1,
+    bloqueado: 'Você não pode possuir este item ainda.',
     descricao: 'Cartas de bordas queimadas que ninguém se lembra de ter comprado. É o requisito para conjurar o feitiço de mesmo nome: sem ele na mão, não há o que embaralhar.' },
   { id: 'ite_pena_asa_negra', nome: 'Pena de asa negra', classe: 'mago', nivelMin: 'negro', peso: 2,
     descricao: 'Uma vez por sessão, conjure um feitiço sem gastar sanidade.' },
@@ -969,8 +972,12 @@ const ITENS_CATALOGO = [
 ];
 
 /* Mesmo filtro do resto, com trava extra de nível para itens de mago negro. */
+/* Item trancado só aparece depois de a ficha ganhar o desbloqueio. */
+const itemDesbloqueado = (item, char) => !item?.bloqueado || (char?.desbloqueados || []).includes(item.id);
+
 function itemDisponivel(item, char) {
   if (fichaLivre(char)) return false;
+  if (!itemDesbloqueado(item, char)) return false;
   /* Item sem classe é geral: aparece para qualquer personagem. */
   if (item.classe && item.classe !== char.originId) return false;
   if (item.subdivisaoId && item.subdivisaoId !== char.subdivisaoId) return false;
@@ -980,6 +987,12 @@ function itemDisponivel(item, char) {
 }
 function itemBloqueadoPorNivel(item, char) {
   return item.nivelMin === 'negro' && (char.subdivisaoNivel || 0) < NIVEL_MAX;
+}
+/* Trancados que a ficha ainda pode destrancar, com a mensagem de cada um. */
+function itensTrancados(char) {
+  if (fichaLivre(char)) return [];
+  return ITENS_CATALOGO.filter((i) => i.bloqueado && !itemDesbloqueado(i, char)
+    && (!i.classe || i.classe === char.originId));
 }
 
 /* ---------- catálogo de habilidades ----------
@@ -1042,21 +1055,21 @@ const HABILIDADES_CATALOGO = [
   { id: 'hab_emprestimo_tinta', nome: 'Empréstimo de tinta', classe: 'mago',
     descricao: 'Você cede 10 de mana a outro mago, ou puxa 10 dele com o consentimento dele. Gasta 6 de sanidade por transferência.' },
   { id: 'hab_heranca_de_tinta', nome: 'Herança de tinta', classe: 'mago',
-    descricao: 'Quando outro mago morre perto de você, você absorve metade da mana que ele tinha. Passivo, sem custo. Ninguém te ensinou isso — simplesmente aconteceu, uma vez, e você não esqueceu.' },
+    descricao: 'Quando outro mago morre perto de você, você absorve metade da mana que ele tinha. Passivo, sem custo.' },
   { id: 'hab_economia_palavras', nome: 'Economia de palavras', classe: 'mago',
     descricao: 'Escolha um feitiço seu no começo da sessão. Ele custa 2 de mana a menos até o fim dela. Passivo, sem custo.' },
   { id: 'hab_segunda_tentativa', nome: 'Segunda tentativa', classe: 'mago',
     descricao: 'Quando um feitiço seu falha ou é resistido, você pode conjurá-lo de novo imediatamente pela metade do custo.' },
   { id: 'hab_mana_emprestada_carne', nome: 'Mana emprestada da carne', classe: 'mago',
-    descricao: 'Você converte sanidade em mana na razão de 1 para 2, até cinco vezes por sessão. Ambição custa caro, e Karzaron nunca escondeu isso.' },
+    descricao: 'Você converte sanidade em mana na razão de 1 para 2, até cinco vezes por sessão. Ambição custa caro, afinal.' },
   { id: 'hab_quanto_custa', nome: 'Quanto custa?', classe: 'mago',
     descricao: 'Você identifica o valor real e a origem de qualquer artefato mágico, inclusive se ele é falsificado. Teste de Dicionário mental (DT da mestra). Gasta 6 de sanidade.' },
   { id: 'hab_conheco_esse_cheiro', nome: 'Eu conheço esse cheiro', classe: 'mago',
-    descricao: 'Você reconhece na hora se alguém usou manteiga azul, há quanto tempo e o quanto. Passivo, sem custo — e você nunca conta como sabe.' },
+    descricao: 'Você reconhece na hora se alguém usou manteiga azul, há quanto tempo e o quanto. Gasta 3 de sanidade.' },
 
   /* ===== GUERREIRO ===== */
   { id: 'hab_plateia_quer_sangue', nome: 'A plateia quer sangue', classe: 'guerreiro',
-    descricao: 'Você ignora medo, intimidação e controle mental por 2 rodadas, avançando em linha reta. Gasta 5 de sanidade. Você também não consegue recuar ou mudar de plano nesse intervalo.' },
+    descricao: 'Você dobra seu deslocamento para avançar em uma linha reta. No final deste percurso, você pode dar um ataque em um inimigo no alcance. O inimigo precisa passar em um teste de Velocidade de reação para não cair no chão.' },
   { id: 'hab_arena_nunca_sai', nome: 'A arena nunca sai de você', classe: 'guerreiro',
     descricao: 'Você reconhece na hora quem é o mais perigoso de um grupo e quanto dano aquele inimigo ainda aguenta antes de cair. Teste de Percepção (DT da mestra). Gasta 4 de sanidade.' },
   { id: 'hab_faca_disso_cicatriz', nome: 'Faça disso uma cicatriz', classe: 'guerreiro', subdivisaoId: 'brutus',
@@ -1064,7 +1077,7 @@ const HABILIDADES_CATALOGO = [
   { id: 'hab_deixe_me_viver', nome: 'Deixe-me viver um pouco mais', classe: 'guerreiro', subdivisaoId: 'brutus',
     descricao: 'Você prevê que algo horrível pode acontecer a qualquer momento, então precisa se preparar. Antes de uma cena de combate, usa esta habilidade para você e seus aliados receberem 1d8 em testes de Resistência até o final deste combate. Você gasta 1d12 de sanidade permanente ao utilizar essa habilidade.' },
   { id: 'hab_corpo_de_aco', nome: 'Corpo de Aço', classe: 'guerreiro', subdivisaoId: 'brutus',
-    descricao: 'Você recebe +3 de defesa até o final da cena. Gasta 12 pontos de sanidade.' },
+    descricao: 'Você recebe +3 de defesa, e esse mesmo valor em bônus para resistir aos efeitos de medo, controle e intimidação até o final da cena. Gasta 12 pontos de sanidade.' },
   { id: 'hab_gladiador_sombras', nome: 'Gladiador das Sombras', classe: 'guerreiro', subdivisaoId: 'pritzk',
     descricao: 'Você age melhor quando os outros não te veem. Você recebe +1d6 em testes de Silêncio até o final da cena. Gasta 6 pontos de sanidade.' },
   { id: 'hab_golpe_nao_viu', nome: 'O golpe que você não viu', classe: 'guerreiro', subdivisaoId: 'pritzk',
@@ -1644,9 +1657,10 @@ const FEITICOS_CATALOGO = [
       'Você agora pode mover todos os objetos do recinto, ignorando seu tamanho, desde que seja feito de metal. Gasta 10 de mana e o dano de objetos considerados grandes ou enormes é de 4d12 de dano.',
     ] },
   { id: 'fei_homunculo', escala: true, nome: 'Invocando o Homúnculo', nivelMin: 50,
-    descricao: 'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
+    nota: 'Requisito: você precisa ter ou já ter tido ligação com necromancia.',
+    descricao: 'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida.',
     evolucoes: [
-      'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida e te obedecem cegamente.',
+      'Você cria 2 aliados de carne para te auxiliar em combates ou testar estruturas perigosas. Você gasta 5 de mana para invocá-los e eles obedecem suas ordens cegamente. Aparências são definidas por você. Eles causam 1d10 de dano e você escolhe quem eles atacam. Cada um tem 10 de vida.',
       'Você cria 3 aliados agora, um pouco maiores por 7 de mana. Eles causam 2d6 de dano por ataque. Cada um tem 13 de vida e te obedecem cegamente.',
       'Você cria um monstro de carne, sangue e raiva. Ela é quase um brutamonte, causando 2d10 + 6 por ataque por 10 de mana. Ela tem 35 de vida, mas não te obedece muito bem.',
     ] },
@@ -3919,7 +3933,7 @@ function SeletorArmas({ char, selecionadas, onToggle, color, customs, canCreate,
 }
 
 /* Catálogo de itens + inventário livre. Itens do catálogo carregam peso e descrição. */
-function SeletorItens({ char, inventario, onAdd, onRemove, color }) {
+function SeletorItens({ char, inventario, onAdd, onRemove, onDesbloquear, color }) {
   const [aberto, setAberto] = useState(null);
   const [novoItem, setNovoItem] = useState('');
   const [novaQtd, setNovaQtd] = useState('1');
@@ -3931,6 +3945,7 @@ function SeletorItens({ char, inventario, onAdd, onRemove, color }) {
 
   const disponiveis = ITENS_CATALOGO.filter((i) => itemDisponivel(i, char));
   const bloqueados = ITENS_CATALOGO.filter((i) => i.classe === char.originId && itemBloqueadoPorNivel(i, char));
+  const trancados = itensTrancados(char);
 
   const addDoCatalogo = (item) => {
     onAdd({ id: uid(), catalogoId: item.id, nome: item.nome, descricao: item.descricao, peso: item.peso, quantidade: '1' });
@@ -3957,7 +3972,7 @@ function SeletorItens({ char, inventario, onAdd, onRemove, color }) {
 
       {mostrarCatalogo && (
         <div className="space-y-2 mb-4">
-          {disponiveis.length === 0 && bloqueados.length === 0 ? (
+          {disponiveis.length === 0 && bloqueados.length === 0 && trancados.length === 0 ? (
             <p className="text-xs italic" style={{ color: '#6f6291', fontFamily: F.body }}>
               Nenhum item de catálogo disponível ainda — escolha sua subdivisão primeiro.
             </p>
@@ -3983,6 +3998,27 @@ function SeletorItens({ char, inventario, onAdd, onRemove, color }) {
                   </div>
                 );
               })}
+              {/* Trancados: aparecem com a mensagem do próprio item e um botão
+                  que destranca para esta ficha. Diferente dos travados por
+                  nível logo abaixo, que dependem do nível mágico e não de um
+                  clique. */}
+              {trancados.map((item) => (
+                <div key={item.id} className="rounded-lg p-2.5 flex items-start gap-2" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ border: `1px solid ${V.border}` }}>
+                    <Lock size={11} color={V.muted} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm" style={{ fontFamily: F.body, color: V.text, fontWeight: 600 }}>{item.nome}</p>
+                    <p className="text-xs mt-0.5" style={{ fontFamily: F.body, color: '#c9899f' }}>{item.bloqueado}</p>
+                  </div>
+                  {onDesbloquear && (
+                    <button onClick={() => onDesbloquear(item.id)} className="text-xs rounded-lg px-2.5 py-1 shrink-0"
+                      style={{ color, border: `1px solid ${color}88`, fontFamily: F.body }}>
+                      Desbloquear
+                    </button>
+                  )}
+                </div>
+              ))}
               {bloqueados.map((item) => (
                 <div key={item.id} className="rounded-lg p-2.5 flex items-start gap-2" style={{ background: '#171029', border: `1px solid ${V.border}`, opacity: 0.55 }}>
                   <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ border: `1px solid ${V.border}` }}>
@@ -4429,6 +4465,7 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
       <SeletorItens char={draft} inventario={draft.inventario || []}
         onAdd={(item) => setDraft({ ...draft, inventario: [...(draft.inventario || []), item] })}
         onRemove={(id) => setDraft({ ...draft, inventario: draft.inventario.filter((i) => i.id !== id) })}
+        onDesbloquear={(id) => setDraft({ ...draft, desbloqueados: [...(draft.desbloqueados || []), id] })}
         color={color} />
     </div>
   );
@@ -4640,7 +4677,7 @@ function blankDraft(owner, tipoFicha = null) {
     pericias: {}, periciasOutros: {}, recursos: { vidaBonusLore: 0, sanidadeBonusLore: 0, vidaPerdida: 0 },
     atual: { vida: null, sanidade: null, mana: null, ira: 0 },
     defesas: { equipamento: 0, defesaOutros: 0, bloqueioOutros: 0, esquivaOutros: 0 },
-    armas: [], armaduraId: null, feiticos: [], habilidades: [], inventario: [],
+    armas: [], armaduraId: null, feiticos: [], habilidades: [], inventario: [], desbloqueados: [],
     editedByMaster: false, editedAt: null, createdAt: null,
   };
 }
@@ -5683,6 +5720,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                 <SeletorItens char={editDraft} inventario={editDraft.inventario || []}
                   onAdd={(item) => setEditDraft({ ...editDraft, inventario: [...(editDraft.inventario || []), item] })}
                   onRemove={(id) => setEditDraft({ ...editDraft, inventario: editDraft.inventario.filter((i) => i.id !== id) })}
+                  onDesbloquear={(id) => setEditDraft({ ...editDraft, desbloqueados: [...(editDraft.desbloqueados || []), id] })}
                   color={origin.cor} />
               </div>
             </div>
