@@ -409,7 +409,7 @@ const DICIONARIOS = [
       {
         titulo: 'Contratos de vida',
         paragrafos: [
-          `Âncore não cobra oração. Ele cobra sangue, e cobra na hora.`,
+          `Coragem é o elemento mais valioso para Âncore, por isso é justo ser trocada por poder.`,
           `Todo filho do mar pode fechar um contrato: um poder que acontece agora, pago com a sua própria vida, descontado da barra no instante em que você usa. Não existe teste para resistir ao preço, não existe parcelamento e não existe desconto. E toda a vida que sai de você nesses contratos vai para o seu pai — ninguém na Assembleia da Concha sabe dizer o que ele faz com ela, e quem já perguntou não repetiu a pergunta.`,
           `Você recebe um contrato a cada dois níveis, e eles não ocupam vaga de habilidade. Os primeiros cobram da vida que você tem na hora — cinco, dez, quinze ou vinte pontos — em troca de uma rodada de vantagem. O último é diferente — ele cobra vida permanente. O seu máximo cai e não volta com descanso nenhum, porque o que foi entregue ao mar não foi emprestado.`,
           `É por isso que criatura do mar velha é criatura do mar que soube a hora de não assinar. Cada contrato é uma escolha de quanto do seu futuro vale resolver o problema desta cena.`,
