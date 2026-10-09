@@ -1069,7 +1069,7 @@ const HABILIDADES_CATALOGO = [
 
   /* ===== GUERREIRO ===== */
   { id: 'hab_plateia_quer_sangue', nome: 'A plateia quer sangue', classe: 'guerreiro',
-    descricao: 'Você dobra seu deslocamento para avançar em uma linha reta. No final deste percurso, você pode dar um ataque em um inimigo no alcance. O inimigo precisa passar em um teste de Velocidade de reação para não cair no chão.' },
+    descricao: 'Você dobra seu deslocamento para avançar em uma linha reta. No final deste percurso, você pode dar um ataque em um inimigo no alcance. O inimigo precisa passar em um teste de Velocidade de reação para não cair no chão. Gasta 6 de sanidade.' },
   { id: 'hab_arena_nunca_sai', nome: 'A arena nunca sai de você', classe: 'guerreiro',
     descricao: 'Você reconhece na hora quem é o mais perigoso de um grupo e quanto dano aquele inimigo ainda aguenta antes de cair. Teste de Percepção (DT da mestra). Gasta 4 de sanidade.' },
   { id: 'hab_faca_disso_cicatriz', nome: 'Faça disso uma cicatriz', classe: 'guerreiro', subdivisaoId: 'brutus',
