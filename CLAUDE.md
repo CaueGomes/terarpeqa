@@ -303,6 +303,13 @@ fúria: quem despeja tudo em Físico tem barra curta e perde o controle antes.
 Barra cheia = condição **Em ira**. Zera no Restaurar. "Acumula N de ira" é lido
 por `ganhoDeIra`.
 
+Os custos sobem com o nível: 4, 6, 8, 10 e **20**. O salto no nível 9 é
+proposital — **Nenhuma palavra te alcança** (09/10/2026) dá imunidade total a
+magia pelo combate inteiro, inclusive à dos aliados, e come 71% de uma barra
+típica de 28. Depois dela cabe mais uma habilidade pequena antes de virar
+EM IRA, então usá-la é decidir o combate inteiro de uma vez. Ela substituiu
+"A fúria é a arma", que custava 12 e dava dano máximo no golpe seguinte.
+
 **Contrato de vida** (só criatura do mar): não cria barra, cobra da vida. "Custa
 N de vida" e "Custa N de vida permanente" saem de `custoDeVidaDoPoder`. O
 permanente vai para `char.recursos.vidaPerdida`, que `computeRecursos` desconta

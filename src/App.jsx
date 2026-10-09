@@ -1267,8 +1267,8 @@ const PODERES_POR_NIVEL = {
       descricao: 'Você bate antes de pensar, e bate de novo. Nesta rodada você ataca duas vezes com a mesma arma. Acumula 8 de ira.' },
     { nivel: 7, nome: 'Nada me derruba',
       descricao: 'Enquanto durar, ninguém tira você do lugar. Por 3 rodadas você recebe +5 de Defesa e não pode ser derrubado, empurrado nem ficar IMÓVEL. Acumula 10 de ira.' },
-    { nivel: 9, nome: 'A fúria é a arma',
-      descricao: 'Você para de medir o golpe. Seu próximo ataque sai no dano máximo e ignora o Bloqueio do alvo. Acumula 12 de ira.' },
+    { nivel: 9, nome: 'Nenhuma palavra te alcança',
+      descricao: 'Você entra tão fundo na própria fúria que a magia não encontra onde se prender. Até o fim do combate, você é imune a qualquer feitiço — inclusive aos dos seus aliados, então não há cura nem bênção que chegue até você. Acumula 20 de ira.' },
   ],
   sereia: [
     { nivel: 1, nome: 'Maré de sal',
