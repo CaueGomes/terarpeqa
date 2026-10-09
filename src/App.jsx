@@ -1292,7 +1292,7 @@ const PODERES_CLASSE = {
   },
   sereia: {
     aba: 'Contratos', titulo: 'Contratos de vida', cor: '#5fb7c9',
-    texto: 'O mar não empresta de graça. Cada contrato é pago com a sua própria vida, descontada na hora da barra. O último cobra vida permanente: o seu máximo cai e não volta com descanso nenhum.',
+    texto: 'O mar não empresta de graça: toda a vida que você gasta nestes contratos vai para o seu deus e pai, Âncore. Cada contrato é pago com a sua própria vida, descontada na hora da barra. O último cobra vida permanente: o seu máximo cai e não volta com descanso nenhum.',
   },
 };
 
