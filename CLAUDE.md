@@ -380,6 +380,13 @@ do catálogo da mestra.
   busca nos catálogos; a busca de Doente é só em maiúsculas, porque "plantas
   doentes" aparece numa habilidade. Em ira e Enfeitiçado saem com **Controle
   seus demônios**, que antes não era usada por nada.
+- **Dicionários com número na prosa**: as seções "Mecânica de Ira" (guerreiro)
+  e "Contratos de vida" (criatura do mar) explicam as mecânicas de classe e
+  **repetem na mão** o teto da barra (10 + 3 por ponto), a faixa de custo da ira
+  (4 a 20) e os preços dos contratos (5, 10, 15, 20 e o permanente). São a
+  exceção à regra de ler do dado: prosa não sai de `PODERES_POR_NIVEL` sem
+  mover constante de lugar. Mexeu nesses números no código, mexa no dicionário
+  junto.
 - **Dicionários** (`DICIONARIOS`): cada seção tem `titulo` e `paragrafos`, e
   pode ter `subsecoes` ([{ titulo, paragrafos }]) quando o texto pede um bloco
   por assunto. Hoje só "Religião e Fé", no dicionário geral, usa: um bloco por

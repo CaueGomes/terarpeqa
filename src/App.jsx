@@ -407,6 +407,15 @@ const DICIONARIOS = [
         ],
       },
       {
+        titulo: 'Contratos de vida',
+        paragrafos: [
+          `Âncore não cobra oração. Ele cobra sangue, e cobra na hora.`,
+          `Todo filho do mar pode fechar um contrato: um poder que acontece agora, pago com a sua própria vida, descontado da barra no instante em que você usa. Não existe teste para resistir ao preço, não existe parcelamento e não existe desconto. E toda a vida que sai de você nesses contratos vai para o seu pai — ninguém na Assembleia da Concha sabe dizer o que ele faz com ela, e quem já perguntou não repetiu a pergunta.`,
+          `Você recebe um contrato a cada dois níveis, e eles não ocupam vaga de habilidade. Os primeiros cobram da vida que você tem na hora: cinco, dez, quinze, vinte pontos em troca de uma rodada de vantagem. O último é diferente — ele cobra vida permanente. O seu máximo cai e não volta com descanso nenhum, porque o que foi entregue ao mar não foi emprestado.`,
+          `É por isso que criatura do mar velha é criatura do mar que soube a hora de não assinar. Cada contrato é uma escolha de quanto do seu futuro vale resolver o problema desta cena.`,
+        ],
+      },
+      {
         titulo: 'A Assembleia da Concha',
         paragrafos: [
           `Ancorê sempre tentou defender os princípios de liberdade, justiça e voz para quem deseja ser ouvido (ou para quem tem coragem de falar), e é por isso que ele criou a Assembleia da Concha: um evento mensal que reúne o representante eleito de cada bairro marítimo de seu reino, onde cada um traz opiniões, sugestões, elogios e críticas das pessoas do seu bairro, estas que sempre são discutidas e viabilizadas.`,
@@ -548,6 +557,9 @@ const DICIONARIOS = [
           `Quando se torna um guerreiro, você não pode fugir de sua essência, mesmo que um dia consiga sair dessa arena.`,
           `Todo dia, você como guerreiro precisa desmaiar alguém ou ser desmaiado; você precisa matar ou ser morto por alguém. Você precisa ganhar uma batalha ou perder uma todo dia.`,
           `Caso contrário, você entra em estado de Ira. O estado de Ira não permite que você use a lógica de seu cérebro para fazer decisões: uma fúria sem igual toma conta de seu corpo e destrói tudo que vem pela frente.`,
+          `Na ficha, essa fúria tem medida: a barra de Ira. Ela é a única barra do sistema que começa vazia e sobe — as outras você gasta, esta você enche. O teto dela é 10, mais 3 para cada ponto que você tenha em Físico e em Psique: o corpo aguenta a fúria, e a cabeça é o que a segura. Quem despeja tudo em músculo tem barra curta e perde o controle antes de todo mundo.`,
+          `As habilidades de Ira são o que enche a barra. Você ganha uma a cada dois níveis, elas não ocupam vaga de habilidade e nenhuma cobra sanidade: o preço é sempre empurrar o ponteiro mais para perto do fim. Cada uma custa mais que a anterior, da primeira, que pede 4, até a última, que pede 20 e desliga a magia inteira por um combate.`,
+          `Quando a barra enche, você entra na condição Em ira e deixa de escolher quem ataca. Ela esvazia quando a cena acaba, ou quando a condição passa — e a condição só passa do jeito que a arena ensinou: matando alguém, desmaiando alguém, ou sendo morto ou desmaiado.`,
         ],
       },
     ],
