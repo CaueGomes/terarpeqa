@@ -967,6 +967,12 @@ const ITENS_CATALOGO = [
     descricao: 'O improviso de sempre. Causa 2d6 de dano, e 4d6 se o alvo estiver bêbado, distraído ou de costas.' },
   { id: 'ite_caixa_pecas_soltas', nome: 'Caixa de peças soltas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos', peso: 3,
     descricao: 'Sempre tem a peça que falta. +5 em testes de C\u2019est la vie para improvisar. Não gasta.' },
+  { id: 'ite_lima_quatro_dentes', nome: 'Lima de quatro dentes', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos', peso: 1,
+    descricao: 'Corta grade, corrente e algema — mas leva tempo e faz barulho. A mestra decide quantas rodadas, e quem estiver por perto ouve.' },
+  { id: 'ite_oleo_pesado', nome: 'Frasco de óleo pesado', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos', peso: 1,
+    descricao: 'Solta qualquer mecanismo emperrado: +5 em testes de Savoir-faire para destravar. Derramado no chão, quem passar faz um teste de Coordenação motora DT 15 ou cai. Dá para três usos.' },
+  { id: 'ite_espelho_sinal', nome: 'Espelho de sinal', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos', peso: 1,
+    descricao: 'Conversa com quem está longe sem ninguém no meio escutar, desde que haja luz e linha de visão. Quem não combinou o código antes só vê um brilho piscando. Não gasta.' },
 
   /* ===== NASCIDO DE OURO ===== */
   { id: 'ite_perfume_corte', nome: 'Frasco de perfume da corte', classe: 'nascido_ouro', peso: 1,
