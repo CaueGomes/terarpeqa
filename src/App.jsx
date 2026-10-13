@@ -411,7 +411,7 @@ const DICIONARIOS = [
         paragrafos: [
           `Coragem é o elemento mais valioso para Âncore, por isso é justo ser trocada por poder.`,
           `Todo filho do mar pode fechar um contrato: um poder que acontece agora, pago com a sua própria vida, descontado da barra no instante em que você usa. Não existe teste para resistir ao preço, não existe parcelamento e não existe desconto. E toda a vida que sai de você nesses contratos vai para o seu pai — ninguém na Assembleia da Concha sabe dizer o que ele faz com ela, e quem já perguntou não repetiu a pergunta.`,
-          `Você recebe um contrato a cada dois níveis, e eles não ocupam vaga de habilidade. Os primeiros cobram da vida que você tem na hora — cinco, dez, quinze ou vinte pontos — em troca de uma rodada de vantagem. O último é diferente — ele cobra vida permanente. O seu máximo cai e não volta com descanso nenhum, porque o que foi entregue ao mar não foi emprestado.`,
+          () => `Você recebe um contrato a cada dois níveis, e eles não ocupam vaga de habilidade. Os primeiros cobram da vida que você tem na hora — ${custosDeContrato().join(', ')} pontos — em troca de uma rodada de vantagem. O último é diferente: ele cobra vida permanente. O seu máximo cai e não volta com descanso nenhum, porque o que foi entregue ao mar não foi emprestado.`,
           `É por isso que criatura do mar velha é criatura do mar que soube a hora de não assinar. Cada contrato é uma escolha de quanto do seu futuro vale resolver o problema desta cena.`,
         ],
       },
@@ -557,8 +557,8 @@ const DICIONARIOS = [
           `Quando se torna um guerreiro, você não pode fugir de sua essência, mesmo que um dia consiga sair dessa arena.`,
           `Todo dia, você como guerreiro precisa desmaiar alguém ou ser desmaiado; você precisa matar ou ser morto por alguém. Você precisa ganhar uma batalha ou perder uma todo dia.`,
           `Caso contrário, você entra em estado de Ira. O estado de Ira não permite que você use a lógica de seu cérebro para fazer decisões: uma fúria sem igual toma conta de seu corpo e destrói tudo que vem pela frente.`,
-          `Na ficha, essa fúria tem medida: a barra de Ira. Ela é a única barra do sistema que começa vazia e sobe — as outras você gasta, esta você enche. O teto dela é 10, mais 3 para cada ponto que você tenha em Físico e em Psique: o corpo aguenta a fúria, e a cabeça é o que a segura. Quem despeja tudo em músculo tem barra curta e perde o controle antes de todo mundo.`,
-          `As habilidades de Ira são o que enche a barra. Você ganha uma a cada dois níveis, elas não ocupam vaga de habilidade e nenhuma cobra sanidade: o preço é sempre empurrar o ponteiro mais para perto do fim. Cada uma custa mais que a anterior, da primeira, que pede 4, até a última, que pede 20 e desliga a magia inteira por um combate.`,
+          () => `Na ficha, essa fúria tem medida: a barra de Ira. Ela é a única barra do sistema que começa vazia e sobe — as outras você gasta, esta você enche. O teto dela é ${IRA_BASE}, mais ${IRA_POR_ATRIBUTO} para cada ponto que você tenha em Físico e em Psique: o corpo aguenta a fúria, e a cabeça é o que a segura. Quem despeja tudo em músculo tem barra curta e perde o controle antes de todo mundo.`,
+          () => `As habilidades de Ira são o que enche a barra. Você ganha uma a cada dois níveis, elas não ocupam vaga de habilidade e nenhuma cobra sanidade: o preço é sempre empurrar o ponteiro mais para perto do fim. Cada uma custa mais que a anterior, da primeira, que pede ${custosDeIra()[0]}, até a última, que pede ${custosDeIra().at(-1)} e desliga a magia inteira por um combate.`,
           `Quando a barra enche, você entra na condição Em ira e deixa de escolher quem ataca. Ela esvazia quando a cena acaba, ou quando a condição passa — e a condição só passa do jeito que a arena ensinou: matando alguém, desmaiando alguém, ou sendo morto ou desmaiado.`,
         ],
       },
@@ -1150,8 +1150,8 @@ const HABILIDADES_CATALOGO = [
     descricao: 'Você olha para a tarefa e descobre que o que carrega era exatamente o que ela pedia. Uma vez por cena, depois de rolar e antes de a mestra dizer se passou, some +6 a um teste de Savoir-faire ou de C’est la vie. Gasta 10 de sanidade.' },
   { id: 'hab_eu_construi_isso', nome: 'Eu construí isso', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
     descricao: 'Você passa uma noite inteira montando alguma coisa com o que o grupo tem em mãos: uma armadilha, uma polia, um alarme, um bote. Teste de Savoir-faire (DT da mestra); se passar, o grupo começa a próxima cena com uma vantagem concreta, combinada com a mestra. Gasta 12 de sanidade.' },
-  { id: 'hab_duas_maos_um_golpe', nome: 'Duas Mãos, Um Golpe', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
-    descricao: 'Pelo mesmo princípio de Duas mãos, três tarefas, você ataca duas vezes no mesmo turno, cada golpe com dano reduzido. Gasta 12 de sanidade.' },
+  { id: 'hab_saida_que_ninguem_viu', nome: 'A saída que ninguém viu', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
+    descricao: 'Você encontra a saída que não existia: um alçapão sob o tapete, uma tábua solta, uma grade que cede. Teste de C’est la vie (DT da mestra); se passar, o grupo inteiro deixa um lugar fechado em uma rodada. Gasta 12 de sanidade.' },
   { id: 'hab_vinganca_profundezas', nome: 'Vingança das Profundezas', classe: 'pirata', subdivisaoId: 'predileto_mares',
     descricao: 'Depois de sofrer dano, seu próximo ataque causa dano extra. Gasta 7 de sanidade.' },
   { id: 'hab_sorte_furada', nome: 'Sorte Furada', classe: 'pirata', subdivisaoId: 'predileto_mares',
@@ -1300,9 +1300,9 @@ const PODERES_POR_NIVEL = {
     { nivel: 3, nome: 'Fôlego emprestado',
       descricao: 'Âncore segura o seu fôlego por você. Por 3 rodadas, você não pode ser reduzido abaixo de 1 de vida. Custa 10 de vida.' },
     { nivel: 5, nome: 'O mar cobra',
-      descricao: 'Você puxa a ferida de um aliado para dentro de você. Cure 4d10 de vida em um aliado à sua escolha. Custa 20 de vida.' },
+      descricao: 'Você puxa a ferida de um aliado para dentro de você. Cure 4d10 de vida em um aliado à sua escolha. Custa 15 de vida.' },
     { nivel: 7, nome: 'Dobra da onda',
-      descricao: 'A onda bate duas vezes no mesmo lugar. Seu próximo ataque causa o dobro do dano rolado. Custa 15 de vida.' },
+      descricao: 'A onda bate duas vezes no mesmo lugar. Seu próximo ataque causa o dobro do dano rolado. Custa 20 de vida.' },
     { nivel: 9, nome: 'Promessa de Âncore',
       descricao: 'Você devolve alguém que o mar já tinha levado. Um aliado morto nesta cena volta com metade da vida. Custa 15 de vida permanente: o seu máximo cai e não volta mais.' },
   ],
@@ -1340,8 +1340,44 @@ function iraMaxima(char) {
   const a = char.attributes || {};
   return IRA_BASE + IRA_POR_ATRIBUTO * ((a.fisico || 0) + (a.psique || 0));
 }
+/* Os custos escritos no texto de cada poder, para o dicionário não repetir
+   número na mão. São lidos na hora de desenhar, não na carga do módulo. */
+const custosDeIra = () => (PODERES_POR_NIVEL.guerreiro || []).map((p) => ganhoDeIra(p.descricao)).filter(Boolean);
+const custosDeContrato = () => (PODERES_POR_NIVEL.sereia || [])
+  .map((p) => custoDeVidaDoPoder(p.descricao))
+  .filter((c) => c && !c.permanente)
+  .map((c) => c.valor);
+
 /* Diferente das outras barras, a ira começa VAZIA: null aqui é zero, não cheio. */
 const iraAtual = (char) => Math.max(0, Number(char?.atual?.ira) || 0);
+
+/* ---------- vigia da reserva de sanidade ----------
+   A reserva é a média das habilidades mais caras de cada classe, então escrever
+   uma habilidade cara nova sobe a sanidade máxima de todo mundo daquela
+   subdivisão sem ninguém pedir. Este teto não trava nada: ele reclama no
+   console em desenvolvimento, para a mudança não passar despercebida. */
+const RESERVA_MAXIMA = 30;
+
+function reservasForaDoTeto() {
+  const fora = [];
+  for (const origem of ORIGINS) {
+    const subs = [...new Set(HABILIDADES_CATALOGO
+      .filter((h) => h.classe === origem.id)
+      .map((h) => h.subdivisaoId || h.animalTipo)
+      .filter(Boolean))];
+    for (const sub of (subs.length ? subs : [null])) {
+      const ficha = { originId: origem.id, subdivisaoId: sub, subdivisaoAnimalTipo: sub };
+      const r = reservaDeSanidade(ficha);
+      if (r > RESERVA_MAXIMA) fora.push(`${origem.id}${sub ? '/' + sub : ''}: reserva ${r} acima do teto ${RESERVA_MAXIMA}`);
+    }
+  }
+  return fora;
+}
+
+if (import.meta.env.DEV) {
+  const fora = reservasForaDoTeto();
+  if (fora.length) console.warn('Reserva de sanidade acima do teto:', fora);
+}
 
 function habilidadesDaFicha(char) {
   const automaticas = habilidadesAutomaticas(char);
@@ -1477,8 +1513,8 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_verthaz', tipo: 'mistico', nome: 'Verthaz', especie: 'Dragão', vida: 140,
     concede: { fisico: 6, intelecto: 4, motoras: -2 }, custoPorTurno: 10,
     golpes: [
-      { nome: 'Sopro', resiste: 'Resistência', descricao: '8d20 de dano num cone amplo, teste de Volição. Gasta 25 de conexão.' },
-      { nome: 'Garra e cauda', resiste: 'Velocidade de reação', descricao: '8d12 de dano em dois alvos diferentes, teste de Instrumento físico. Gasta 27 de conexão.' },
+      { nome: 'Sopro', resiste: 'Resistência', descricao: '4d20 de dano num cone amplo, teste de Volição. Gasta 25 de conexão.' },
+      { nome: 'Garra e cauda', resiste: 'Velocidade de reação', descricao: '6d12 de dano em dois alvos diferentes, teste de Instrumento físico. Gasta 27 de conexão.' },
     ],
     habilidades: [
       { nome: 'Escamas antigas', descricao: 'Reduz todo dano recebido pela metade, permanentemente enquanto transformado. Ativar essa habilidade custa 6 de conexão.' },
@@ -1498,7 +1534,7 @@ const ANIMAIS_CATALOGO = [
   { id: 'ani_grohm', tipo: 'mistico', nome: 'Grohm', especie: 'Golem de pedra viva', vida: 200,
     concede: { fisico: 8, motoras: -4, intelecto: -2 }, custoPorTurno: 10,
     golpes: [
-      { nome: 'Punho de montanha', resiste: 'Resistência', descricao: '12d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de conexão.' },
+      { nome: 'Punho de montanha', resiste: 'Resistência', descricao: '7d12 de dano, teste de Guerra. É necessário estar corpo a corpo. Gasta 20 de conexão.' },
       { nome: 'Rachar o chão', resiste: 'Coordenação motora', descricao: '4d20 de dano em todos ao redor e todos ficam IMÓVEIS por 1 rodada, teste de Instrumento físico. Gasta 18 de conexão.' },
     ],
     habilidades: [
@@ -2703,7 +2739,7 @@ function DicionariosScreen({ onBack, inicial }) {
                       fontSize: '1.05rem', borderColor: `${cor}55`,
                     }}>{sec.titulo}</h3>
                     {sec.paragrafos.map((par, i) => (
-                      <p key={i} className="text-sm mb-3" style={{ fontFamily: F.body, color: '#d5d5da', lineHeight: 1.75 }}>{par}</p>
+                      <p key={i} className="text-sm mb-3" style={{ fontFamily: F.body, color: '#d5d5da', lineHeight: 1.75 }}>{typeof par === 'function' ? par() : par}</p>
                     ))}
                     {/* Seção com blocos internos, como um deus por vez. */}
                     {(sec.subsecoes || []).map((sub) => (
@@ -2712,7 +2748,7 @@ function DicionariosScreen({ onBack, inicial }) {
                           {sub.titulo}
                         </h4>
                         {sub.paragrafos.map((par, i) => (
-                          <p key={i} className="text-sm mb-3" style={{ fontFamily: F.body, color: '#d5d5da', lineHeight: 1.75 }}>{par}</p>
+                          <p key={i} className="text-sm mb-3" style={{ fontFamily: F.body, color: '#d5d5da', lineHeight: 1.75 }}>{typeof par === 'function' ? par() : par}</p>
                         ))}
                       </div>
                     ))}
@@ -2853,10 +2889,10 @@ function CondicoesScreen({ onBack }) {
    A Defesa é o número cheio que vai aparecer na ficha: a fábrica desconta a
    base 10 e as Motoras sozinha. */
 const CATEGORIAS_INIMIGO = [
-  { id: 'npc', nome: 'NPC', frase: 'Cai em 1 ou 2 rodadas. Capanga, guarda, bicho de estrada.' },
-  { id: 'medio', nome: 'Boss médio', frase: 'Aguenta 3 ou 4 rodadas. Chefe de cena, fim de capítulo curto.' },
-  { id: 'forte', nome: 'Boss forte', frase: 'Aguenta 5 ou 6 rodadas. Precisa de plano, não só de dado.' },
-  { id: 'final', nome: 'Boss final', frase: 'Aguenta 7 ou 8 rodadas. Fecha arco, e o grupo sai marcado.' },
+  { id: 'npc', nome: 'NPC', frase: 'Cai em 1 ou 2 rodadas contra um grupo de 4 no nível 3. Capanga, guarda, bicho de estrada.' },
+  { id: 'medio', nome: 'Boss médio', frase: 'Aguenta 3 ou 4 rodadas contra um grupo de 4 no nível 5. Chefe de cena, fim de capítulo curto.' },
+  { id: 'forte', nome: 'Boss forte', frase: 'Aguenta 5 ou 6 rodadas contra um grupo de 4 no nível 7. Precisa de plano, não só de dado.' },
+  { id: 'final', nome: 'Boss final', frase: 'Aguenta 7 ou 8 rodadas contra um grupo de 4 no nível 10. Fecha arco, e o grupo sai marcado.' },
 ];
 
 /* attrs: [intelecto, psique, físico, motoras] · armas: [nome, dano, perícia do teste] */
@@ -2910,7 +2946,7 @@ const INIMIGOS_PRONTOS = [
       ['Reescreve o chão', 'Troca dois alvos de lugar na cena. Eles resistem com Velocidade de reação DT 16.']] },
 
   /* ===== BOSS FORTE ===== */
-  { id: 'inm_cavaleiro_prata', cat: 'forte', nome: 'Cavaleiro de prata', vida: 300, sanidade: 60, defesa: 18, attrs: [2, 3, 5, 3],
+  { id: 'inm_cavaleiro_prata', cat: 'forte', nome: 'Cavaleiro de prata', vida: 270, sanidade: 60, defesa: 18, attrs: [2, 3, 5, 3],
     pericias: { instrumento_fisico: 3, resistencia: 3, limiar_dor: 3, autoridade: 2 },
     historia: 'Armadura inteira, rosto que ninguém viu. Dizem que Împera o abençoou e que ele não dorme desde então.',
     armas: [['Montante', '4d10', 'Instrumento físico'], ['Manopla', '3d8', 'Guerra']],

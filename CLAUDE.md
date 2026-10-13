@@ -153,6 +153,13 @@ Consequência a conhecer: druida místico e dono da coroa passam o mago em
 sanidade total, porque as habilidades deles são as mais caras da mesa. O mago
 lidera a parte da classe (36), não a reserva (12, ele gasta mana).
 
+**Teto vigiado** (13/10/2026): `RESERVA_MAXIMA = 30` e `reservasForaDoTeto()`
+reclamam no console em desenvolvimento quando alguma classe ou subdivisão passa
+disso. Não trava nada — só impede que uma habilidade cara nova suba a sanidade
+de toda uma subdivisão sem ninguém perceber. O máximo hoje é exatamente 30
+(druida místico), então qualquer habilidade mais cara que as atuais acende o
+aviso.
+
 **Sanidade zero** (regra escrita em 26/09/2026): cai inconsciente na hora,
 acorda no fim da cena com a condição **Depressivo** e recupera metade da
 sanidade numa noite inteira de descanso. Em zero não dá para usar habilidade.
@@ -239,10 +246,13 @@ o catálogo só na aba de Inimigos, e o botão de criar inimigo à mão **contin
 onde estava** — o catálogo é atalho, não substituição. `fichaDeInimigo` expande o
 modelo compacto numa ficha de verdade e `handleSaveDraft` salva.
 
-A vida foi calibrada pelo dano real: grupo de 4 no nível 5 entrega perto de 50
-por rodada (mediana 13,5 do dado + atributo 3 + metade do nível, acertando em
-70%). Daí NPC 45 a 60 de vida, médio 150 a 175, forte 250 a 300 e final 400 a
-450. A `defesa` do modelo é o número cheio; a fábrica desconta a base 10 e as
+**Cada categoria diz para qual nível foi escrita**, e isso importa mais que a
+ficha: a mesma Primeira Marca leva 27 rodadas contra um grupo de nível 3 e 8
+contra um de nível 10. NPC supõe grupo de 4 no nível 3, médio no 5, forte no 7
+e final no 10. Medido nessas faixas, **as 16 fichas caem na faixa prometida**
+(o Cavaleiro de prata desceu de 300 para 270 de vida em 13/10 para entrar).
+A vida sai do dano real: mediana 13,5 do dado + atributo + metade do nível,
+vezes a chance de acerto contra a Defesa daquele inimigo, vezes 4 jogadores. A `defesa` do modelo é o número cheio; a fábrica desconta a base 10 e as
 Motoras e guarda o resto em `defesaOutros`.
 
 ### Abas da ficha
@@ -351,6 +361,11 @@ do catálogo da mestra.
   selecionáveis desde o nível 1. A escolha é uma **etapa da criação da ficha**
   (passo "Animais", depois de Perícias, porque o limite do laço natural depende
   do nível escolhido em Atributos), e continua editável na aba Animal.
+  **Os golpes dos místicos foram calibrados em 13/10/2026**: o teto era 84
+  (Sopro do Verthaz) contra 23,5 de um guerreiro de nível 10 — 3,6 vezes. Hoje
+  o teto é 45,5 (Punho do Grohm), cerca de 1,9 vezes, e os sete golpes ficam
+  entre 13 e 45,5. Quem mexer num golpe místico confere contra essa régua, não
+  contra a lore: Sopro 4d20, Garra e cauda 6d12, Punho de montanha 7d12.
   **DT de Ágape para entrar na forma** = 10 + o custo por turno do animal.
   **DT de resistência de cada golpe** = 10 + metade do custo em conexão dele,
   e cada golpe diz com qual perícia o alvo resiste (campo `resiste`). A ficha guarda só os ids em
@@ -380,13 +395,13 @@ do catálogo da mestra.
   busca nos catálogos; a busca de Doente é só em maiúsculas, porque "plantas
   doentes" aparece numa habilidade. Em ira e Enfeitiçado saem com **Controle
   seus demônios**, que antes não era usada por nada.
-- **Dicionários com número na prosa**: as seções "Mecânica de Ira" (guerreiro)
-  e "Contratos de vida" (criatura do mar) explicam as mecânicas de classe e
-  **repetem na mão** o teto da barra (10 + 3 por ponto), a faixa de custo da ira
-  (4 a 20) e os preços dos contratos (5, 10, 15, 20 e o permanente). São a
-  exceção à regra de ler do dado: prosa não sai de `PODERES_POR_NIVEL` sem
-  mover constante de lugar. Mexeu nesses números no código, mexa no dicionário
-  junto.
+- **Dicionário com parágrafo que é função**: um item de `paragrafos` pode ser
+  uma função em vez de string, e o renderizador chama na hora de desenhar. Foi
+  o jeito de as seções "Mecânica de Ira" e "Contratos de vida" lerem os números
+  do próprio catálogo: `DICIONARIOS` é montado antes das mecânicas existirem no
+  arquivo, então a leitura precisa ser adiada. `custosDeIra()` e
+  `custosDeContrato()` fazem a ponte. Desde 13/10/2026 não há mais número de
+  mecânica escrito à mão nos dicionários.
 - **Dicionários** (`DICIONARIOS`): cada seção tem `titulo` e `paragrafos`, e
   pode ter `subsecoes` ([{ titulo, paragrafos }]) quando o texto pede um bloco
   por assunto. Hoje só "Religião e Fé", no dicionário geral, usa: um bloco por
@@ -484,13 +499,18 @@ código**, não no banco. Perder o banco não afeta nada disso.
 - **Animal místico não trava**: o jogador pode trocar o animal escolhido. Pela
   lore o laço é para a vida toda; se a mestra quiser, dá para deixar a troca só
   com ela.
-- **Linha de resistência nas habilidades**: só 8 das 79 estão preenchidas (as
-  que já diziam no texto que o alvo resiste). O mecanismo está pronto, falta a
-  lista dele.
+- **Linha de resistência nas habilidades**: só 8 das 84 estão preenchidas. O
+  mecanismo está pronto e falta a lista dele. Conferido em 13/10/2026: não há
+  nenhuma habilidade cuja resistência dê para deduzir do texto — as quatro que
+  mencionam "resistir" falam de teste do próprio personagem, não do alvo. Essa
+  pendência só sai com a decisão da mestra, uma a uma.
 - **Habilidade cara nova sobe a sanidade** de quem a recebe, porque a reserva é
   a média das 3 mais caras. Habilidade barata não mexe em nada.
-- **Fichas antigas acima do orçamento** de atributos depois da mudança para base
-  0. Ofereci escrever um script que lista quais precisam de revisão.
+- **Fichas antigas acima do orçamento**: `scripts/revisar-fichas.mjs` lista
+  quais precisam de revisão (atributos, degraus de perícia, vagas de habilidade
+  e de feitiço, animais acima do limite). Ele **não corrige nada** de propósito:
+  quem decide o que cortar é a mestra. Roda como o backup, com a URL do banco na
+  variável de ambiente.
 - Dicionários das outras classes podem ser reescritos como o do guerreiro foi.
 
 ---
@@ -516,6 +536,14 @@ código**, não no banco. Perder o banco não afeta nada disso.
   mágico), Pulso Arcano II (mantém o IMÓVEL) e dois feitiços de dano no topo,
   **Capítulo Final** (85) e **Tinta Viva** (95), que eu escrevi — o texto deles é
   meu, não do usuário, e pode ser reescrito à vontade.
+- Em 13/10/2026 saiu a terceira análise em PDF (`Terarpeqa-analise-outubro-2026.pdf`,
+  na área de trabalho) e o usuário mandou resolver tudo que desse. Resolvidos:
+  golpes místicos calibrados, Cavaleiro de prata em 270, categorias de inimigo
+  com o nível que assumem, escada dos contratos de volta (5/10/15/20), a
+  duplicata "Duas Mãos, Um Golpe" trocada por "A saída que ninguém viu", teto
+  vigiado da reserva, dicionários lendo do dado e o script de revisão de fichas.
+  Ficaram de fora só os textos das evoluções dos feitiços e as 76 linhas de
+  resistência, que dependem dele.
 - Em 26/09/2026 o usuário mandou aplicar **todas** as sugestões daquela análise:
   dano com atributo, Motoras×1, atributo valendo 8, vagas de habilidade, nível
   mínimo nos animais místicos, régua de bônus, DT de ritual nova, sanidade zero,
