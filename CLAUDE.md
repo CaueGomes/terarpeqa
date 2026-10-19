@@ -490,6 +490,13 @@ código**, não no banco. Perder o banco não afeta nada disso.
 
 ---
 
+## Redação dos textos de jogo
+
+- **Pronome de Împera vai em maiúscula** (19/10/2026, pedido do usuário):
+  "Ela", "Dela" — em qualquer texto do jogo, dicionário antigo incluído. Vale
+  só quando a palavra é a deusa; "ela" que se refere à barra, à coroa ou à
+  corte continua minúscula. Até hoje a regra foi pedida só para Împera.
+
 ## Armadilhas já encontradas
 
 - **Texto com número fixo desatualiza.** Já aconteceu duas vezes: cards de
