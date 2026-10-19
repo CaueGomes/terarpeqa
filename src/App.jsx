@@ -158,7 +158,7 @@ const REPUTACOES_PIRATA = [
 ];
 const CORTE_NASCIDO_OURO = [
   { id: 'bobo_corte', nome: 'Bobo da Corte', foco: 'Conquista', pericias: ['imperio_interior', 'cest_la_vie'], desc: 'Você não nasceu para ser um palhaço, mas a frequência com que faz as pessoas gostarem e rirem de você às vezes te faz questionar se você realmente pertence à família real. Afinal, até Împera já riu de suas falas. Você acredita que pessoas precisam ser conquistadas, e não governadas. É como um rebelde, só que menos ofensivo.' },
-  { id: 'dono_coroa', nome: 'Dono da Coroa', foco: 'Autoridade', pericias: ['controle_demonios', 'autoridade'], desc: 'Você é quase uma cópia de Împera, talvez um pouco inferior. Nascidos de Prata talvez às vezes te confundam com ela. Sua voz ecoa por todo o país, autoritária e certeira.' },
+  { id: 'dono_coroa', nome: 'Dono da Coroa', foco: 'Autoridade', pericias: ['controle_demonios', 'autoridade'], desc: 'Você é quase uma cópia de Împera, talvez um pouco inferior. Nascidos de Prata talvez às vezes te confundam com Ela. Sua voz ecoa por todo o país, autoritária e certeira.' },
   { id: 'ensanguentado', nome: 'Ensanguentado', foco: 'Proteção', pericias: ['limiar_dor', 'doenca'], desc: 'Já te disseram que você é um fracasso. Afinal, que membro da família real pega uma arma com suas próprias mãos? Você defende que um país precisa ser protegido, e não governado. Escolha uma arma a seu gosto e lute!' },
 ];
 
@@ -303,7 +303,7 @@ const DICIONARIOS = [
             titulo: 'Împera',
             paragrafos: [
               `Grande parte dos cidadãos de prata, assim como a família real, é devota da deusa Împera. Em seu reino, igrejas foram erguidas para louvar aquela que os criou. Uma vez por semana, a própria deusa desce à igreja principal para abençoar seu povo com palavras de fé e submissão.`,
-              `A fé não é uma imposição, mas o poder de Împera e seus feitos são tamanhos que muitos escolhem rezar a ela por livre devoção.`,
+              `A fé não é uma imposição, mas o poder de Împera e seus feitos são tamanhos que muitos escolhem rezar a Ela por livre devoção.`,
             ],
           },
           {
@@ -363,7 +363,7 @@ const DICIONARIOS = [
           `Apesar de alguns de seus filhos não gostarem da ideia de dar à luz uma criança que vai embora e que fica “se aproveitando” de seus reinos por um tempo limitado, esses dois deuses são restritos quanto à presença e proteção de druidas em seus reinos. Todos obedecem, gostando ou não.`,
           `No reino de Împera, a história é diferente.`,
           `A deusa não constituiu nenhuma lei de proteção ou mesmo um simples ensinamento de como seus cidadãos devem tratar druidas. Pelo contrário: a guarda real muitas das vezes persegue e mata druidas abandonados pelas suas famílias “de sangue” e maior parte deles nunca consegue sair daquele reino e irem para o reino de Melôdia. Algumas histórias dizem que até mesmo druidas no reino de Împera são colocados para fazer o trabalho sujo e insalubre do reino em troca de suas meras sobrevivências.`,
-          `Împera não odeia druidas, na verdade ela não liga para eles. Mas no momento em que nada os protege de cidadãos que dão à luz algo cujo objetivo de vida é ir embora sem mais nem menos, druidas correm risco de vida desde seus nascimentos.`,
+          `Împera não odeia druidas, na verdade Ela não liga para eles. Mas no momento em que nada os protege de cidadãos que dão à luz algo cujo objetivo de vida é ir embora sem mais nem menos, druidas correm risco de vida desde seus nascimentos.`,
         ],
       },
       {
@@ -511,7 +511,7 @@ const DICIONARIOS = [
       {
         titulo: 'Quem é seu Deus',
         paragrafos: [
-          `Você é filho de Împera e, sinceramente, não sabe nada dessa deusa além de seu nome. Até porque os boatos nunca chegam até esse lugar imundo e pequeno que você vive. Eles se perdem no meio do caminho. Você acredita que ela não goste muito de vocês, guerreiros, por motivos que também nunca chegaram aos seus ouvidos.`,
+          `Você é filho de Împera e, sinceramente, não sabe nada dessa deusa além de seu nome. Até porque os boatos nunca chegam até esse lugar imundo e pequeno que você vive. Eles se perdem no meio do caminho. Você acredita que Ela não goste muito de vocês, guerreiros, por motivos que também nunca chegaram aos seus ouvidos.`,
           `A única administração que você conhece é dentro da Arena: você vive aqui dentro, com vozes vindo de fora, comentando sobre qual guerreiro apostariam na luta do dia seguinte. Eles te colocaram em um lugar com vários de seus semelhantes e foi escolhido a dedo por pessoas de marcas prateadas, podres de ricas. Disseram que você teria potencial, e desde então, você luta.`,
           `Você luta na frente de todas essas pessoas porque sabe que é isso que te dá comida (a da menor qualidade), água (a mais suja de todas) e um espaço para dormir (junto a ratos, baratas e goteiras), o que é engraçado, porque você tem certeza que essa armadura que você usa ou essa arma que você carrega poderiam te alimentar pelo resto da sua vida se fossem vendidas.`,
           `No final, você luta porque sabe que é a única coisa que te restou a fazer.`,
@@ -618,8 +618,8 @@ const DICIONARIOS = [
       {
         titulo: 'Quem é seu Deus',
         paragrafos: [
-          `Împera participa diariamente da vida de vocês, nascidos do ouro, e vocês conseguem resumir sua deusa em duas simples palavras: autoridade e rigidez. Vocês raramente veem um sorriso no rosto de Împera, muito menos um lampejo de bondade que seja. Împera não gosta quando a chamam de mãe, gosta de ser chamada de imperatriz, de senhora. Mas vocês sentem um afeto maternal vindo dessa deusa de qualquer forma, e ela parece saber disso, embora não a agrade.`,
-          `Seu trono é uma autonomia falsa. Vocês dão ordens, enviam tropas, recrutam pessoas, comandam expedições, entretanto, cada palavra que sai de suas bocas precisa ser aprovada antes por Împera. Suas rotinas são controladas por ela em reuniões diárias durante o café da manhã. Se você sair deste planejamento dela, ela saberá, e você pode ser repreendido. O que, vindo dela, não agrada a ninguém.`,
+          `Împera participa diariamente da vida de vocês, nascidos do ouro, e vocês conseguem resumir sua deusa em duas simples palavras: autoridade e rigidez. Vocês raramente veem um sorriso no rosto de Împera, muito menos um lampejo de bondade que seja. Împera não gosta quando a chamam de mãe, gosta de ser chamada de imperatriz, de senhora. Mas vocês sentem um afeto maternal vindo dessa deusa de qualquer forma, e Ela parece saber disso, embora não a agrade.`,
+          `Seu trono é uma autonomia falsa. Vocês dão ordens, enviam tropas, recrutam pessoas, comandam expedições, entretanto, cada palavra que sai de suas bocas precisa ser aprovada antes por Împera. Suas rotinas são controladas por Ela em reuniões diárias durante o café da manhã. Se você sair deste planejamento Dela, Ela saberá, e você pode ser repreendido. O que, vindo Dela, não agrada a ninguém.`,
           `Guerreiros são marionetes dos nascidos da prata, nascidos da prata são suas marionetes, e vocês são marionetes de Împera. Este é o mundo ideal da deusa: poder fracionado em poucas mãos, e tudo conquistado por uma meritocracia que destrói vidas.`,
           `O reino de Împera é o maior de todos, entretanto, é o único reino em que filhos de Împera passam fome, sede e, muitos deles, em maioria quem não consegue trabalho, moram na rua, em partes periféricas do reino. Împera sabe que esses fatores existem e gosta que eles existam. Ela defende que todos devem lutar por aquilo que querem, e nada vem de graça.`,
         ],
@@ -636,12 +636,12 @@ const DICIONARIOS = [
         titulo: 'Entrega da Coroa',
         paragrafos: [
           `Ninguém nasce herdeiro. Vocês nascem candidatos, e isso é bem pior.`,
-          `A coroa não vai para o mais velho, nem para o mais forte, nem para quem Împera mais gosta — ela vai para quem melhor respeitou os princípios dela ao longo de uma vida inteira. Disciplina. Rigidez. Autoridade que não dobra. Aquilo que ela é, e que espera ver reproduzido em vocês.`,
-          `O problema é que Împera nunca escreveu esses princípios em lugar nenhum. Não existe lista, não existe prova, não existe uma data em que a decisão será tomada. Existem as reuniões de café da manhã, existe o modo como ela olha para você quando você responde, e existe uma contagem silenciosa que ela faz e que ninguém mais tem acesso.`,
-          `Então vocês passam a vida sendo avaliados sem saber exatamente por quê. Cada ordem que você dá, cada expedição que comanda, cada vez que hesita na frente dela — tudo isso entra numa conta que você não pode conferir. E como vocês são muitos, cada acerto de um irmão é uma perda sua.`,
+          `A coroa não vai para o mais velho, nem para o mais forte, nem para quem Împera mais gosta — Ela vai para quem melhor respeitou os princípios Dela ao longo de uma vida inteira. Disciplina. Rigidez. Autoridade que não dobra. Aquilo que Ela é, e que espera ver reproduzido em vocês.`,
+          `O problema é que Împera nunca escreveu esses princípios em lugar nenhum. Não existe lista, não existe prova, não existe uma data em que a decisão será tomada. Existem as reuniões de café da manhã, existe o modo como Ela olha para você quando você responde, e existe uma contagem silenciosa que Ela faz e que ninguém mais tem acesso.`,
+          `Então vocês passam a vida sendo avaliados sem saber exatamente por quê. Cada ordem que você dá, cada expedição que comanda, cada vez que hesita na frente Dela — tudo isso entra numa conta que você não pode conferir. E como vocês são muitos, cada acerto de um irmão é uma perda sua.`,
           `É por isso que a corte é do jeito que é. Ninguém confia em ninguém, todo mundo é gentil, e a gentileza é a coisa mais falsa que existe naquele palácio. Você aprende cedo que o irmão que te ajuda numa reunião pode estar te deixando falar demais de propósito.`,
           `Alguns desistem da coroa em silêncio e passam a viver como querem, o que também é uma escolha — e Împera nota isso na hora. Outros perseguem o trono a vida inteira e morrem sem saber se chegaram perto. E há quem entenda, já adulto, que os princípios de Împera nunca foram feitos para serem alcançados: foram feitos para manter todos os filhos correndo atrás deles até o fim.`,
-          `Nada vem de graça. Nem o trono, nem a atenção dela, nem a resposta sobre quem venceu.`,
+          `Nada vem de graça. Nem o trono, nem a atenção Dela, nem a resposta sobre quem venceu.`,
         ],
       },
       {
@@ -649,10 +649,10 @@ const DICIONARIOS = [
         paragrafos: [
           `A contagem silenciosa tem um número, e ele está na sua ficha. Chama-se Redenção.`,
           () => `Ela começa cheia: você nasce com o benefício da dúvida, e passa a vida gastando. O seu máximo é ${REDENCAO_BASE} mais o seu nível, mais ${REDENCAO_POR_PSIQUE} para cada ponto de Psique — porque o que Împera mede é a sua capacidade de ler a sala e segurar a própria língua, e porque uma vida inteira de serviço constrói mais crédito do que uma recém-começada.`,
-          `Desce quando você desobedece uma ordem, contraria uma pregação dela, hesita na frente da corte. Sobe quando você cumpre o que foi mandado, ou quando um irmão seu tropeça. Nenhuma habilidade sua gasta esse número, e você não mexe nele: quem anota é Împera, pelo que você escolheu fazer. Descanso não devolve nada, porque não é cansaço — é reputação.`,
+          `Desce quando você desobedece uma ordem, contraria uma pregação Dela, hesita na frente da corte. Sobe quando você cumpre o que foi mandado, ou quando um irmão seu tropeça. Nenhuma habilidade sua gasta esse número, e você não mexe nele: quem anota é Împera, pelo que você escolheu fazer. Descanso não devolve nada, porque não é cansaço — é reputação.`,
           `E o número não faz nada sozinho. O que ele faz é decidir quem o mundo enxerga. Entre dois nascidos de ouro, o guarda real que só consegue salvar um salva o de mais pontos. O inimigo que só consegue matar um ataca o de mais pontos. A porta que abre para um abre para o de mais pontos. Ser o favorito de Împera é ser protegido e ser alvo pela mesma razão.`,
-          `No alto, ela te usa: favorito é a mão da deusa, e a mão não escolhe para onde vai. No meio, ninguém te deve nada e ninguém te vigia — é a faixa mais confortável e a mais esquecida. Embaixo, a guarda não recebeu a ordem e o mensageiro se perdeu, e a corte continua educadíssima com você, que é como aquele palácio avisa que acabou.`,
-          `No zero, Împera risca o seu nome da sucessão. Nenhuma ordem dela chega mais até você e, pela primeira vez na vida, ninguém está te olhando. Alguns passam a vida inteira tentando evitar esse número. Outros correm até ele de propósito.`,
+          `No alto, Ela te usa: favorito é a mão da deusa, e a mão não escolhe para onde vai. No meio, ninguém te deve nada e ninguém te vigia — é a faixa mais confortável e a mais esquecida. Embaixo, a guarda não recebeu a ordem e o mensageiro se perdeu, e a corte continua educadíssima com você, que é como aquele palácio avisa que acabou.`,
+          `No zero, Împera risca o seu nome da sucessão. Riscar o nome quer dizer duas coisas, e só essas duas: o trono nunca mais vai ser seu, e ninguém na corte tem mais ordem de te proteger. As ordens Dela continuam chegando — e você continua tendo que cumprir cada uma. Ser deserdado não te solta de Împera. Só tira o que você ganhava por servir Ela.`,
         ],
       },
     ],
@@ -1188,7 +1188,7 @@ const HABILIDADES_CATALOGO = [
   { id: 'hab_minha_palavra_lei', nome: 'Minha palavra é lei', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
     descricao: 'Você dá uma ordem direta a um aliado e ele recebe +10 no teste para cumpri-la. Gasta 9 de sanidade.' },
   { id: 'hab_impera_em_pessoa', resistencia: 'Resiste com Volição.', nome: 'Împera em pessoa', classe: 'nascido_ouro', subdivisaoId: 'dono_coroa',
-    descricao: 'Uma vez por cena, alguém te confunde com Împera e obedece uma única ordem sem questionar (se a pessoa conhecer ela). O alvo pode tentar resistir com um teste de Volição, mas a DT é a soma da sua Autoridade com a da ficha de Împera. Gasta 12 de sanidade a cada ordem dada.' },
+    descricao: 'Uma vez por cena, alguém te confunde com Împera e obedece uma única ordem sem questionar (se a pessoa conhecer Ela). O alvo pode tentar resistir com um teste de Volição, mas a DT é a soma da sua Autoridade com a da ficha de Împera. Gasta 12 de sanidade a cada ordem dada.' },
   { id: 'hab_pais_protege_corpo', nome: 'Um país se protege com o corpo', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
     descricao: 'Enquanto houver aliados feridos na cena, você recebe +5 em todos os testes de combate. Gasta 8 de sanidade e dura até o fim da cena.' },
   { id: 'hab_que_membro_familia_real', nome: 'Que membro da família real faz isso?', classe: 'nascido_ouro', subdivisaoId: 'ensanguentado',
@@ -1381,18 +1381,18 @@ function redencaoMaxima(char) {
   return REDENCAO_BASE + nivelDaFicha(char) + REDENCAO_POR_PSIQUE * (char.attributes?.psique || 0);
 }
 /* Psique porque é o atributo de Império interior e de Controle seus demônios:
-   ler Împera e segurar a própria língua é literalmente o que ela mede. Nível
+   ler Împera e segurar a própria língua é literalmente o que Ela mede. Nível
    porque a contagem é de uma vida inteira — quem serviu mais tem mais crédito. */
 
 const FAIXAS_DE_REDENCAO = [
   { id: 'favorita', nome: 'Favorita', minimo: 0.75, cor: '#D4AF37',
-    texto: 'Entre dois nascidos de ouro, você é quem a guarda real protege primeiro, quem a corte atende primeiro e quem o inimigo ataca primeiro. Împera também te dá ordens: ser o favorito é ser a mão dela.' },
+    texto: 'Entre dois nascidos de ouro, você é quem a guarda real protege primeiro, quem a corte atende primeiro e quem o inimigo ataca primeiro. Împera também te dá ordens: ser o favorito é ser a mão Dela.' },
   { id: 'observacao', nome: 'Em observação', minimo: 1 / 3, cor: '#a89bc9',
     texto: 'O meio da corte. Ninguém te deve nada e ninguém está te olhando de perto. É a faixa mais confortável e a mais esquecida.' },
   { id: 'desgraca', nome: 'Em desgraça', minimo: 0.0001, cor: '#c9899f',
     texto: 'A guarda não recebeu a ordem, a porta estava trancada, o mensageiro se perdeu. Ninguém te ataca primeiro porque você não vale mais o trabalho. A corte continua educadíssima com você, que é como aquele palácio avisa que acabou.' },
   { id: 'deserdado', nome: 'Deserdado', minimo: 0, cor: '#e0577a',
-    texto: 'Împera riscou o seu nome da sucessão. Nenhuma ordem dela chega mais até você — e, pela primeira vez na vida, ninguém está te vigiando. Quem decide se isso tem volta é a mestra.' },
+    texto: 'Împera riscou o seu nome da sucessão: o trono nunca mais vai ser seu e ninguém na corte tem mais ordem de te proteger. As ordens Dela continuam chegando e você continua tendo que cumprir — só não ganha mais nada por isso. Quem decide se tem volta é a mestra.' },
 ];
 
 function faixaDeRedencao(char) {
@@ -5320,7 +5320,7 @@ function AbaPoderesDeClasse({ char, color, onChangeVidaPerdida }) {
         <Flame size={12} /> {info.titulo}
       </p>
       <p className="text-xs leading-relaxed mb-3" style={{ color: '#6f6291', fontFamily: F.body }}>
-        {info.texto} Você ganha uma a cada dois níveis, e elas não ocupam vaga de habilidade.
+        {info.texto}{!info.semPoderes && ' Você ganha uma a cada dois níveis, e elas não ocupam vaga de habilidade.'}
       </p>
 
       {max > 0 && (
@@ -5404,7 +5404,7 @@ function AbaPoderesDeClasse({ char, color, onChangeVidaPerdida }) {
             </div>
             <p className="text-xs leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
               Máximo {max} = {REDENCAO_BASE} + nível {nivelDaFicha(char)} + {REDENCAO_POR_PSIQUE} × Psique {char.attributes?.psique || 0}.
-              A barra fica no painel da ficha, e só a mestra tem os botões dela.
+              A barra fica no painel da ficha, e só a mestra tem os botões.
             </p>
           </>
         );
