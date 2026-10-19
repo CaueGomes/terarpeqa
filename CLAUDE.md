@@ -266,7 +266,7 @@ habilidades, inventário, histórico com rolagens):
 | Ficha | identidade, barras, atributos, história, defesas **+ as 23 perícias** | 728px | não |
 | Combate | armas **+ inventário + histórico de rolagens** | 578px | não |
 | Habilidades | as habilidades inteiras | 501px | não |
-| Ira / Contratos | poderes de classe | 557px | não |
+| Ira / Contratos / Redenção | poderes de classe | 557px | não |
 | Condições | as 11 condições | 1534px | **sim** |
 
 O que tornou a fusão possível: `TabelaPericias` ganhou `duasColunas`, que
@@ -299,7 +299,7 @@ nascem em 0 e são digitadas; atributos sem teto; as 23 perícias livres; nenhum
 catálogo pré-carregado. Deus funde habilidades e feitiços em "Poderes Divinos".
 Especial escolhe uma classe; deus e inimigo não têm classe.
 
-### Poderes de classe: Ira e Contrato de vida
+### Poderes de classe: Ira, Contrato de vida e Redenção
 Guerreiro e criatura do mar ganham um poder a cada dois níveis (1, 3, 5, 7 e 9),
 em `PODERES_POR_NIVEL`. Eles **não ocupam vaga** e ficam fora de
 `HABILIDADES_CATALOGO` de propósito: a reserva de sanidade é a média das três
@@ -324,6 +324,27 @@ EM IRA, então usá-la é decidir o combate inteiro de uma vez. Ela substituiu
 N de vida" e "Custa N de vida permanente" saem de `custoDeVidaDoPoder`. O
 permanente vai para `char.recursos.vidaPerdida`, que `computeRecursos` desconta
 do máximo (nunca abaixo de 1), e a aba tem o seletor de −5/+5.
+
+**Pontos de redenção** (só nascido de ouro, 19/10/2026): a contagem que Împera
+faz de cada candidato à coroa. É a única barra do jogo que **nenhum poder
+gasta** — a classe entra em `PODERES_CLASSE` com `semPoderes: true` e a aba dela
+não lista poder nenhum. O usuário foi explícito: *"quem mexe na barra é
+justamente a Împera, ou seja, eu, a mestre... é puramente lore"*. Por isso a
+barra aparece para todos mas só a mestra tem os botões (`onChangeRedencao` é
+passado apenas quando `account.isMaster`), e o **Restaurar não a enche**: ela é
+de uma vida inteira, não de uma cena.
+
+Máximo = `10 + nível + 2 × Psique` (`REDENCAO_BASE`, `REDENCAO_POR_PSIQUE`).
+Psique porque é o atributo de Império interior e de Controle seus demônios: ler
+Împera e segurar a própria língua é o que ela mede. **Começa cheia** — o
+benefício da dúvida — então, como a ira, não passa por `valorAtual` (lá null é
+cheio, aqui cheio é o começo mas o zero precisa continuar zero): quem lê é
+`redencaoAtual`.
+
+O número não faz nada mecanicamente. Ele decide **quem o mundo enxerga**: entre
+dois nascidos de ouro, o guarda salva o de mais pontos e o inimigo ataca o de
+mais pontos. Quatro faixas em `FAIXAS_DE_REDENCAO` por fração do máximo —
+Favorita ≥ 75%, Em observação ≥ ⅓, Em desgraça > 0, Deserdado = 0.
 
 ### Habilidades: vagas e automáticas
 **Vagas** (`vagasDeHabilidade`): 2 no nível 1 e mais 1 a cada 2 níveis, 6 no

@@ -644,6 +644,17 @@ const DICIONARIOS = [
           `Nada vem de graça. Nem o trono, nem a atenção dela, nem a resposta sobre quem venceu.`,
         ],
       },
+      {
+        titulo: 'Pontos de Redenção',
+        paragrafos: [
+          `A contagem silenciosa tem um número, e ele está na sua ficha. Chama-se Redenção.`,
+          () => `Ela começa cheia: você nasce com o benefício da dúvida, e passa a vida gastando. O seu máximo é ${REDENCAO_BASE} mais o seu nível, mais ${REDENCAO_POR_PSIQUE} para cada ponto de Psique — porque o que Împera mede é a sua capacidade de ler a sala e segurar a própria língua, e porque uma vida inteira de serviço constrói mais crédito do que uma recém-começada.`,
+          `Desce quando você desobedece uma ordem, contraria uma pregação dela, hesita na frente da corte. Sobe quando você cumpre o que foi mandado, ou quando um irmão seu tropeça. Nenhuma habilidade sua gasta esse número, e você não mexe nele: quem anota é Împera, pelo que você escolheu fazer. Descanso não devolve nada, porque não é cansaço — é reputação.`,
+          `E o número não faz nada sozinho. O que ele faz é decidir quem o mundo enxerga. Entre dois nascidos de ouro, o guarda real que só consegue salvar um salva o de mais pontos. O inimigo que só consegue matar um ataca o de mais pontos. A porta que abre para um abre para o de mais pontos. Ser o favorito de Împera é ser protegido e ser alvo pela mesma razão.`,
+          `No alto, ela te usa: favorito é a mão da deusa, e a mão não escolhe para onde vai. No meio, ninguém te deve nada e ninguém te vigia — é a faixa mais confortável e a mais esquecida. Embaixo, a guarda não recebeu a ordem e o mensageiro se perdeu, e a corte continua educadíssima com você, que é como aquele palácio avisa que acabou.`,
+          `No zero, Împera risca o seu nome da sucessão. Nenhuma ordem dela chega mais até você e, pela primeira vez na vida, ninguém está te olhando. Alguns passam a vida inteira tentando evitar esse número. Outros correm até ele de propósito.`,
+        ],
+      },
     ],
   },
 ];
@@ -1314,6 +1325,10 @@ const PODERES_CLASSE = {
     aba: 'Ira', titulo: 'Habilidades de ira', cor: '#e0577a',
     texto: 'A ira começa em zero e sobe: cada habilidade de ira empurra o ponteiro para cima em troca do que ela faz. Com a barra cheia você entra na condição EM IRA e deixa de escolher quem ataca. A barra zera no fim da cena, ou quando a condição passa.',
   },
+  nascido_ouro: {
+    aba: 'Redenção', titulo: 'Pontos de redenção', cor: '#D4AF37', semPoderes: true,
+    texto: 'A contagem silenciosa que Împera faz de cada candidato à coroa. Ela começa cheia — você nasce com o benefício da dúvida — e desce quando você desobedece uma ordem ou contraria uma pregação da deusa. Nenhuma habilidade gasta estes pontos e você não mexe nesta barra: quem sobe e desce o número é a mestra, pelo que você escolheu fazer. Ela também não volta com descanso, porque é uma vida inteira sendo somada.',
+  },
   sereia: {
     aba: 'Contratos', titulo: 'Contratos de vida', cor: '#5fb7c9',
     texto: 'O mar não empresta de graça: toda a vida que você gasta nestes contratos vai para o seu deus e pai, Âncore. Cada contrato é pago com a sua própria vida, descontada na hora da barra. O último cobra vida permanente: o seu máximo cai e não volta com descanso nenhum.',
@@ -1347,6 +1362,51 @@ const custosDeContrato = () => (PODERES_POR_NIVEL.sereia || [])
   .map((p) => custoDeVidaDoPoder(p.descricao))
   .filter((c) => c && !c.permanente)
   .map((c) => c.valor);
+
+/* ---------- pontos de redenção (nascido de ouro) ----------
+   A contagem silenciosa que Împera faz de cada candidato à coroa. É a única
+   barra do jogo que NENHUM poder gasta: quem mexe nela é a mestra, conforme o
+   personagem obedece ou contraria as ordens e as pregações da deusa. Ela
+   também não zera no descanso — é uma vida inteira sendo somada.
+
+   O que ela faz é puramente de mundo: entre dois nascidos de ouro, tudo que
+   decide a quem obedecer, a quem proteger ou a quem atacar primeiro olha o
+   número. Estar no topo é ser defendido e ser alvo ao mesmo tempo.
+
+   Começa CHEIA: você nasce com o benefício da dúvida, e passa a vida gastando. */
+const REDENCAO_BASE = 10;
+const REDENCAO_POR_PSIQUE = 2;
+function redencaoMaxima(char) {
+  if (fichaLivre(char) || char?.originId !== 'nascido_ouro') return 0;
+  return REDENCAO_BASE + nivelDaFicha(char) + REDENCAO_POR_PSIQUE * (char.attributes?.psique || 0);
+}
+/* Psique porque é o atributo de Império interior e de Controle seus demônios:
+   ler Împera e segurar a própria língua é literalmente o que ela mede. Nível
+   porque a contagem é de uma vida inteira — quem serviu mais tem mais crédito. */
+
+const FAIXAS_DE_REDENCAO = [
+  { id: 'favorita', nome: 'Favorita', minimo: 0.75, cor: '#D4AF37',
+    texto: 'Entre dois nascidos de ouro, você é quem a guarda real protege primeiro, quem a corte atende primeiro e quem o inimigo ataca primeiro. Împera também te dá ordens: ser o favorito é ser a mão dela.' },
+  { id: 'observacao', nome: 'Em observação', minimo: 1 / 3, cor: '#a89bc9',
+    texto: 'O meio da corte. Ninguém te deve nada e ninguém está te olhando de perto. É a faixa mais confortável e a mais esquecida.' },
+  { id: 'desgraca', nome: 'Em desgraça', minimo: 0.0001, cor: '#c9899f',
+    texto: 'A guarda não recebeu a ordem, a porta estava trancada, o mensageiro se perdeu. Ninguém te ataca primeiro porque você não vale mais o trabalho. A corte continua educadíssima com você, que é como aquele palácio avisa que acabou.' },
+  { id: 'deserdado', nome: 'Deserdado', minimo: 0, cor: '#e0577a',
+    texto: 'Împera riscou o seu nome da sucessão. Nenhuma ordem dela chega mais até você — e, pela primeira vez na vida, ninguém está te vigiando. Quem decide se isso tem volta é a mestra.' },
+];
+
+function faixaDeRedencao(char) {
+  const max = redencaoMaxima(char);
+  if (!max) return null;
+  const fracao = redencaoAtual(char) / max;
+  return FAIXAS_DE_REDENCAO.find((f) => fracao >= f.minimo) || FAIXAS_DE_REDENCAO.at(-1);
+}
+/* Como a ira, a redenção não passa por valorAtual: lá null quer dizer cheio, e
+   aqui cheio é o começo mesmo — mas o zero precisa continuar sendo zero. */
+const redencaoAtual = (char) => {
+  const v = char?.atual?.redencao;
+  return v === undefined || v === null ? redencaoMaxima(char) : Math.max(0, Number(v) || 0);
+};
 
 /* Diferente das outras barras, a ira começa VAZIA: null aqui é zero, não cheio. */
 const iraAtual = (char) => Math.max(0, Number(char?.atual?.ira) || 0);
@@ -2128,7 +2188,8 @@ function computeRecursos(char) {
   const manaMax = char.originId === 'mago' ? nivelMagico : null;
 
   return {
-    vidaMax, sanidadeMax, manaMax, iraMax: iraMaxima(char), vidaPerdida, vidaNivel, sanidadeNivel, reservaSan,
+    vidaMax, sanidadeMax, manaMax, iraMax: iraMaxima(char), redencaoMax: redencaoMaxima(char),
+    vidaPerdida, vidaNivel, sanidadeNivel, reservaSan,
     nivel, vidaClasse, sanClasse, subVida: sub.vida, subSanidade: sub.sanidade,
   };
 }
@@ -4540,7 +4601,7 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
    inventário) e as perícias treinadas, que agora estão do lado em tabela
    cheia. A revisão da criação continua mostrando tudo, porque lá o resumo é
    justamente o ponto. */
-function CharacterSheetBody({ char, contentIndex, onChangeAtual, compacto }) {
+function CharacterSheetBody({ char, contentIndex, onChangeAtual, onChangeRedencao, compacto }) {
   const origin = originDaFicha(char);
   const der = computeRecursos(char);
   const mColor = markColor(origin, char);
@@ -4613,7 +4674,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual, compacto }) {
 
       {/* Uma barra embaixo da outra na coluna estreita da aba Ficha; lado a
           lado quando a ficha ocupa a largura toda, como na revisão da criação. */}
-      <div className={`grid grid-cols-1 ${compacto ? '' : (der.manaMax !== null || der.iraMax ? 'sm:grid-cols-3' : 'sm:grid-cols-2')} gap-3 mb-6 mt-4`}>
+      <div className={`grid grid-cols-1 ${compacto ? '' : (der.manaMax !== null || der.iraMax || der.redencaoMax ? 'sm:grid-cols-3' : 'sm:grid-cols-2')} gap-3 mb-6 mt-4`}>
         {onChangeAtual ? (
           <>
             <BarraAjustavel label="Vida" atual={valorAtual(char, 'vida', der.vidaMax)} max={der.vidaMax}
@@ -4628,6 +4689,12 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual, compacto }) {
               <BarraAjustavel label="Ira" atual={iraAtual(char)} max={der.iraMax}
                 color="#ff8a3d" onChange={(v) => onChangeAtual('ira', v)} />
             )}
+            {der.redencaoMax > 0 && (onChangeRedencao ? (
+              <BarraAjustavel label="Redenção" atual={redencaoAtual(char)} max={der.redencaoMax}
+                color="#D4AF37" onChange={(v) => onChangeRedencao(v)} />
+            ) : (
+              <ProgressBar value={redencaoAtual(char)} max={der.redencaoMax} color="#D4AF37" label="Redenção" />
+            ))}
           </>
         ) : (
           <>
@@ -4635,6 +4702,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual, compacto }) {
             <ProgressBar value={valorAtual(char, 'sanidade', der.sanidadeMax)} max={der.sanidadeMax} color="#caa24a" label="Sanidade" />
             {der.manaMax !== null && <ProgressBar value={valorAtual(char, 'mana', der.manaMax)} max={der.manaMax} color="#8FB4F5" label="Mana" />}
             {der.iraMax > 0 && <ProgressBar value={iraAtual(char)} max={der.iraMax} color="#ff8a3d" label="Ira" />}
+            {der.redencaoMax > 0 && <ProgressBar value={redencaoAtual(char)} max={der.redencaoMax} color="#D4AF37" label="Redenção" />}
           </>
         )}
       </div>
@@ -4735,7 +4803,7 @@ function blankDraft(owner, tipoFicha = null) {
     recursosLivres: { vidaMax: 0, sanidadeMax: 0, manaMax: 0 },
     custom: { armas: [], armaduras: [], habilidades: [] },
     pericias: {}, periciasOutros: {}, recursos: { vidaBonusLore: 0, sanidadeBonusLore: 0, vidaPerdida: 0 },
-    atual: { vida: null, sanidade: null, mana: null, ira: 0 },
+    atual: { vida: null, sanidade: null, mana: null, ira: 0, redencao: null },
     defesas: { equipamento: 0, defesaOutros: 0, bloqueioOutros: 0, esquivaOutros: 0 },
     armas: [], armaduraId: null, feiticos: [], habilidades: [], inventario: [], desbloqueados: [],
     editedByMaster: false, editedAt: null, createdAt: null,
@@ -4871,7 +4939,7 @@ function abasDaFicha(char) {
     base.push({ id: 'habilidades', nome: 'Habilidades' });
     if (char.originId === 'mago') base.push({ id: 'feiticos', nome: 'Feitiços' });
   }
-  /* Ira do guerreiro e contratos de vida da criatura do mar. */
+  /* Ira do guerreiro, contratos da criatura do mar, redenção do nascido de ouro. */
   if (!fichaLivre(char) && PODERES_CLASSE[char.originId]) {
     base.push({ id: 'poderes_classe', nome: PODERES_CLASSE[char.originId].aba });
   }
@@ -5237,7 +5305,9 @@ function AbaAnimais({ char, color, podeEditar, onSalvarAnimais, onChangeAtual })
 function AbaPoderesDeClasse({ char, color, onChangeVidaPerdida }) {
   const info = PODERES_CLASSE[char.originId];
   const poderes = poderesDaClasse(char);
-  if (!info || poderes.length === 0) return null;
+  /* O nascido de ouro tem mecânica e nenhum poder: a aba dele é só a barra e o
+     que o número significa na mesa. */
+  if (!info || (poderes.length === 0 && !info.semPoderes)) return null;
   const cor = info.cor || color;
   const max = iraMaxima(char);
   const atual = iraAtual(char);
@@ -5287,6 +5357,58 @@ function AbaPoderesDeClasse({ char, color, onChangeVidaPerdida }) {
           </div>
         </div>
       )}
+
+      {info.semPoderes && (() => {
+        const faixa = faixaDeRedencao(char);
+        const max = redencaoMaxima(char);
+        return (
+          <>
+            <div className="rounded-lg px-3 py-2 mb-3" style={{ background: '#171029', border: `1px solid ${faixa?.cor || cor}` }}>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm" style={{ fontFamily: F.display, color: faixa?.cor || cor, fontWeight: 700, letterSpacing: '0.06em' }}>
+                  {(faixa?.nome || '').toUpperCase()}
+                </p>
+                <span className="text-xs" style={{ fontFamily: F.mono, color: V.muted }}>
+                  {redencaoAtual(char)} de {max}
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: V.muted, fontFamily: F.body }}>A regra de ouro</p>
+            <p className="text-sm leading-relaxed mb-3" style={{ fontFamily: F.body, color: V.text }}>
+              Entre dois nascidos de ouro, o mundo sempre escolhe o de <strong style={{ color: cor }}>mais pontos</strong> —
+              e escolhe para tudo. O guarda real que só pode salvar um salva esse. O inimigo que
+              só pode matar um ataca esse. Estar no alto é ser defendido e ser alvo ao mesmo tempo.
+            </p>
+
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: V.muted, fontFamily: F.body }}>As faixas</p>
+            <div className="space-y-1.5 mb-3">
+              {FAIXAS_DE_REDENCAO.map((f) => (
+                <div key={f.id} className="rounded-md px-2.5 py-2" style={{
+                  background: '#120d20',
+                  border: `1px solid ${faixa?.id === f.id ? f.cor : V.border}`,
+                  opacity: faixa?.id === f.id ? 1 : 0.6,
+                }}>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm" style={{ fontFamily: F.body, color: f.cor, fontWeight: 600 }}>{f.nome}</p>
+                    <span className="text-xs" style={{ fontFamily: F.mono, color: V.muted }}>
+                      {f.minimo >= 0.75 ? `${Math.ceil(max * 0.75)} ou mais`
+                        : f.minimo > 0.01 ? `${Math.ceil(max / 3)} a ${Math.ceil(max * 0.75) - 1}`
+                        : f.minimo > 0 ? `1 a ${Math.ceil(max / 3) - 1}`
+                        : 'zero'}
+                    </span>
+                  </div>
+                  <p className="text-xs mt-0.5 leading-relaxed" style={{ fontFamily: F.body, color: V.muted }}>{f.texto}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+              Máximo {max} = {REDENCAO_BASE} + nível {nivelDaFicha(char)} + {REDENCAO_POR_PSIQUE} × Psique {char.attributes?.psique || 0}.
+              A barra fica no painel da ficha, e só a mestra tem os botões dela.
+            </p>
+          </>
+        );
+      })()}
 
       <div className="space-y-2">
         {poderes.map((p) => {
@@ -5614,7 +5736,10 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
   };
 
   const restaurarTudo = async () => {
-    await onSaveEdit({ ...char, atual: { vida: null, sanidade: null, mana: null, ira: 0 } }, { silencioso: true });
+    await onSaveEdit({
+      ...char,
+      atual: { vida: null, sanidade: null, mana: null, ira: 0, redencao: char.atual?.redencao ?? null },
+    }, { silencioso: true });
   };
 
   const startEdit = () => { setEditDraft(char); setEditing(true); };
@@ -5835,7 +5960,8 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             <div className="grid gap-6 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] items-start">
               <div>
                 <CharacterSheetBody char={char} contentIndex={contentIndex} compacto
-                  onChangeAtual={canEdit ? alterarAtual : undefined} />
+                  onChangeAtual={canEdit ? alterarAtual : undefined}
+                  onChangeRedencao={account.isMaster ? ((v) => alterarAtual('redencao', v)) : undefined} />
                 <PainelDefesas char={char} color={origin.cor} compacto armadurasCustom={catalogoDe(contentIndex, 'armaduras', [], char)} />
               </div>
               <div>
