@@ -170,6 +170,10 @@ const MODELO = {
   teto: '50 rodadas; passou disso, conta como combate que não acaba',
 };
 
+/* Experimento: o feitiço somar o atributo no dano, como a arma já faz. Com
+   --feitico-com-atributo o simulador mede a regra antes de ela existir. */
+const SOMA_ATRIBUTO_NO_FEITICO = process.argv.includes('--feitico-com-atributo');
+
 const d = (faces) => 1 + Math.floor(Math.random() * faces);
 const rolar = (n) => {
   if (!n) return 0;
@@ -212,7 +216,14 @@ function armasDisponiveis(classe, subId) {
   });
 }
 
-function montar(classe, subId, nivel, nivelMagico = 50) {
+const NIVEL_MAGICO = (() => { const i = process.argv.indexOf('--nivel-magico'); return i > 0 && process.argv[i + 1] ? Number(process.argv[i + 1]) : 50; })();
+/* O mesmo teto do App.jsx: dez de nível mágico por nível de classe. */
+const NIVEL_MAGICO_POR_NIVEL = num('NIVEL_MAGICO_POR_NIVEL');
+const NIVEL_MAX_MAGICO = num('NIVEL_MAX');
+const tetoDoNivelMagico = (nivelClasse) =>
+  Math.min(NIVEL_MAX_MAGICO, Math.max(5, nivelClasse * NIVEL_MAGICO_POR_NIVEL));
+
+function montar(classe, subId, nivel, nivelMagico = Math.min(NIVEL_MAGICO, tetoDoNivelMagico(nivel))) {
   const base = BALANCO_CLASSE[classe];
   const sub = subId ? BALANCO_SUBDIVISAO[subId] : null;
 
@@ -220,11 +231,18 @@ function montar(classe, subId, nivel, nivelMagico = 50) {
   const arma = armasDisponiveis(classe, subId)
     .sort((a, b) => mediaDado(lerNotacao(b.dano)) - mediaDado(lerNotacao(a.dano)))[0];
   const periciaArma = periciaPorNome.get(String(arma?.teste || '').toLowerCase());
+  /* O mago ataca com feitiço, e feitiço é Dicionário mental (Intelecto). A arma
+     dele é Savoir-faire, que é MOTORAS: investir na arma deixa o feitiço sem
+     atributo nenhum. Quem manda no perfil é a ação que ele usa de verdade. */
+  const periciaDeAtaque = classe === 'mago'
+    ? periciaPorId.get('dicionario_mental')
+    : periciaArma;
   const attrArma = periciaArma?.atributo || 'fisico';
+  const attrAtaque = periciaDeAtaque?.atributo || attrArma;
 
   /* --- atributos --- */
   const attrs = { intelecto: 0, psique: 0, fisico: 0, motoras: 0 };
-  const fila = [attrArma, 'fisico', attrArma, 'motoras'];
+  const fila = [attrAtaque, 'fisico', attrAtaque, 'motoras'];
   let restam = pontosDeAtributo(nivel), i = 0, tentativas = 0;
   while (restam > 0 && tentativas < 200) {
     const alvo = fila[i % fila.length];
@@ -240,7 +258,10 @@ function montar(classe, subId, nivel, nivelMagico = 50) {
   const pericias = {};
   concedidas.forEach((p) => { pericias[p] = Math.min(1, teto); });
   let degraus = degrausDePericia(nivel);
-  const prioridade = [periciaArma?.id, 'velocidade_reacao', 'resistencia'].filter(Boolean);
+  /* O mago ataca com feitiço, e TODO feitiço é lançado com Dicionário mental:
+     é essa que ele treina primeiro, não a da arma que ele quase não saca. */
+  const prioridade = [periciaDeAtaque?.id, periciaArma?.id, 'velocidade_reacao', 'resistencia']
+    .filter((x, i, a) => x && a.indexOf(x) === i);
   for (const pid of prioridade) {
     while (degraus > 0 && (pericias[pid] || 0) < teto) { pericias[pid] = (pericias[pid] || 0) + 1; degraus--; }
   }
@@ -323,6 +344,44 @@ function novoLutador(ficha) {
   };
 }
 
+/* Com --acoes N o simulador ignora a categoria e dá N ações a todo inimigo:
+   é como se mede quanto de pressão falta antes de escrever o número no
+   catálogo. Sem a flag, vale o que está no catálogo. */
+const forcarAcoes = (() => {
+  const i = process.argv.indexOf('--acoes');
+  return i > 0 && process.argv[i + 1] ? Number(process.argv[i + 1]) : null;
+})();
+/* --escala-vida 1.5 multiplica a vida de todo boss à mão. Sem ela, vale a
+   escala de encontro do catálogo para o tamanho do grupo simulado. */
+const escalaVidaManual = (() => {
+  const i = process.argv.indexOf('--escala-vida');
+  return i > 0 && process.argv[i + 1] ? Number(process.argv[i + 1]) : null;
+})();
+/* Quantos jogadores na mesa. O grupo simulado é um de cada classe: seis. */
+const JOGADORES = (() => {
+  const i = process.argv.indexOf('--jogadores');
+  return i > 0 && process.argv[i + 1] ? Number(process.argv[i + 1]) : 6;
+})();
+
+/* A mesma regra do App.jsx, lida de lá para não divergir. */
+const JOGADORES_BASE = num('JOGADORES_BASE');
+const VIDA_POR_JOGADOR_EXTRA = num('VIDA_POR_JOGADOR_EXTRA');
+const JOGADORES_POR_ACAO_EXTRA = num('JOGADORES_POR_ACAO_EXTRA');
+function escalaDeEncontro(categoriaId, jogadores) {
+  const extras = Math.max(0, (Number(jogadores) || JOGADORES_BASE) - JOGADORES_BASE);
+  const base = CATEGORIAS.find((c) => c.id === categoriaId)?.acoes || 1;
+  if (categoriaId === 'npc') return { vida: 1, acoes: base };
+  return {
+    vida: 1 + VIDA_POR_JOGADOR_EXTRA * extras,
+    acoes: base + Math.floor(extras / JOGADORES_POR_ACAO_EXTRA),
+  };
+}
+
+/* A chance de acertar uma DT típica de jogador no nível alto. Só serve para o
+   inimigo comparar as próprias armas entre si. */
+const DT_TIPICA = 20;
+const chanceContra = (mod) => Math.min(1, Math.max(0.05, (21 - (DT_TIPICA - mod)) / 20));
+
 function inimigoLutador(modelo) {
   const [intelecto, psique, fisico, motoras] = modelo.attrs;
   const attrs = { intelecto, psique, fisico, motoras };
@@ -331,16 +390,29 @@ function inimigoLutador(modelo) {
     .filter((a) => a.dado)
     .sort((a, b) => mediaDado(b.dado) - mediaDado(a.dado));
   const grau = (pid) => modelo.pericias?.[pid] || 0;
-  /* Metade do que um boss é está nas habilidades dele, não na arma. */
+  /* Metade do que um boss é está nas habilidades dele, não na arma. Mas só
+     entra o que tira VIDA: o 10d10 do Arauto é cura, e a Chuva de marcas tira
+     sanidade — tratar os dois como golpe fazia dele o dobro do que é. */
   const golpes = (modelo.habilidades || [])
-    .map(([nome, descricao]) => ({ nome, dado: lerNotacao(descricao), pericia: armas[0]?.pericia }))
-    .filter((h) => h.dado);
+    .map(([nome, descricao]) => ({ nome, descricao, dado: lerNotacao(descricao), pericia: armas[0]?.pericia }))
+    .filter((h) => h.dado && /de dano/i.test(h.descricao)
+      && !/sanidade|cura|recupera|de volta/i.test(h.descricao));
+  const escala = escalaDeEncontro(modelo.cat, JOGADORES);
+  const vida = Math.round(modelo.vida * (escalaVidaManual ?? escala.vida));
+  const mod = (a) => (a.pericia ? TIERS[grau(a.pericia.id)].bonus + attrs[a.pericia.atributo] : 0);
+  /* Pelo dano ESPERADO, não pelo dado maior: de nada adianta o inimigo sacar a
+     arma de 3d10 se a perícia dela não está treinada e ele erra o tempo todo. */
+  const melhorGolpe = [...armas, ...golpes]
+    .sort((a, b) => mediaDado(b.dado) * chanceContra(mod(b)) - mediaDado(a.dado) * chanceContra(mod(a)))[0];
   return {
-    modelo, attrs, armas, golpes, vida: modelo.vida, vidaMax: modelo.vida,
+    modelo, attrs, armas, golpes, melhorGolpe, vida, vidaMax: vida,
+    /* Quantas vezes age por rodada: é o que equilibra uma mesa inteira contra
+       um inimigo só. Vem da categoria, escalada pelo tamanho do grupo. */
+    acoes: forcarAcoes ?? escala.acoes,
     defesa: modelo.defesa,
     esquiva: C.baseEsquiva + motoras + TIERS[grau('velocidade_reacao')].bonus,
     bloqueio: TIERS[grau('resistencia')].bonus * C.multBloqueio,
-    mod: (a) => (a.pericia ? TIERS[grau(a.pericia.id)].bonus + attrs[a.pericia.atributo] : 0),
+    mod,
   };
 }
 
@@ -385,7 +457,8 @@ function melhorAcao(l) {
     opcoes.push({
       tipo: 'feitico', nome: fe.f.nome, dado: fe.dado,
       mod: f.modTeste('dicionario_mental'),
-      bonusDano: fe.escala ? f.bonusMagico : 0, custoSan: 0, custoMana: cm, comCritico: false,
+      bonusDano: fe.escala ? f.bonusMagico + (SOMA_ATRIBUTO_NO_FEITICO ? f.attrs.intelecto : 0) : 0,
+      custoSan: 0, custoMana: cm, comCritico: false,
     });
   }
   if (!opcoes.length) return null;
@@ -430,20 +503,22 @@ function combate(fichas, modelos, tetoRodadas = 50) {
       return { venceu: true, rodadas: rodada, caidos: grupo.filter((x) => x.vida <= 0).length, grupo, danoSofrido };
     }
 
-    /* --- os inimigos, cada um sorteia um alvo de pé --- */
+    /* --- os inimigos: cada um age o número de vezes da ficha dele --- */
     for (const inim of vivos()) {
-      const alvos = dePe();
-      if (!alvos.length) break;
-      const golpe = [...inim.armas, ...inim.golpes].sort((a, b) => mediaDado(b.dado) - mediaDado(a.dado))[0];
+      const golpe = inim.melhorGolpe;
       if (!golpe) continue;
-      const alvo = alvos[Math.floor(Math.random() * alvos.length)];
-      const usaReacao = !alvo.reacaoUsada;
-      alvo.reacaoUsada = true;
-      const r = atacar(
-        { mod: inim.mod(golpe), dado: golpe.dado, bonusDano: inim.attrs[golpe.pericia?.atributo] || 0, critico: false },
-        { defesa: alvo.f.defesa, esquiva: alvo.f.esquiva, bloqueio: alvo.f.bloqueio }, usaReacao);
-      alvo.vida -= r.dano;
-      danoSofrido += r.dano;
+      for (let acao = 0; acao < inim.acoes; acao++) {
+        const alvos = dePe();
+        if (!alvos.length) break;
+        const alvo = alvos[Math.floor(Math.random() * alvos.length)];
+        const usaReacao = !alvo.reacaoUsada;
+        alvo.reacaoUsada = true;
+        const r = atacar(
+          { mod: inim.mod(golpe), dado: golpe.dado, bonusDano: inim.attrs[golpe.pericia?.atributo] || 0, critico: false },
+          { defesa: alvo.f.defesa, esquiva: alvo.f.esquiva, bloqueio: alvo.f.bloqueio }, usaReacao);
+        alvo.vida -= r.dano;
+        danoSofrido += r.dano;
+      }
     }
     if (!dePe().length) return { venceu: false, rodadas: rodada, caidos: grupo.length, grupo, danoSofrido };
   }
@@ -598,6 +673,43 @@ function principal() {
     }
   }
 
+  /* ---- 2b. quem cai, e quanto cada um entrega ---- */
+  console.log('\n\n### QUEM CAI E QUEM ENTREGA');
+  console.log('Grupo de nível 10 contra cada boss final, 6 jogadores. Mostra se a Defesa baixa');
+  console.log('de uma subdivisão a transforma em alvo de verdade ou só no papel.\n');
+  {
+    const nivel = 10;
+    const porClasse = new Map();
+    for (const c of combos) {
+      const f = montar(c.classe, c.subId, nivel);
+      const dpr = dprContra(f, 14, 1500);
+      const atual = porClasse.get(c.classe);
+      if (!atual || dpr > atual.dpr) porClasse.set(c.classe, { f, dpr, nome: c.nome });
+    }
+    const grupo = [...porClasse.values()].map((x) => x.f);
+    const finais = INIMIGOS.filter((i) => i.cat === 'final');
+    const quedas = new Map(), danos = new Map();
+    let total = 0;
+    for (const modelo of finais) {
+      for (let i = 0; i < repeticoes; i++) {
+        const r = combate(grupo, [modelo]);
+        total++;
+        r.grupo.forEach((l) => {
+          if (l.vida <= 0) quedas.set(l.f.nome, (quedas.get(l.f.nome) || 0) + 1);
+          danos.set(l.f.nome, (danos.get(l.f.nome) || 0) + l.dano);
+        });
+      }
+    }
+    const linhas = grupo.map((f) => ({
+      nome: f.nome, dt: Math.max(f.defesa, f.esquiva), vida: f.vidaMax,
+      queda: (quedas.get(f.nome) || 0) / total, dano: (danos.get(f.nome) || 0) / total,
+    })).sort((a, b) => b.queda - a.queda);
+    const danoTotal = linhas.reduce((s, l) => s + l.dano, 0);
+    for (const l of linhas) {
+      console.log(`  ${l.nome.padEnd(22)} DT ${l.dt} · vida ${String(l.vida).padStart(3)} · cai em ${pct(l.queda).padStart(4)} dos combates · entrega ${pct(l.dano / danoTotal).padStart(4)} do dano do grupo`);
+    }
+  }
+
   /* ---- 3. a conta das ações: seis contra um ---- */
   console.log('\n\n### A CONTA DAS AÇÕES');
   console.log('Seis jogadores agem seis vezes por rodada; um boss age uma. Esta tabela mostra');
@@ -616,7 +728,7 @@ function principal() {
     const danoGrupo = grupo.reduce((s, x) => s + x.dpr, 0);
     for (const modelo of INIMIGOS.filter((i) => i.cat === cat.id)) {
       const inim = inimigoLutador(modelo);
-      const golpe = [...inim.armas, ...inim.golpes].sort((a, b) => mediaDado(b.dado) - mediaDado(a.dado))[0];
+      const golpe = inim.melhorGolpe;
       if (!golpe) continue;
       const defesaMedia = media(grupo.map((x) => Math.max(x.f.defesa, x.f.esquiva)));
       const chance = Math.min(1, Math.max(0, (21 - (defesaMedia - inim.mod(golpe))) / 20));
@@ -636,7 +748,7 @@ function principal() {
     const nivel = nivelDaCategoria[cat.id];
     const inims = INIMIGOS.filter((i) => i.cat === cat.id).map(inimigoLutador);
     const modInimigo = media(inims.map((i) => {
-      const g = [...i.armas, ...i.golpes].sort((a, b) => mediaDado(b.dado) - mediaDado(a.dado))[0];
+      const g = i.melhorGolpe;
       return g ? i.mod(g) : 0;
     }));
     console.log(`${cat.nome} — nível ${nivel} (o inimigo ataca com +${n1(modInimigo)})`);
@@ -653,7 +765,26 @@ function principal() {
     console.log('');
   }
 
-  /* ---- 5. o que o simulador não soube usar ---- */
+  /* ---- 5. inimigo com arma que ele não sabe usar ---- */
+  console.log('\n\n### ARMA QUE O INIMIGO NÃO SABE USAR');
+  console.log('A arma de maior dano da ficha, quando a perícia dela não está treinada:');
+  console.log('o dado é grande e o inimigo erra, então a ficha vale menos do que parece.\n');
+  let achou = 0;
+  for (const modelo of INIMIGOS) {
+    const inim = inimigoLutador(modelo);
+    if (inim.armas.length < 2) continue;
+    const porDado = [...inim.armas].sort((a, b) => mediaDado(b.dado) - mediaDado(a.dado));
+    const maior = porDado[0];
+    const grau = modelo.pericias?.[maior.pericia?.id] || 0;
+    if (grau > 0) continue;
+    achou++;
+    const outra = porDado.find((a) => (modelo.pericias?.[a.pericia?.id] || 0) > 0);
+    console.log(`  ${modelo.nome.padEnd(27)} ${maior.nome} (${maior.dado.qtd}d${maior.dado.faces}) rola +${inim.mod(maior)} em ${maior.pericia?.nome || '—'}, sem treino`
+      + (outra ? ` · a treinada é ${outra.nome} (${outra.dado.qtd}d${outra.dado.faces}) +${inim.mod(outra)}` : ''));
+  }
+  if (!achou) console.log('  nenhum — toda arma de maior dano está treinada.');
+
+  /* ---- 6. o que o simulador não soube usar ---- */
   console.log('\n\n### HABILIDADES SEM NÚMERO NO TEXTO');
   console.log('O simulador só usa o que tem dado escrito. O resto depende da mestra na hora —');
   console.log('o que não é defeito, mas diz quanto de cada classe é conversa e quanto é combate.\n');

@@ -26,7 +26,13 @@ já foi combinado e decidido, para uma sessão nova não precisar redescobrir na
    no navegador, e rodar os testes de API quando o servidor mudou. O usuário
    confia nesse passo; não afirmar que algo funciona sem ter visto funcionar.
 4. Commit + push.
-5. **Acompanhar o deploy** comparando o nome do bundle publicado com o do build
+5. **Simular o combate** quando mexer em arma, habilidade, feitiço ou ficha de
+   inimigo: `node scripts/simular-combate.mjs`. Ele monta um personagem de cada
+   classe e subdivisão a partir dos catálogos e roda milhares de combates. Tem
+   auto-teste contra uma ficha vista na tela — se a fórmula mudar e o simulador
+   não acompanhar, ele aborta em vez de mentir. O relatório mais recente está em
+   `analises/`.
+6. **Acompanhar o deploy** comparando o nome do bundle publicado com o do build
    local, e conferir `/api/health`. O Render publica sozinho a cada push.
 
 ```bash
@@ -126,6 +132,25 @@ Perícias dadas pela classe: druida → Ágape; mago → Savoir-faire e Dicioná
 mental. Os `id` das perícias nunca mudam (são a chave do treino nas fichas
 salvas); renomear é só trocar o `nome`. Ex.: "Percepção" ainda tem id `logica`,
 "Guerra" ainda tem id `limiar_dor`.
+
+### Teto do nível mágico
+**Dez de nível mágico por nível de classe** (`NIVEL_MAGICO_POR_NIVEL`,
+`tetoDoNivelMagico`), desde 19/10/2026. Antes o nível mágico era livre, e o
+simulador mostrou o estrago: no mesmo nível 10 de classe, um mago de nível
+mágico 20 batia 15,6 por rodada e um de 100 batia 44,2 — quase três vezes, por
+uma escolha feita na criação, às cegas, sem nada na tela dizendo qual número era
+razoável.
+
+Funciona como o teto de treino das perícias: **o número escolhido continua
+guardado na ficha** acima do teto, e volta a valer quando o personagem sobe de
+nível. Nenhuma ficha antiga perde o que escolheu. Quem aplica é
+`nivelMagicoDaFicha`, por onde passam mana, vagas, DT, dano, cor da marca e a
+trava de mago negro — mexer lá vale para tudo de uma vez. Ficha de mestra não
+tem teto.
+
+O slider mostra o valor **efetivo** e avisa em vermelho quando o escolhido está
+acima. E o passo **Herança** do mago desceu para depois de Atributos, pelo mesmo
+motivo dos animais do druida: o teto depende do nível, que é escolhido lá.
 
 ### Vida, sanidade e mana
 ```
@@ -254,6 +279,32 @@ e final no 10. Medido nessas faixas, **as 16 fichas caem na faixa prometida**
 A vida sai do dano real: mediana 13,5 do dado + atributo + metade do nível,
 vezes a chance de acerto contra a Defesa daquele inimigo, vezes 4 jogadores. A `defesa` do modelo é o número cheio; a fábrica desconta a base 10 e as
 Motoras e guarda o resto em `defesaOutros`.
+
+### Ações por rodada e escala de encontro
+Medido em 19/10/2026 com `scripts/simular-combate.mjs`: seis jogadores contra um
+boss é aritmética perdida. Seis ações por rodada contra uma. Um boss final levava
+5 rodadas, tirava 11% da vida do grupo e **não derrubava ninguém em 3.000
+combates**. A duração estava certa (a calibragem de 13/10 previa 8 rodadas para
+um grupo de 4, e 6 jogadores dão 5 — a proporção exata); o que faltava era
+ameaça, não vida.
+
+Em vez de recalibrar 16 fichas, entraram duas alavancas:
+- **Ações** — `CATEGORIAS_INIMIGO` ganhou `acoes`: NPC 1, todo boss 2. O inimigo
+  age esse número de vezes por rodada, em sequência. É o que devolve a ameaça
+  **sem alongar o combate**, porque não mexe na vida dele. A reação continua
+  sendo uma só, dele e de cada jogador.
+- **Escala** — `escalaDeEncontro(categoria, jogadores)`: +25% de vida por jogador
+  além de 4 e +1 ação a cada 2 jogadores além de 4. NPC não escala: quem ajusta
+  um bando é o número de capangas.
+
+O catálogo de inimigos tem um **seletor de jogadores na cena** (3 a 8, começa em
+4) que mostra a vida e as ações já escaladas antes de criar a ficha. A ficha
+guarda em `recursosLivres.acoes`, lido por `acoesDaFicha` — que vale **só para
+ficha de mestra**; jogador age uma vez. Aparece no painel de Defesas quando é
+mais de uma, e é editável junto dos outros números livres.
+
+Com um grupo de 6 (3 ações, vida ×1,5) o boss final passou a tirar 41% a 66% da
+vida do grupo e a derrubar de 0,7 a 2 personagens. Boss forte, 22% a 36%.
 
 ### Abas da ficha
 Desde 08/10/2026 a ficha tem **menos abas, cada uma usando a largura**. A régua
@@ -432,6 +483,42 @@ do catálogo da mestra.
 - Todo peso de catálogo já foi somado em 1 (não existe mais "sem peso").
 
 ---
+
+## O que a simulação de 19/10/2026 mudou
+
+Além das ações de inimigo e do teto de nível mágico (acima):
+
+- **Capítulo Final 5d12 → 3d12 e Tinta Viva 6d12 → 4d12** (e as evoluções na
+  mesma proporção). Com eles no tamanho antigo, um mago de nível mágico 100
+  batia 67% acima do melhor guerreiro; agora, 22% — o prêmio justo de quem
+  chegou ao fim da escada. Entre os feitiços de topo a escada passou a ser de
+  **efeito**, não de dado. Os dois textos são meus, de setembro.
+- **Chave-mestra reforçada 2d8 → 3d8**: o Mestre dos Redemoinhos era o último
+  da mesa em dano em todos os níveis, 35% abaixo do topo. Agora a dispersão da
+  mesa inteira é 1,7× a 1,8× (o alvo é ficar abaixo de 2×).
+- **Cinco habilidades de combate**, uma por classe (guerreiro, druida, criatura
+  do mar, pirata, nascido de ouro), no topo do `HABILIDADES_CATALOGO`. Só 4% das
+  habilidades de pirata e 6% das de nascido de ouro tinham dado no texto: na
+  rodada, o jogador não tinha escolha além da arma. Nenhuma delas bate mais que
+  a arma de propósito — a arma soma atributo e metade do nível, elas não. Elas
+  fazem o que a arma não faz: tiram a reação, prendem, sangram, espalham.
+  **O custo de cada uma cabe abaixo da terceira mais cara da classe**, senão a
+  reserva de sanidade subiria para todo mundo (druida e nascido de ouro já estão
+  no teto de 30). Conferido: nenhuma reserva mudou.
+- O mago ficou de fora das habilidades novas: ele já escolhe entre a arma e 29
+  feitiços.
+
+**O que a medição desmentiu**: a primeira leitura dizia que o Bobo da Corte era
+o elo fraco pela Defesa baixa. Medindo quem de fato cai, o elo fraco é o **mago**
+(cai em 31% dos combates e entrega 13% do dano, contra 4% e 20% do guerreiro
+Nêrena) — e boa parte da dispersão de Defesa que eu tinha medido era artefato da
+heurística do simulador, não do jogo. A diferença real entre Ensanguentado e
+Bobo é de 5 pontos de DT, e é intencional: Proteção contra Conquista.
+
+**Armadilha achada no caminho**: as duas perícias de classe do mago usam
+atributos diferentes — Savoir-faire é **Motoras** e Dicionário mental é
+**Intelecto**. Como todo feitiço é lançado com Dicionário mental, um mago que
+investe na arma fica sem atributo nenhum para a magia.
 
 ## Banco de dados
 

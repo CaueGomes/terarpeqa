@@ -7,173 +7,185 @@ SIMULAÇÃO DE COMBATE — Terarpeqá
 ### DANO POR RODADA — nível 1
 (contra Defesa 14, que é a de um inimigo médio; inclui a chance de errar)
 
-guerreiro / Nêrena                13.5 dano/rodada  ·  acerta  60%  ·  vida  46  def 21/esq 15  ·  Espada de lâmina longa (3d12+3)
-nascido_ouro / Ensanguentado      13.4 dano/rodada  ·  acerta  60%  ·  vida  52  def 20/esq 13  ·  Lâmina sem brasão (3d12+3)
-druida / Animal místico           12.0 dano/rodada  ·  acerta  60%  ·  vida  38  def 17/esq 15  ·  Foice de pedra-lua (3d10+3)
-druida / Animal natural           11.9 dano/rodada  ·  acerta  60%  ·  vida  42  def 18/esq 15  ·  Foice de pedra-lua (3d10+3)
-guerreiro / Brutus                11.9 dano/rodada  ·  acerta  60%  ·  vida  66  def 19/esq 13  ·  Manoplas de ferro bruto (3d10+3)
-sereia / Tritão                   11.6 dano/rodada  ·  acerta  60%  ·  vida  58  def 18/esq 13  ·  Tridente das profundezas (3d10+3)
-pirata / Trapaceiro               11.6 dano/rodada  ·  acerta  60%  ·  vida  40  def 18/esq 15  ·  Pistola emperrada (3d10+3)
-guerreiro / Pritzk                10.2 dano/rodada  ·  acerta  60%  ·  vida  44  def 19/esq 15  ·  Bastão de peso (3d8+3)
-sereia / Sereia                    9.9 dano/rodada  ·  acerta  60%  ·  vida  38  def 17/esq 15  ·  Corrente de pérolas negras (3d8+3)
-pirata / Predileto dos Mares       9.3 dano/rodada  ·  acerta  60%  ·  vida  62  def 17/esq 13  ·  Sabre pesado (2d12+3)
+guerreiro / Nêrena                13.6 dano/rodada  ·  acerta  60%  ·  vida  46  def 21/esq 15  ·  Espada de lâmina longa (3d12+3)
+nascido_ouro / Ensanguentado      13.5 dano/rodada  ·  acerta  60%  ·  vida  52  def 20/esq 13  ·  Lâmina sem brasão (3d12+3)
+sereia / Tritão                   12.0 dano/rodada  ·  acerta  60%  ·  vida  58  def 18/esq 13  ·  Tridente das profundezas (3d10+3)
+pirata / Trapaceiro               11.9 dano/rodada  ·  acerta  60%  ·  vida  40  def 18/esq 15  ·  Pistola emperrada (3d10+3)
+guerreiro / Brutus                11.6 dano/rodada  ·  acerta  60%  ·  vida  66  def 19/esq 13  ·  Manoplas de ferro bruto (3d10+3)
+druida / Animal místico           11.6 dano/rodada  ·  acerta  60%  ·  vida  38  def 17/esq 15  ·  Foice de pedra-lua (3d10+3)
+druida / Animal natural           11.3 dano/rodada  ·  acerta  60%  ·  vida  42  def 18/esq 15  ·  Foice de pedra-lua (3d10+3)
+guerreiro / Pritzk                10.1 dano/rodada  ·  acerta  60%  ·  vida  44  def 19/esq 15  ·  Bastão de peso (3d8+3)
+sereia / Sereia                    9.8 dano/rodada  ·  acerta  60%  ·  vida  38  def 17/esq 15  ·  Corrente de pérolas negras (3d8+3)
+pirata / Predileto dos Mares       9.4 dano/rodada  ·  acerta  60%  ·  vida  62  def 17/esq 13  ·  Sabre pesado (2d12+3)
+pirata / Mestre dos Redemoinhos    8.8 dano/rodada  ·  acerta  55%  ·  vida  42  def 18/esq 13  ·  Chave-mestra reforçada (3d8+2)
 nascido_ouro / Bobo da Corte       8.6 dano/rodada  ·  acerta  55%  ·  vida  34  def 15/esq 13  ·  Cetro de guizos (3d8+2)
-nascido_ouro / Dono da Coroa       8.4 dano/rodada  ·  acerta  55%  ·  vida  36  def 17/esq 13  ·  Espada cerimonial (2d12+2)
-mago / Mago                        8.3 dano/rodada  ·  acerta  45%  ·  vida  35  def 15/esq 15  ·  Armadilha Rúnica (2d12+5)
-pirata / Mestre dos Redemoinhos    6.1 dano/rodada  ·  acerta  55%  ·  vida  42  def 18/esq 13  ·  Chave-mestra reforçada (2d8+2)
+nascido_ouro / Dono da Coroa       8.1 dano/rodada  ·  acerta  55%  ·  vida  36  def 17/esq 13  ·  Espada cerimonial (2d12+2)
+mago / Mago                        7.1 dano/rodada  ·  acerta  50%  ·  vida  31  def 13/esq 13  ·  Pena de aço (3d8+1)
 
-  maior ÷ menor = 2.2×   (até 2× é uma mesa onde todo mundo contribui)
+  maior ÷ menor = 1.9×   (até 2× é uma mesa onde todo mundo contribui)
 
 
 ### DANO POR RODADA — nível 3
 (contra Defesa 14, que é a de um inimigo médio; inclui a chance de errar)
 
-nascido_ouro / Ensanguentado      16.1 dano/rodada  ·  acerta  65%  ·  vida  68  def 20/esq 13  ·  Lâmina sem brasão (3d12+5)
-guerreiro / Nêrena                16.0 dano/rodada  ·  acerta  65%  ·  vida  58  def 22/esq 16  ·  Espada de lâmina longa (3d12+5)
-druida / Animal natural           14.1 dano/rodada  ·  acerta  65%  ·  vida  50  def 19/esq 16  ·  Foice de pedra-lua (3d10+5)
+nascido_ouro / Ensanguentado      15.9 dano/rodada  ·  acerta  65%  ·  vida  68  def 20/esq 13  ·  Lâmina sem brasão (3d12+5)
+guerreiro / Nêrena                15.7 dano/rodada  ·  acerta  65%  ·  vida  58  def 22/esq 16  ·  Espada de lâmina longa (3d12+5)
+druida / Animal natural           14.2 dano/rodada  ·  acerta  65%  ·  vida  50  def 19/esq 16  ·  Foice de pedra-lua (3d10+5)
+druida / Animal místico           14.2 dano/rodada  ·  acerta  65%  ·  vida  46  def 18/esq 16  ·  Foice de pedra-lua (3d10+5)
 guerreiro / Brutus                14.0 dano/rodada  ·  acerta  65%  ·  vida  86  def 19/esq 13  ·  Manoplas de ferro bruto (3d10+5)
-druida / Animal místico           13.9 dano/rodada  ·  acerta  65%  ·  vida  46  def 18/esq 16  ·  Foice de pedra-lua (3d10+5)
 pirata / Trapaceiro               13.8 dano/rodada  ·  acerta  65%  ·  vida  50  def 19/esq 16  ·  Pistola emperrada (3d10+5)
-sereia / Tritão                   13.7 dano/rodada  ·  acerta  65%  ·  vida  76  def 18/esq 13  ·  Tridente das profundezas (3d10+5)
-mago / Mago                       12.1 dano/rodada  ·  acerta  65%  ·  vida  41  def 16/esq 16  ·  Pena de aço (3d8+5)
-guerreiro / Pritzk                12.0 dano/rodada  ·  acerta  65%  ·  vida  56  def 20/esq 16  ·  Bastão de peso (3d8+5)
-sereia / Sereia                   12.0 dano/rodada  ·  acerta  65%  ·  vida  48  def 18/esq 16  ·  Corrente de pérolas negras (3d8+5)
+sereia / Tritão                   13.8 dano/rodada  ·  acerta  65%  ·  vida  76  def 18/esq 13  ·  Tridente das profundezas (3d10+5)
+sereia / Sereia                   12.2 dano/rodada  ·  acerta  65%  ·  vida  48  def 18/esq 16  ·  Corrente de pérolas negras (3d8+5)
+guerreiro / Pritzk                11.9 dano/rodada  ·  acerta  65%  ·  vida  56  def 20/esq 16  ·  Bastão de peso (3d8+5)
 pirata / Predileto dos Mares      11.7 dano/rodada  ·  acerta  65%  ·  vida  80  def 17/esq 13  ·  Sabre pesado (2d12+5)
-nascido_ouro / Bobo da Corte      10.5 dano/rodada  ·  acerta  60%  ·  vida  42  def 15/esq 13  ·  Cetro de guizos (3d8+4)
+nascido_ouro / Bobo da Corte      10.8 dano/rodada  ·  acerta  60%  ·  vida  42  def 15/esq 13  ·  Cetro de guizos (3d8+4)
+pirata / Mestre dos Redemoinhos   10.4 dano/rodada  ·  acerta  60%  ·  vida  52  def 18/esq 13  ·  Chave-mestra reforçada (3d8+4)
 nascido_ouro / Dono da Coroa      10.2 dano/rodada  ·  acerta  60%  ·  vida  44  def 17/esq 13  ·  Espada cerimonial (2d12+4)
-pirata / Mestre dos Redemoinhos    7.9 dano/rodada  ·  acerta  60%  ·  vida  52  def 18/esq 13  ·  Chave-mestra reforçada (2d8+4)
+mago / Mago                        7.5 dano/rodada  ·  acerta  50%  ·  vida  39  def 13/esq 13  ·  Pena de aço (3d8+2)
 
-  maior ÷ menor = 2.0×   (até 2× é uma mesa onde todo mundo contribui)
+  maior ÷ menor = 2.1×   (até 2× é uma mesa onde todo mundo contribui)
 
 
 ### DANO POR RODADA — nível 5
 (contra Defesa 14, que é a de um inimigo médio; inclui a chance de errar)
 
-nascido_ouro / Ensanguentado      21.3 dano/rodada  ·  acerta  80%  ·  vida  84  def 20/esq 15  ·  Lâmina sem brasão (3d12+7)
-guerreiro / Nêrena                19.2 dano/rodada  ·  acerta  75%  ·  vida  78  def 22/esq 18  ·  Espada de lâmina longa (3d12+6)
+nascido_ouro / Ensanguentado      21.0 dano/rodada  ·  acerta  80%  ·  vida  84  def 20/esq 15  ·  Lâmina sem brasão (3d12+7)
+guerreiro / Nêrena                19.0 dano/rodada  ·  acerta  75%  ·  vida  78  def 22/esq 18  ·  Espada de lâmina longa (3d12+6)
 guerreiro / Brutus                18.9 dano/rodada  ·  acerta  80%  ·  vida 106  def 19/esq 15  ·  Manoplas de ferro bruto (3d10+7)
 sereia / Tritão                   18.6 dano/rodada  ·  acerta  80%  ·  vida  94  def 18/esq 15  ·  Tridente das profundezas (3d10+7)
-druida / Animal místico           17.2 dano/rodada  ·  acerta  75%  ·  vida  62  def 18/esq 18  ·  Foice de pedra-lua (3d10+6)
-pirata / Trapaceiro               16.9 dano/rodada  ·  acerta  75%  ·  vida  68  def 19/esq 18  ·  Pistola emperrada (3d10+6)
-druida / Animal natural           16.6 dano/rodada  ·  acerta  75%  ·  vida  66  def 19/esq 18  ·  Foice de pedra-lua (3d10+6)
-pirata / Predileto dos Mares      15.7 dano/rodada  ·  acerta  80%  ·  vida  98  def 17/esq 15  ·  Sabre pesado (2d12+7)
-guerreiro / Pritzk                14.8 dano/rodada  ·  acerta  75%  ·  vida  76  def 20/esq 18  ·  Bastão de peso (3d8+6)
-mago / Mago                       14.8 dano/rodada  ·  acerta  75%  ·  vida  55  def 16/esq 18  ·  Pena de aço (3d8+6)
-sereia / Sereia                   14.5 dano/rodada  ·  acerta  75%  ·  vida  66  def 18/esq 18  ·  Corrente de pérolas negras (3d8+6)
-nascido_ouro / Bobo da Corte      13.0 dano/rodada  ·  acerta  70%  ·  vida  58  def 15/esq 15  ·  Cetro de guizos (3d8+5)
-nascido_ouro / Dono da Coroa      12.5 dano/rodada  ·  acerta  70%  ·  vida  60  def 17/esq 15  ·  Espada cerimonial (2d12+5)
-pirata / Mestre dos Redemoinhos    9.9 dano/rodada  ·  acerta  70%  ·  vida  70  def 18/esq 15  ·  Chave-mestra reforçada (2d8+5)
+druida / Animal místico           16.9 dano/rodada  ·  acerta  75%  ·  vida  62  def 18/esq 18  ·  Foice de pedra-lua (3d10+6)
+pirata / Trapaceiro               16.8 dano/rodada  ·  acerta  75%  ·  vida  68  def 19/esq 18  ·  Pistola emperrada (3d10+6)
+druida / Animal natural           16.7 dano/rodada  ·  acerta  75%  ·  vida  66  def 19/esq 18  ·  Foice de pedra-lua (3d10+6)
+pirata / Predileto dos Mares      16.0 dano/rodada  ·  acerta  80%  ·  vida  98  def 17/esq 15  ·  Sabre pesado (2d12+7)
+sereia / Sereia                   14.8 dano/rodada  ·  acerta  75%  ·  vida  66  def 18/esq 18  ·  Corrente de pérolas negras (3d8+6)
+guerreiro / Pritzk                14.7 dano/rodada  ·  acerta  75%  ·  vida  76  def 20/esq 18  ·  Bastão de peso (3d8+6)
+nascido_ouro / Bobo da Corte      13.1 dano/rodada  ·  acerta  70%  ·  vida  58  def 15/esq 15  ·  Cetro de guizos (3d8+5)
+pirata / Mestre dos Redemoinhos   12.9 dano/rodada  ·  acerta  70%  ·  vida  70  def 18/esq 15  ·  Chave-mestra reforçada (3d8+5)
+mago / Mago                       12.7 dano/rodada  ·  acerta  70%  ·  vida  55  def 13/esq 15  ·  Armadilha Rúnica (2d12+5)
+nascido_ouro / Dono da Coroa      12.7 dano/rodada  ·  acerta  70%  ·  vida  60  def 17/esq 15  ·  Espada cerimonial (2d12+5)
 
-  maior ÷ menor = 2.1×   (até 2× é uma mesa onde todo mundo contribui)
+  maior ÷ menor = 1.7×   (até 2× é uma mesa onde todo mundo contribui)
 
 
 ### DANO POR RODADA — nível 7
 (contra Defesa 14, que é a de um inimigo médio; inclui a chance de errar)
 
-nascido_ouro / Ensanguentado      22.2 dano/rodada  ·  acerta  80%  ·  vida  92  def 21/esq 16  ·  Lâmina sem brasão (3d12+8)
-guerreiro / Nêrena                21.9 dano/rodada  ·  acerta  80%  ·  vida  90  def 23/esq 19  ·  Espada de lâmina longa (3d12+8)
-guerreiro / Brutus                19.8 dano/rodada  ·  acerta  80%  ·  vida 118  def 20/esq 16  ·  Manoplas de ferro bruto (3d10+8)
+nascido_ouro / Ensanguentado      22.0 dano/rodada  ·  acerta  80%  ·  vida  92  def 21/esq 16  ·  Lâmina sem brasão (3d12+8)
+guerreiro / Nêrena                21.8 dano/rodada  ·  acerta  80%  ·  vida  90  def 23/esq 19  ·  Espada de lâmina longa (3d12+8)
+sereia / Tritão                   19.7 dano/rodada  ·  acerta  80%  ·  vida 104  def 19/esq 16  ·  Tridente das profundezas (3d10+8)
 druida / Animal natural           19.7 dano/rodada  ·  acerta  80%  ·  vida  74  def 20/esq 19  ·  Foice de pedra-lua (3d10+8)
-druida / Animal místico           19.6 dano/rodada  ·  acerta  80%  ·  vida  70  def 19/esq 19  ·  Foice de pedra-lua (3d10+8)
-sereia / Tritão                   19.6 dano/rodada  ·  acerta  80%  ·  vida 104  def 19/esq 16  ·  Tridente das profundezas (3d10+8)
-pirata / Trapaceiro               19.4 dano/rodada  ·  acerta  80%  ·  vida  78  def 20/esq 19  ·  Pistola emperrada (3d10+8)
-guerreiro / Pritzk                17.2 dano/rodada  ·  acerta  80%  ·  vida  88  def 21/esq 19  ·  Bastão de peso (3d8+8)
-mago / Mago                       17.1 dano/rodada  ·  acerta  80%  ·  vida  61  def 17/esq 19  ·  Pena de aço (3d8+8)
-sereia / Sereia                   17.1 dano/rodada  ·  acerta  80%  ·  vida  76  def 19/esq 19  ·  Corrente de pérolas negras (3d8+8)
-pirata / Predileto dos Mares      16.7 dano/rodada  ·  acerta  80%  ·  vida 108  def 18/esq 16  ·  Sabre pesado (2d12+8)
-nascido_ouro / Bobo da Corte      15.4 dano/rodada  ·  acerta  75%  ·  vida  66  def 15/esq 15  ·  Cetro de guizos (3d8+7)
-nascido_ouro / Dono da Coroa      14.7 dano/rodada  ·  acerta  75%  ·  vida  68  def 17/esq 15  ·  Espada cerimonial (2d12+7)
-pirata / Mestre dos Redemoinhos   12.2 dano/rodada  ·  acerta  75%  ·  vida  80  def 18/esq 15  ·  Chave-mestra reforçada (2d8+7)
+guerreiro / Brutus                19.7 dano/rodada  ·  acerta  80%  ·  vida 118  def 20/esq 16  ·  Manoplas de ferro bruto (3d10+8)
+druida / Animal místico           19.7 dano/rodada  ·  acerta  80%  ·  vida  70  def 19/esq 19  ·  Foice de pedra-lua (3d10+8)
+pirata / Trapaceiro               19.6 dano/rodada  ·  acerta  80%  ·  vida  78  def 20/esq 19  ·  Pistola emperrada (3d10+8)
+sereia / Sereia                   17.5 dano/rodada  ·  acerta  80%  ·  vida  76  def 19/esq 19  ·  Corrente de pérolas negras (3d8+8)
+guerreiro / Pritzk                17.1 dano/rodada  ·  acerta  80%  ·  vida  88  def 21/esq 19  ·  Bastão de peso (3d8+8)
+pirata / Predileto dos Mares      16.8 dano/rodada  ·  acerta  80%  ·  vida 108  def 18/esq 16  ·  Sabre pesado (2d12+8)
+nascido_ouro / Bobo da Corte      15.7 dano/rodada  ·  acerta  75%  ·  vida  66  def 15/esq 15  ·  Cetro de guizos (3d8+7)
+pirata / Mestre dos Redemoinhos   15.3 dano/rodada  ·  acerta  75%  ·  vida  80  def 18/esq 15  ·  Chave-mestra reforçada (3d8+7)
+nascido_ouro / Dono da Coroa      14.9 dano/rodada  ·  acerta  75%  ·  vida  68  def 17/esq 15  ·  Espada cerimonial (2d12+7)
+mago / Mago                       13.6 dano/rodada  ·  acerta  75%  ·  vida  61  def 13/esq 15  ·  Armadilha Rúnica (2d12+5)
 
-  maior ÷ menor = 1.8×   (até 2× é uma mesa onde todo mundo contribui)
+  maior ÷ menor = 1.6×   (até 2× é uma mesa onde todo mundo contribui)
 
 
 ### DANO POR RODADA — nível 10
 (contra Defesa 14, que é a de um inimigo médio; inclui a chance de errar)
 
-nascido_ouro / Ensanguentado      27.0 dano/rodada  ·  acerta  90%  ·  vida 104  def 24/esq 21  ·  Lâmina sem brasão (3d12+10)
-guerreiro / Nêrena                26.4 dano/rodada  ·  acerta  90%  ·  vida 132  def 23/esq 21  ·  Espada de lâmina longa (3d12+10)
-druida / Animal natural           24.0 dano/rodada  ·  acerta  90%  ·  vida 110  def 20/esq 21  ·  Foice de pedra-lua (3d10+10)
-pirata / Trapaceiro               24.0 dano/rodada  ·  acerta  90%  ·  vida 117  def 20/esq 21  ·  Pistola emperrada (3d10+10)
-guerreiro / Brutus                23.9 dano/rodada  ·  acerta  90%  ·  vida 136  def 23/esq 21  ·  Manoplas de ferro bruto (3d10+10)
-druida / Animal místico           23.6 dano/rodada  ·  acerta  90%  ·  vida 106  def 19/esq 21  ·  Foice de pedra-lua (3d10+10)
-sereia / Tritão                   23.5 dano/rodada  ·  acerta  90%  ·  vida 119  def 22/esq 21  ·  Tridente das profundezas (3d10+10)
-guerreiro / Pritzk                21.4 dano/rodada  ·  acerta  90%  ·  vida 130  def 21/esq 21  ·  Bastão de peso (3d8+10)
-nascido_ouro / Bobo da Corte      21.4 dano/rodada  ·  acerta  90%  ·  vida  86  def 16/esq 18  ·  Cetro de guizos (3d8+10)
-mago / Mago                       21.4 dano/rodada  ·  acerta  90%  ·  vida  94  def 17/esq 21  ·  Pena de aço (3d8+10)
-sereia / Sereia                   20.9 dano/rodada  ·  acerta  90%  ·  vida 115  def 19/esq 21  ·  Corrente de pérolas negras (3d8+10)
+guerreiro / Nêrena                26.7 dano/rodada  ·  acerta  90%  ·  vida 132  def 23/esq 21  ·  Espada de lâmina longa (3d12+10)
+nascido_ouro / Ensanguentado      26.7 dano/rodada  ·  acerta  90%  ·  vida 104  def 24/esq 21  ·  Lâmina sem brasão (3d12+10)
+pirata / Trapaceiro               23.9 dano/rodada  ·  acerta  90%  ·  vida 117  def 20/esq 21  ·  Pistola emperrada (3d10+10)
+druida / Animal místico           23.9 dano/rodada  ·  acerta  90%  ·  vida 106  def 19/esq 21  ·  Foice de pedra-lua (3d10+10)
+druida / Animal natural           23.8 dano/rodada  ·  acerta  90%  ·  vida 110  def 20/esq 21  ·  Foice de pedra-lua (3d10+10)
+sereia / Tritão                   23.7 dano/rodada  ·  acerta  90%  ·  vida 119  def 22/esq 21  ·  Tridente das profundezas (3d10+10)
+guerreiro / Brutus                23.5 dano/rodada  ·  acerta  90%  ·  vida 136  def 23/esq 21  ·  Manoplas de ferro bruto (3d10+10)
+pirata / Mestre dos Redemoinhos   21.2 dano/rodada  ·  acerta  90%  ·  vida 103  def 19/esq 18  ·  Chave-mestra reforçada (3d8+10)
+guerreiro / Pritzk                21.1 dano/rodada  ·  acerta  90%  ·  vida 130  def 21/esq 21  ·  Bastão de peso (3d8+10)
+nascido_ouro / Bobo da Corte      21.1 dano/rodada  ·  acerta  90%  ·  vida  86  def 16/esq 18  ·  Cetro de guizos (3d8+10)
+sereia / Sereia                   21.1 dano/rodada  ·  acerta  90%  ·  vida 115  def 19/esq 21  ·  Corrente de pérolas negras (3d8+10)
+nascido_ouro / Dono da Coroa      20.7 dano/rodada  ·  acerta  90%  ·  vida  88  def 18/esq 18  ·  Espada cerimonial (2d12+10)
 pirata / Predileto dos Mares      20.7 dano/rodada  ·  acerta  90%  ·  vida 123  def 21/esq 21  ·  Sabre pesado (2d12+10)
-nascido_ouro / Dono da Coroa      20.6 dano/rodada  ·  acerta  90%  ·  vida  88  def 18/esq 18  ·  Espada cerimonial (2d12+10)
-pirata / Mestre dos Redemoinhos   17.3 dano/rodada  ·  acerta  90%  ·  vida 103  def 19/esq 18  ·  Chave-mestra reforçada (2d8+10)
+mago / Mago                       15.5 dano/rodada  ·  acerta  75%  ·  vida  78  def 14/esq 18  ·  Pena de aço (3d8+7)
 
-  maior ÷ menor = 1.6×   (até 2× é uma mesa onde todo mundo contribui)
+  maior ÷ menor = 1.7×   (até 2× é uma mesa onde todo mundo contribui)
 
 
 ### O GRUPO DE SEIS CONTRA OS INIMIGOS PRONTOS
 Um de cada classe, a subdivisão de maior dano, no nível que a categoria assume.
 
 
-NPC — grupo de nível 3  (vida somada 343)
+NPC — grupo de nível 3  (vida somada 341)
   sereia:Tritão  guerreiro:Nêrena  pirata:Trapaceiro  nascido_ouro:Ensanguentado  druida:Animal natural  mago:Mago
   Salteador de estrada em bando de 4    3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   2% da vida  <- passeio
-  Guarda de prata em bando de 4         4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   4% da vida
-  Marujo amotinado em bando de 4        3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   3% da vida  <- passeio
-  Acólito de Karzaron em bando de 4     3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   3% da vida  <- passeio
+  Guarda de prata em bando de 4         4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   5% da vida
+  Marujo amotinado em bando de 4        3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   4% da vida  <- passeio
+  Acólito de Karzaron em bando de 4     3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   4% da vida  <- passeio
 
-BOSS MÉDIO — grupo de nível 5  (vida somada 473)
-  sereia:Tritão  guerreiro:Brutus  pirata:Trapaceiro  nascido_ouro:Ensanguentado  druida:Animal natural  mago:Mago
-  Capitão da guarda de Împera sozinho   2.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   1% da vida  <- passeio
-  Capitão da guarda de Împera + 2 NPCs  3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   3% da vida  <- passeio
-  Contramestre do Olho Torto sozinho    2.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   1% da vida  <- passeio
-  Contramestre do Olho Torto + 2 NPCs   3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   2% da vida  <- passeio
-  Lobo-mestre de Melôdia sozinho        2.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   2% da vida  <- passeio
-  Lobo-mestre de Melôdia + 2 NPCs       3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   3% da vida  <- passeio
-  Escriba renegado sozinho              2.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   2% da vida  <- passeio
-  Escriba renegado + 2 NPCs             3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   3% da vida  <- passeio
-
-BOSS FORTE — grupo de nível 7  (vida somada 495)
+BOSS MÉDIO — grupo de nível 5  (vida somada 441)
   sereia:Tritão  guerreiro:Nêrena  pirata:Trapaceiro  nascido_ouro:Ensanguentado  druida:Animal místico  mago:Mago
-  Cavaleiro de prata sozinho            4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   6% da vida
-  Cavaleiro de prata + 2 NPCs           5.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   8% da vida
-  Serpente do canal fundo sozinho       3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   6% da vida  <- passeio
-  Serpente do canal fundo + 2 NPCs      4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   7% da vida
-  Mago negro exilado sozinho            3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   6% da vida  <- passeio
-  Mago negro exilado + 2 NPCs           4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   7% da vida
-  O Coletor de marcas sozinho           4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   4% da vida
-  O Coletor de marcas + 2 NPCs          5.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   6% da vida
+  Capitão da guarda de Împera sozinho   3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   8% da vida  <- passeio
+  Capitão da guarda de Împera + 2 NPCs  4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde  11% da vida
+  Contramestre do Olho Torto sozinho    3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   6% da vida  <- passeio
+  Contramestre do Olho Torto + 2 NPCs   4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   9% da vida
+  Lobo-mestre de Melôdia sozinho        3.0 rodadas · derrota   0% · 0.0 caídos · grupo perde  12% da vida  <- passeio
+  Lobo-mestre de Melôdia + 2 NPCs       4.0 rodadas · derrota   0% · 0.1 caídos · grupo perde  14% da vida
+  Escriba renegado sozinho              3.0 rodadas · derrota   0% · 0.1 caídos · grupo perde  13% da vida  <- passeio
+  Escriba renegado + 2 NPCs             4.0 rodadas · derrota   0% · 0.1 caídos · grupo perde  16% da vida
 
-BOSS FINAL — grupo de nível 10  (vida somada 676)
+BOSS FORTE — grupo de nível 7  (vida somada 499)
   sereia:Tritão  guerreiro:Nêrena  pirata:Trapaceiro  nascido_ouro:Ensanguentado  druida:Animal natural  mago:Mago
-  Almirante dos Afogados sozinho        5.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   7% da vida
-  Almirante dos Afogados + 2 NPCs       5.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   9% da vida
-  A Primeira Marca sozinho              5.0 rodadas · derrota   0% · 0.0 caídos · grupo perde  11% da vida
-  A Primeira Marca + 2 NPCs             6.0 rodadas · derrota   0% · 0.0 caídos · grupo perde  13% da vida
-  Grande Besta de Melôdia sozinho       4.0 rodadas · derrota   0% · 0.0 caídos · grupo perde   9% da vida
-  Grande Besta de Melôdia + 2 NPCs      5.0 rodadas · derrota   0% · 0.0 caídos · grupo perde  10% da vida
-  Arauto de Karzaron sozinho            5.0 rodadas · derrota   0% · 0.1 caídos · grupo perde  17% da vida
-  Arauto de Karzaron + 2 NPCs           6.0 rodadas · derrota   0% · 0.1 caídos · grupo perde  19% da vida
+  Cavaleiro de prata sozinho            5.0 rodadas · derrota   0% · 0.5 caídos · grupo perde  36% da vida
+  Cavaleiro de prata + 2 NPCs           7.0 rodadas · derrota   0% · 0.7 caídos · grupo perde  39% da vida
+  Serpente do canal fundo sozinho       5.0 rodadas · derrota   0% · 0.4 caídos · grupo perde  31% da vida
+  Serpente do canal fundo + 2 NPCs      6.0 rodadas · derrota   0% · 0.5 caídos · grupo perde  34% da vida
+  Mago negro exilado sozinho            4.0 rodadas · derrota   0% · 0.5 caídos · grupo perde  32% da vida
+  Mago negro exilado + 2 NPCs           5.0 rodadas · derrota   0% · 0.6 caídos · grupo perde  35% da vida
+  O Coletor de marcas sozinho           5.0 rodadas · derrota   0% · 0.2 caídos · grupo perde  22% da vida
+  O Coletor de marcas + 2 NPCs          6.0 rodadas · derrota   0% · 0.3 caídos · grupo perde  26% da vida
+
+BOSS FINAL — grupo de nível 10  (vida somada 660)
+  sereia:Tritão  guerreiro:Nêrena  pirata:Trapaceiro  nascido_ouro:Ensanguentado  druida:Animal natural  mago:Mago
+  Almirante dos Afogados sozinho        7.0 rodadas · derrota   0% · 0.7 caídos · grupo perde  41% da vida
+  Almirante dos Afogados + 2 NPCs       8.0 rodadas · derrota   0% · 0.8 caídos · grupo perde  44% da vida
+  A Primeira Marca sozinho              8.0 rodadas · derrota   6% · 2.0 caídos · grupo perde  66% da vida
+  A Primeira Marca + 2 NPCs             9.0 rodadas · derrota   8% · 2.2 caídos · grupo perde  71% da vida
+  Grande Besta de Melôdia sozinho       7.0 rodadas · derrota   0% · 1.1 caídos · grupo perde  50% da vida
+  Grande Besta de Melôdia + 2 NPCs      8.0 rodadas · derrota   1% · 1.2 caídos · grupo perde  54% da vida
+  Arauto de Karzaron sozinho            7.0 rodadas · derrota   2% · 1.4 caídos · grupo perde  58% da vida
+  Arauto de Karzaron + 2 NPCs           9.0 rodadas · derrota   3% · 1.6 caídos · grupo perde  62% da vida
+
+
+### QUEM CAI E QUEM ENTREGA
+Grupo de nível 10 contra cada boss final, 6 jogadores. Mostra se a Defesa baixa
+de uma subdivisão a transforma em alvo de verdade ou só no papel.
+
+  mago/—                 DT 18 · vida  78 · cai em  55% dos combates · entrega   8% do dano do grupo
+  druida/natural         DT 21 · vida 110 · cai em  25% dos combates · entrega  16% do dano do grupo
+  pirata/trapaceiro      DT 21 · vida 117 · cai em  23% dos combates · entrega  17% do dano do grupo
+  sereia/triton          DT 22 · vida 119 · cai em   9% dos combates · entrega  17% do dano do grupo
+  nascido_ouro/ensanguentado DT 24 · vida 104 · cai em   8% dos combates · entrega  20% do dano do grupo
+  guerreiro/nerena       DT 23 · vida 132 · cai em   6% dos combates · entrega  22% do dano do grupo
 
 
 ### A CONTA DAS AÇÕES
 Seis jogadores agem seis vezes por rodada; um boss age uma. Esta tabela mostra
 o que o inimigo precisaria para o grupo perder METADE da vida antes de vencer.
 
-  Salteador de estrada        dura  0.5 rodadas · bate   2.7/rodada (acerta 30%) · leva   0% da vida do grupo · precisaria de 121.4× isso
-  Guarda de prata             dura  0.7 rodadas · bate   3.3/rodada (acerta 30%) · leva   1% da vida do grupo · precisaria de 74.5× isso
-  Marujo amotinado            dura  0.6 rodadas · bate   3.3/rodada (acerta 30%) · leva   1% da vida do grupo · precisaria de 81.3× isso
-  Acólito de Karzaron         dura  0.6 rodadas · bate   4.4/rodada (acerta 40%) · leva   1% da vida do grupo · precisaria de 67.1× isso
-  Capitão da guarda de Împera dura  1.5 rodadas · bate   7.3/rodada (acerta 44%) · leva   2% da vida do grupo · precisaria de 20.4× isso
-  Contramestre do Olho Torto  dura  1.4 rodadas · bate   3.5/rodada (acerta 19%) · leva   1% da vida do grupo · precisaria de 44.7× isso
-  Lobo-mestre de Melôdia      dura  1.6 rodadas · bate  10.1/rodada (acerta 49%) · leva   4% da vida do grupo · precisaria de 13.5× isso
-  Escriba renegado            dura  1.4 rodadas · bate  13.9/rodada (acerta 59%) · leva   4% da vida do grupo · precisaria de 11.4× isso
-  Cavaleiro de prata          dura  2.3 rodadas · bate  16.0/rodada (acerta 59%) · leva   7% da vida do grupo · precisaria de  6.8× isso
-  Serpente do canal fundo     dura  2.3 rodadas · bate  16.0/rodada (acerta 59%) · leva   7% da vida do grupo · precisaria de  6.8× isso
-  Mago negro exilado          dura  2.1 rodadas · bate  18.3/rodada (acerta 59%) · leva   8% da vida do grupo · precisaria de  6.4× isso
-  O Coletor de marcas         dura  2.4 rodadas · bate  11.5/rodada (acerta 44%) · leva   6% da vida do grupo · precisaria de  8.8× isso
-  Almirante dos Afogados      dura  2.9 rodadas · bate  16.3/rodada (acerta 50%) · leva   7% da vida do grupo · precisaria de  7.2× isso
-  A Primeira Marca            dura  3.1 rodadas · bate  22.0/rodada (acerta 50%) · leva  10% da vida do grupo · precisaria de  5.0× isso
-  Grande Besta de Melôdia     dura  2.8 rodadas · bate  21.2/rodada (acerta 55%) · leva   9% da vida do grupo · precisaria de  5.8× isso
-  Arauto de Karzaron          dura  3.0 rodadas · bate  33.6/rodada (acerta 55%) · leva  15% da vida do grupo · precisaria de  3.4× isso
+  Salteador de estrada        dura  0.6 rodadas · bate   3.0/rodada (acerta 33%) · leva   0% da vida do grupo · precisaria de 101.5× isso
+  Guarda de prata             dura  0.7 rodadas · bate   3.7/rodada (acerta 33%) · leva   1% da vida do grupo · precisaria de 62.3× isso
+  Marujo amotinado            dura  0.7 rodadas · bate   3.7/rodada (acerta 33%) · leva   1% da vida do grupo · precisaria de 67.9× isso
+  Acólito de Karzaron         dura  0.6 rodadas · bate   4.8/rodada (acerta 43%) · leva   1% da vida do grupo · precisaria de 57.5× isso
+  Capitão da guarda de Împera dura  1.5 rodadas · bate   7.7/rodada (acerta 47%) · leva   3% da vida do grupo · precisaria de 18.9× isso
+  Contramestre do Olho Torto  dura  1.4 rodadas · bate   7.7/rodada (acerta 47%) · leva   2% da vida do grupo · precisaria de 20.1× isso
+  Lobo-mestre de Melôdia      dura  1.7 rodadas · bate  10.6/rodada (acerta 52%) · leva   4% da vida do grupo · precisaria de 12.5× isso
+  Escriba renegado            dura  1.4 rodadas · bate  14.5/rodada (acerta 62%) · leva   5% da vida do grupo · precisaria de 10.7× isso
+  Cavaleiro de prata          dura  2.3 rodadas · bate  16.9/rodada (acerta 63%) · leva   8% da vida do grupo · precisaria de  6.3× isso
+  Serpente do canal fundo     dura  2.3 rodadas · bate  16.9/rodada (acerta 63%) · leva   8% da vida do grupo · precisaria de  6.3× isso
+  Mago negro exilado          dura  2.1 rodadas · bate  19.4/rodada (acerta 63%) · leva   8% da vida do grupo · precisaria de  5.9× isso
+  O Coletor de marcas         dura  2.5 rodadas · bate  11.2/rodada (acerta 48%) · leva   6% da vida do grupo · precisaria de  8.9× isso
+  Almirante dos Afogados      dura  3.0 rodadas · bate  17.1/rodada (acerta 53%) · leva   8% da vida do grupo · precisaria de  6.4× isso
+  A Primeira Marca            dura  3.2 rodadas · bate  23.1/rodada (acerta 53%) · leva  11% da vida do grupo · precisaria de  4.4× isso
+  Grande Besta de Melôdia     dura  2.9 rodadas · bate  22.1/rodada (acerta 57%) · leva  10% da vida do grupo · precisaria de  5.2× isso
+  Arauto de Karzaron          dura  3.1 rodadas · bate  22.1/rodada (acerta 57%) · leva  10% da vida do grupo · precisaria de  4.8× isso
 
 
 ### ACERTAR E AGUENTAR
@@ -183,78 +195,85 @@ a sanidade aguenta se o personagem usar a habilidade mais cara todo turno.
 NPC — nível 3 (o inimigo ataca com +4.5)
   sereia/Sereia                      DT 18 · o inimigo acerta  38% · sanidade  62 aguenta 5.2 usos da mais cara (12)
   sereia/Tritão                      DT 18 · o inimigo acerta  38% · sanidade  56 aguenta 4.7 usos da mais cara (12)
-  guerreiro/Brutus                   DT 19 · o inimigo acerta  33% · sanidade  33 aguenta 4.7 usos da mais cara (7)
+  guerreiro/Brutus                   DT 19 · o inimigo acerta  33% · sanidade  34 aguenta 4.9 usos da mais cara (7)
   guerreiro/Pritzk                   DT 20 · o inimigo acerta  28% · sanidade  41 aguenta 4.6 usos da mais cara (9)
   guerreiro/Nêrena                   DT 22 · o inimigo acerta  18% · sanidade  37 aguenta 4.1 usos da mais cara (9)
   pirata/Predileto dos Mares         DT 17 · o inimigo acerta  43% · sanidade  53 aguenta 3.5 usos da mais cara (15)
-  pirata/Trapaceiro                  DT 19 · o inimigo acerta  33% · sanidade  54 aguenta 4.9 usos da mais cara (11)
+  pirata/Trapaceiro                  DT 19 · o inimigo acerta  33% · sanidade  55 aguenta 5.0 usos da mais cara (11)
   pirata/Mestre dos Redemoinhos      DT 18 · o inimigo acerta  38% · sanidade  55 aguenta 3.9 usos da mais cara (14)
-  nascido_ouro/Bobo da Corte         DT 15 · o inimigo acerta  53% · sanidade  88 aguenta 7.3 usos da mais cara (12)
+  nascido_ouro/Bobo da Corte         DT 15 · o inimigo acerta  53% · sanidade  90 aguenta 7.5 usos da mais cara (12)
   nascido_ouro/Dono da Coroa         DT 17 · o inimigo acerta  43% · sanidade  70 aguenta 3.9 usos da mais cara (18)
-  nascido_ouro/Ensanguentado         DT 20 · o inimigo acerta  28% · sanidade  61 aguenta 4.1 usos da mais cara (15)
+  nascido_ouro/Ensanguentado         DT 20 · o inimigo acerta  28% · sanidade  64 aguenta 4.3 usos da mais cara (15)
   druida/Animal místico              DT 18 · o inimigo acerta  38% · sanidade  72 aguenta 4.0 usos da mais cara (18)
   druida/Animal natural              DT 19 · o inimigo acerta  33% · sanidade  66 aguenta 3.7 usos da mais cara (18)
-  mago/Mago                          DT 16 · o inimigo acerta  48% · sanidade  63 aguenta 10.5 usos da mais cara (6)
+  mago/Mago                          DT 13 · o inimigo acerta  63% · sanidade  61 aguenta 10.2 usos da mais cara (6)
 
-Boss médio — nível 5 (o inimigo ataca com +6.8)
-  sereia/Sereia                      DT 18 · o inimigo acerta  49% · sanidade  70 aguenta 5.8 usos da mais cara (12)
-  sereia/Tritão                      DT 18 · o inimigo acerta  49% · sanidade  64 aguenta 5.3 usos da mais cara (12)
-  guerreiro/Brutus                   DT 19 · o inimigo acerta  44% · sanidade  39 aguenta 5.6 usos da mais cara (7)
-  guerreiro/Pritzk                   DT 20 · o inimigo acerta  39% · sanidade  47 aguenta 5.2 usos da mais cara (9)
-  guerreiro/Nêrena                   DT 22 · o inimigo acerta  29% · sanidade  43 aguenta 4.8 usos da mais cara (9)
-  pirata/Predileto dos Mares         DT 17 · o inimigo acerta  54% · sanidade  61 aguenta 4.1 usos da mais cara (15)
-  pirata/Trapaceiro                  DT 19 · o inimigo acerta  44% · sanidade  62 aguenta 5.6 usos da mais cara (11)
-  pirata/Mestre dos Redemoinhos      DT 18 · o inimigo acerta  49% · sanidade  63 aguenta 4.5 usos da mais cara (14)
-  nascido_ouro/Bobo da Corte         DT 15 · o inimigo acerta  64% · sanidade  98 aguenta 8.2 usos da mais cara (12)
-  nascido_ouro/Dono da Coroa         DT 17 · o inimigo acerta  54% · sanidade  80 aguenta 4.4 usos da mais cara (18)
-  nascido_ouro/Ensanguentado         DT 20 · o inimigo acerta  39% · sanidade  71 aguenta 4.7 usos da mais cara (15)
-  druida/Animal místico              DT 18 · o inimigo acerta  49% · sanidade  82 aguenta 4.6 usos da mais cara (18)
-  druida/Animal natural              DT 19 · o inimigo acerta  44% · sanidade  76 aguenta 4.2 usos da mais cara (18)
-  mago/Mago                          DT 18 · o inimigo acerta  49% · sanidade  75 aguenta 12.5 usos da mais cara (6)
+Boss médio — nível 5 (o inimigo ataca com +8.0)
+  sereia/Sereia                      DT 18 · o inimigo acerta  55% · sanidade  70 aguenta 5.8 usos da mais cara (12)
+  sereia/Tritão                      DT 18 · o inimigo acerta  55% · sanidade  64 aguenta 5.3 usos da mais cara (12)
+  guerreiro/Brutus                   DT 19 · o inimigo acerta  50% · sanidade  40 aguenta 5.7 usos da mais cara (7)
+  guerreiro/Pritzk                   DT 20 · o inimigo acerta  45% · sanidade  47 aguenta 5.2 usos da mais cara (9)
+  guerreiro/Nêrena                   DT 22 · o inimigo acerta  35% · sanidade  43 aguenta 4.8 usos da mais cara (9)
+  pirata/Predileto dos Mares         DT 17 · o inimigo acerta  60% · sanidade  61 aguenta 4.1 usos da mais cara (15)
+  pirata/Trapaceiro                  DT 19 · o inimigo acerta  50% · sanidade  63 aguenta 5.7 usos da mais cara (11)
+  pirata/Mestre dos Redemoinhos      DT 18 · o inimigo acerta  55% · sanidade  63 aguenta 4.5 usos da mais cara (14)
+  nascido_ouro/Bobo da Corte         DT 15 · o inimigo acerta  70% · sanidade 100 aguenta 8.3 usos da mais cara (12)
+  nascido_ouro/Dono da Coroa         DT 17 · o inimigo acerta  60% · sanidade  80 aguenta 4.4 usos da mais cara (18)
+  nascido_ouro/Ensanguentado         DT 20 · o inimigo acerta  45% · sanidade  74 aguenta 4.9 usos da mais cara (15)
+  druida/Animal místico              DT 18 · o inimigo acerta  55% · sanidade  82 aguenta 4.6 usos da mais cara (18)
+  druida/Animal natural              DT 19 · o inimigo acerta  50% · sanidade  76 aguenta 4.2 usos da mais cara (18)
+  mago/Mago                          DT 15 · o inimigo acerta  70% · sanidade  75 aguenta 12.5 usos da mais cara (6)
 
 Boss forte — nível 7 (o inimigo ataca com +10.3)
   sereia/Sereia                      DT 19 · o inimigo acerta  61% · sanidade  78 aguenta 6.5 usos da mais cara (12)
   sereia/Tritão                      DT 19 · o inimigo acerta  61% · sanidade  72 aguenta 6.0 usos da mais cara (12)
-  guerreiro/Brutus                   DT 20 · o inimigo acerta  56% · sanidade  45 aguenta 6.4 usos da mais cara (7)
+  guerreiro/Brutus                   DT 20 · o inimigo acerta  56% · sanidade  46 aguenta 6.6 usos da mais cara (7)
   guerreiro/Pritzk                   DT 21 · o inimigo acerta  51% · sanidade  53 aguenta 5.9 usos da mais cara (9)
   guerreiro/Nêrena                   DT 23 · o inimigo acerta  41% · sanidade  49 aguenta 5.4 usos da mais cara (9)
   pirata/Predileto dos Mares         DT 18 · o inimigo acerta  66% · sanidade  69 aguenta 4.6 usos da mais cara (15)
-  pirata/Trapaceiro                  DT 20 · o inimigo acerta  56% · sanidade  70 aguenta 6.4 usos da mais cara (11)
+  pirata/Trapaceiro                  DT 20 · o inimigo acerta  56% · sanidade  71 aguenta 6.5 usos da mais cara (11)
   pirata/Mestre dos Redemoinhos      DT 18 · o inimigo acerta  66% · sanidade  71 aguenta 5.1 usos da mais cara (14)
-  nascido_ouro/Bobo da Corte         DT 15 · o inimigo acerta  81% · sanidade 116 aguenta 9.7 usos da mais cara (12)
+  nascido_ouro/Bobo da Corte         DT 15 · o inimigo acerta  81% · sanidade 118 aguenta 9.8 usos da mais cara (12)
   nascido_ouro/Dono da Coroa         DT 17 · o inimigo acerta  71% · sanidade  90 aguenta 5.0 usos da mais cara (18)
-  nascido_ouro/Ensanguentado         DT 21 · o inimigo acerta  51% · sanidade  81 aguenta 5.4 usos da mais cara (15)
+  nascido_ouro/Ensanguentado         DT 21 · o inimigo acerta  51% · sanidade  84 aguenta 5.6 usos da mais cara (15)
   druida/Animal místico              DT 19 · o inimigo acerta  61% · sanidade  92 aguenta 5.1 usos da mais cara (18)
   druida/Animal natural              DT 20 · o inimigo acerta  56% · sanidade  86 aguenta 4.8 usos da mais cara (18)
-  mago/Mago                          DT 19 · o inimigo acerta  61% · sanidade  87 aguenta 14.5 usos da mais cara (6)
+  mago/Mago                          DT 15 · o inimigo acerta  81% · sanidade  87 aguenta 14.5 usos da mais cara (6)
 
 Boss final — nível 10 (o inimigo ataca com +11.5)
   sereia/Sereia                      DT 21 · o inimigo acerta  57% · sanidade  90 aguenta 7.5 usos da mais cara (12)
   sereia/Tritão                      DT 22 · o inimigo acerta  53% · sanidade  84 aguenta 7.0 usos da mais cara (12)
-  guerreiro/Brutus                   DT 23 · o inimigo acerta  48% · sanidade  54 aguenta 7.7 usos da mais cara (7)
+  guerreiro/Brutus                   DT 23 · o inimigo acerta  48% · sanidade  55 aguenta 7.9 usos da mais cara (7)
   guerreiro/Pritzk                   DT 21 · o inimigo acerta  57% · sanidade  62 aguenta 6.9 usos da mais cara (9)
   guerreiro/Nêrena                   DT 23 · o inimigo acerta  48% · sanidade  58 aguenta 6.4 usos da mais cara (9)
   pirata/Predileto dos Mares         DT 21 · o inimigo acerta  57% · sanidade  81 aguenta 5.4 usos da mais cara (15)
-  pirata/Trapaceiro                  DT 21 · o inimigo acerta  57% · sanidade  82 aguenta 7.5 usos da mais cara (11)
+  pirata/Trapaceiro                  DT 21 · o inimigo acerta  57% · sanidade  83 aguenta 7.5 usos da mais cara (11)
   pirata/Mestre dos Redemoinhos      DT 19 · o inimigo acerta  68% · sanidade  83 aguenta 5.9 usos da mais cara (14)
-  nascido_ouro/Bobo da Corte         DT 18 · o inimigo acerta  73% · sanidade 139 aguenta 11.6 usos da mais cara (12)
+  nascido_ouro/Bobo da Corte         DT 18 · o inimigo acerta  73% · sanidade 141 aguenta 11.8 usos da mais cara (12)
   nascido_ouro/Dono da Coroa         DT 18 · o inimigo acerta  73% · sanidade 105 aguenta 5.8 usos da mais cara (18)
-  nascido_ouro/Ensanguentado         DT 24 · o inimigo acerta  43% · sanidade  96 aguenta 6.4 usos da mais cara (15)
+  nascido_ouro/Ensanguentado         DT 24 · o inimigo acerta  43% · sanidade  99 aguenta 6.6 usos da mais cara (15)
   druida/Animal místico              DT 21 · o inimigo acerta  57% · sanidade 107 aguenta 5.9 usos da mais cara (18)
   druida/Animal natural              DT 21 · o inimigo acerta  57% · sanidade 101 aguenta 5.6 usos da mais cara (18)
-  mago/Mago                          DT 21 · o inimigo acerta  57% · sanidade 105 aguenta 17.5 usos da mais cara (6)
+  mago/Mago                          DT 18 · o inimigo acerta  73% · sanidade 105 aguenta 17.5 usos da mais cara (6)
 
+
+
+### ARMA QUE O INIMIGO NÃO SABE USAR
+A arma de maior dano da ficha, quando a perícia dela não está treinada:
+o dado é grande e o inimigo erra, então a ficha vale menos do que parece.
+
+  Contramestre do Olho Torto  Pistola de um tiro (3d10) rola +2 em Coordenação motora, sem treino · a treinada é Alfanje (3d8) +7
 
 
 ### HABILIDADES SEM NÚMERO NO TEXTO
 O simulador só usa o que tem dado escrito. O resto depende da mestra na hora —
 o que não é defeito, mas diz quanto de cada classe é conversa e quanto é combate.
 
-  pirata         23 habilidades  ·   1 com dado (4%)  ·  22 com custo de sanidade (96%)
-  nascido_ouro   17 habilidades  ·   1 com dado (6%)  ·  15 com custo de sanidade (88%)
-  sereia         13 habilidades  ·   2 com dado (15%)  ·  13 com custo de sanidade (100%)
-  guerreiro      13 habilidades  ·   2 com dado (15%)  ·   9 com custo de sanidade (69%)
-  druida         11 habilidades  ·   0 com dado (0%)  ·   5 com custo de sanidade (45%)
+  pirata         24 habilidades  ·   2 com dado (8%)  ·  23 com custo de sanidade (96%)
+  nascido_ouro   18 habilidades  ·   2 com dado (11%)  ·  16 com custo de sanidade (89%)
+  guerreiro      14 habilidades  ·   3 com dado (21%)  ·  10 com custo de sanidade (71%)
+  sereia         14 habilidades  ·   3 com dado (21%)  ·  14 com custo de sanidade (100%)
+  druida         12 habilidades  ·   1 com dado (8%)  ·   6 com custo de sanidade (50%)
   mago            7 habilidades  ·   0 com dado (0%)  ·   3 com custo de sanidade (43%)
 
 

@@ -145,6 +145,14 @@ const TIPOS_AGUA = [
   { id: 'triton', nome: 'Tritão', desc: 'Sua coragem é inabalável, assim como a de seu pai.', pericias: ['instrumento_fisico', 'volicao'] },
 ];
 const NIVEL_MIN = 5, NIVEL_MAX = 100, NIVEL_STEP = 5;
+/* O nível mágico tem teto pelo nível de classe: dez por nível. Sem ele, o
+   mesmo nível 10 comportava um mago de nível mágico 20 e um de 100, com três
+   vezes de diferença no dano — e a escolha era feita na criação, às cegas.
+   Como o teto de treino das perícias, o número escolhido CONTINUA guardado na
+   ficha: quem sobe de nível recupera o que já tinha. */
+const NIVEL_MAGICO_POR_NIVEL = 10;
+const tetoDoNivelMagico = (nivelClasse) =>
+  Math.min(NIVEL_MAX, Math.max(NIVEL_MIN, (Number(nivelClasse) || 1) * NIVEL_MAGICO_POR_NIVEL));
 
 const FAMILIAS_GUERREIRO = [
   { id: 'brutus', nome: 'Brutus', foco: 'Corpo', pericias: ['resistencia', 'furia_sangue'], desc: 'Você é um brutamonte. Nada além do seu corpo entra em uma batalha, e você sabe que isso é o bastante. Você não precisa de armas, nem mesmo pensar no que vai fazer a seguir. Sua força física supera tudo isso.' },
@@ -725,8 +733,12 @@ const ARMAS_CATALOGO = [
   { id: 'arm_pistola_emperrada', nome: 'Pistola emperrada', classe: 'pirata', subdivisaoId: 'trapaceiro',
     dano: '3d10', teste: 'Compostura', peso: 3,
     descricao: 'Falha muito, mas ninguém sabe disso além de você. Role 1d6 antes de atirar: em 1 ou 2, ela falha.' },
+  /* 3d8 desde 19/10/2026: com 2d8 o Mestre dos Redemoinhos era o último da mesa
+     em dano em TODOS os níveis, 35% abaixo do topo. Ele continua com o menor
+     dado de guerra da mesa — a vantagem dele são as ferramentas —, mas agora
+     está no mesmo degrau do Bobo da Corte e do Pritzk, não num degrau abaixo. */
   { id: 'arm_chave_mestra', nome: 'Chave-mestra reforçada', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
-    dano: '2d8', teste: "C'est la vie", peso: 2,
+    dano: '3d8', teste: "C'est la vie", peso: 2,
     descricao: 'Ferramenta que abre fechaduras e crânios com a mesma eficiência.' },
   { id: 'arm_rede_cordas', nome: 'Rede de cordas', classe: 'pirata', subdivisaoId: 'mestre_redemoinhos',
     dano: 'sem dano', teste: 'Coordenação motora', peso: 2,
@@ -1011,11 +1023,11 @@ function itemDisponivel(item, char) {
   if (item.classe && item.classe !== char.originId) return false;
   if (item.subdivisaoId && item.subdivisaoId !== char.subdivisaoId) return false;
   if (item.animalTipo && item.animalTipo !== char.subdivisaoAnimalTipo) return false;
-  if (item.nivelMin === 'negro' && (char.subdivisaoNivel || 0) < NIVEL_MAX) return false;
+  if (item.nivelMin === 'negro' && nivelMagicoDaFicha(char) < NIVEL_MAX) return false;
   return true;
 }
 function itemBloqueadoPorNivel(item, char) {
-  return item.nivelMin === 'negro' && (char.subdivisaoNivel || 0) < NIVEL_MAX;
+  return item.nivelMin === 'negro' && nivelMagicoDaFicha(char) < NIVEL_MAX;
 }
 /* Trancados que a ficha ainda pode destrancar, com a mensagem de cada um. */
 function itensTrancados(char) {
@@ -1028,6 +1040,21 @@ function itensTrancados(char) {
    classe: obrigatória. subdivisaoId ou animalTipo: opcionais (restringem mais).
    Sem subdivisaoId/animalTipo = disponível para toda a classe. */
 const HABILIDADES_CATALOGO = [
+  /* ===== UMA DE COMBATE POR CLASSE (19/10/2026) =====
+     Escritas depois que a simulação mostrou que na rodada não havia escolha:
+     era sempre a arma. Nenhuma delas bate mais que a arma — a graça é o que
+     elas fazem com o alvo. Custo dentro da reserva que a classe já tem. */
+  { id: 'hab_quebra_de_guarda', resistencia: 'Resiste com Velocidade de reação.', nome: 'Quebra de guarda', classe: 'guerreiro',
+    descricao: 'Você não bate no corpo, bate na defesa dele: no braço que segura o escudo, no pé que ia recuar. Causa 2d10 de dano e, até o fim da próxima rodada, o alvo não tem reação nenhuma — nem Bloqueio, nem Esquiva. Gasta 7 de sanidade.' },
+  { id: 'hab_terra_lembra_peso', resistencia: 'Resiste com Instrumento físico.', nome: 'A terra lembra do peso', classe: 'druida',
+    descricao: 'Com um teste de Ágape, o chão sob o alvo amolece até o tornozelo e endurece de novo no lugar errado. Causa 2d10 de dano e o alvo fica IMÓVEL até se soltar. Gasta 12 de sanidade.' },
+  { id: 'hab_sal_na_ferida', resistencia: 'Resiste com Resistência.', nome: 'O sal entra na ferida', classe: 'sereia',
+    descricao: 'Você chama o sal que existe em todo corpo vivo e ele acha sozinho o corte mais recente do alvo. Causa 3d8 de dano e o alvo fica SANGRANDO. Se ele não tiver nenhum ferimento ainda, o dano cai para 1d8 e não sangra. Gasta 12 de sanidade.' },
+  { id: 'hab_briga_de_porto', nome: 'Briga de porto', classe: 'pirata',
+    descricao: 'Você luta com o que está no chão, na mesa e na mão do outro. Causa 2d10 de dano e, se houver qualquer coisa solta por perto — areia, caneco, corda, lampião —, some 1d10 e descreva o que você fez com aquilo. Quem decide se tinha algo solto é a mestra. Gasta 10 de sanidade.' },
+  { id: 'hab_ordem_de_execucao', resistencia: 'Resiste com Volição.', nome: 'Ordem de execução', classe: 'nascido_ouro',
+    descricao: 'Você aponta e diz o nome do que vai acontecer, no tom em que ordens são dadas em palácio. Causa 3d8 de dano e o alvo não consegue te atacar na próxima rodada — pode atacar qualquer outro, menos você. Gasta 12 de sanidade.' },
+
   /* ===== DRUIDA ===== */
   { id: 'hab_raizes_alcancam', nome: 'Onde as raízes alcançam', classe: 'druida',
     descricao: 'Você toca o chão e, com um teste bem-sucedido de Ágape, sente tudo que está vivo num raio determinado pela mestra: pessoas, animais, plantas doentes, corpos recentes. Gasta 9 de sanidade.' },
@@ -1362,6 +1389,10 @@ const custosDeContrato = () => (PODERES_POR_NIVEL.sereia || [])
   .map((p) => custoDeVidaDoPoder(p.descricao))
   .filter((c) => c && !c.permanente)
   .map((c) => c.valor);
+
+/* Ações por rodada. Vale só para ficha de mestra — inimigo, deus e especial —
+   e é o que equilibra um inimigo só contra uma mesa inteira. */
+const acoesDaFicha = (char) => (fichaLivre(char) ? Math.max(1, Number(char?.recursosLivres?.acoes) || 1) : 1);
 
 /* ---------- pontos de redenção (nascido de ouro) ----------
    A contagem silenciosa que Împera faz de cada candidato à coroa. É a única
@@ -1824,11 +1855,11 @@ const FEITICOS_CATALOGO = [
       'As pessoas não precisam estar vivas para você imitá-las, mas você precisa ter visto seu corpo em algum momento da sua vida (o corpo morto, ou a pessoa antes dela morrer). Você determina se quer ficar com o corpo por 1d20 de minutos ou 1d20 de horas, sendo o cálculo de mana gasta equivalente as outras evoluções. Memórias ainda surgem do receptáculo, e elas são verdadeiras, mas só surgem com o uso de horas da marionete, não funciona em minutos.',
     ] },
   { id: 'fei_capitulo_final', escala: true, resistencia: 'Resiste com Volição, tomando metade do dano.', nome: 'Capítulo Final', nivelMin: 85,
-    descricao: 'Você arranca uma página do destino do alvo e a queima na frente dele. Ele sofre 5d12 de dano e esquece a última coisa que fez. Gasta 12 de mana.',
+    descricao: 'Você arranca uma página do destino do alvo e a queima na frente dele. Ele sofre 3d12 de dano e esquece a última coisa que fez. Gasta 12 de mana.',
     evolucoes: [
-      'Você arranca uma página do destino do alvo e a queima na frente dele. Ele sofre 5d12 de dano e esquece a última coisa que fez. Gasta 12 de mana.',
-      'A página agora leva embora o que estava escrito nela: o alvo sofre 6d12 de dano e perde o próximo turno. Gasta 14 de mana.',
-      'Você arranca o capítulo inteiro. Todos os alvos à sua frente sofrem 6d12 de dano e nenhum deles pode reagir nesta rodada. Gasta 18 de mana.',
+      'Você arranca uma página do destino do alvo e a queima na frente dele. Ele sofre 3d12 de dano e esquece a última coisa que fez. Gasta 12 de mana.',
+      'A página agora leva embora o que estava escrito nela: o alvo sofre 4d12 de dano e perde o próximo turno. Gasta 14 de mana.',
+      'Você arranca o capítulo inteiro. Todos os alvos à sua frente sofrem 4d12 de dano e nenhum deles pode reagir nesta rodada. Gasta 18 de mana.',
     ] },
   { id: 'fei_permita_me_deus', nome: 'Permissão de Mago', nivelMin: 90,
     descricao: 'Um aliado à sua escolha recebe +5 em todos os testes, e não pode ser morto ou derrubado, por 3 rodadas. Gasta 10 de mana. Se ele usar isso pra matar alguém, você faz um teste de Resistência com DT 20. Se falhar, você também morre.' },
@@ -1842,11 +1873,11 @@ const FEITICOS_CATALOGO = [
       'Você move um país inteiro, mudando o mapa mundi à sua mercê. Demora uma semana e gasta 80 de mana.',
     ] },
   { id: 'fei_tinta_viva', escala: true, resistencia: 'Resiste com Resistência, tomando metade do dano.', nome: 'Tinta Viva', nivelMin: 95,
-    descricao: 'A tinta da sua marca escorre da pele e ganha vontade própria. Ela agarra o alvo e o corta de dentro para fora, causando 6d12 de dano. Gasta 16 de mana.',
+    descricao: 'A tinta da sua marca escorre da pele e ganha vontade própria. Ela agarra o alvo e o corta de dentro para fora, causando 4d12 de dano. Gasta 16 de mana.',
     evolucoes: [
-      'A tinta da sua marca escorre da pele e ganha vontade própria. Ela agarra o alvo e o corta de dentro para fora, causando 6d12 de dano. Gasta 16 de mana.',
-      'A tinta tem sede agora. O alvo sofre 8d12 de dano e fica SANGRANDO. Gasta 20 de mana.',
-      'A tinta não volta para a sua pele: ela fica no chão da cena e escolhe sozinha quem cortar. Todos os alvos à sua escolha sofrem 6d12 de dano, e você fica sem a sua marca até o próximo descanso longo. Gasta 26 de mana.',
+      'A tinta da sua marca escorre da pele e ganha vontade própria. Ela agarra o alvo e o corta de dentro para fora, causando 4d12 de dano. Gasta 16 de mana.',
+      'A tinta tem sede agora. O alvo sofre 5d12 de dano e fica SANGRANDO. Gasta 20 de mana.',
+      'A tinta não volta para a sua pele: ela fica no chão da cena e escolhe sozinha quem cortar. Todos os alvos à sua escolha sofrem 4d12 de dano, e você fica sem a sua marca até o próximo descanso longo. Gasta 26 de mana.',
     ] },
   { id: 'fei_senhor_quatro_mundos', nome: 'Senhor dos quatro mundos', nivelMin: 'negro',
     descricao: 'Você se teleporta livremente para todos os lugares em que já esteve ou conhece, independente do reino. Cada viagem custa 5 de mana.' },
@@ -1882,7 +1913,11 @@ const DT_BASE_RITUAL = 12;
 const DEGRAU_DT = 10;
 const DEGRAU_DT_FEITICO = 5;
 const nivelMagicoDaFicha = (char) =>
-  (char?.originId === 'mago' ? (char.subdivisaoNivel || NIVEL_MIN) : Number(char?.subdivisaoNivel) || 0);
+  (char?.originId === 'mago'
+    ? (fichaLivre(char)
+      ? (char.subdivisaoNivel || NIVEL_MIN)
+      : Math.min(char.subdivisaoNivel || NIVEL_MIN, tetoDoNivelMagico(nivelDaFicha(char))))
+    : Number(char?.subdivisaoNivel) || 0);
 
 function dtParaResistir(char, feitico) {
   if (!feitico?.resistencia) return null;
@@ -2135,7 +2170,7 @@ function mixHex(hexA, hexB, t) {
 function markColor(origin, char) {
   if (!origin) return V.brand;
   if (origin.id === 'mago') {
-    const t = clamp(((char?.subdivisaoNivel || NIVEL_MIN) - NIVEL_MIN) / (NIVEL_MAX - NIVEL_MIN), 0, 1);
+    const t = clamp((nivelMagicoDaFicha(char) - NIVEL_MIN) / (NIVEL_MAX - NIVEL_MIN), 0, 1);
     return mixHex('#8FB4F5', '#0E0F17', t);
   }
   return origin.cor;
@@ -2158,7 +2193,7 @@ function computeRecursos(char) {
       vidaNivel: 0, sanidadeNivel: 0,
     };
   }
-  const nivelMagico = char.originId === 'mago' ? (char.subdivisaoNivel || NIVEL_MIN) : 0;
+  const nivelMagico = nivelMagicoDaFicha(char);
   /* O nível mágico dá um ganho extra: até +12 de vida e +15 de sanidade no nível 100. */
   const vidaNivel = Math.floor(nivelMagico / 25) * 3;
   const sanidadeNivel = Math.floor(nivelMagico / 20) * 3;
@@ -2235,7 +2270,9 @@ function degrausGastos(char) {
 /* ---------- feitiços do mago ----------
    Começa com 2 vagas e ganha 1 a cada 10 níveis mágicos (12 no nível 100).
    Cada feitiço custa vagas conforme a evolução escolhida: 1, 2 ou 3. */
-const vagasDeFeitico = (char) => 2 + Math.floor((char?.subdivisaoNivel || NIVEL_MIN) / 10);
+/* As vagas saem do nível mágico EFETIVO: quem escolheu 100 no nível 1 não ganha
+   doze vagas por isso. */
+const vagasDeFeitico = (char) => 2 + Math.floor(nivelMagicoDaFicha(char) / 10);
 const feiticoId = (f) => (typeof f === 'string' ? f : f?.id);
 const feiticoEvolucao = (f) => (typeof f === 'string' ? 1 : clamp(Number(f?.evolucao) || 1, 1, 3));
 const idsDeFeiticos = (lista) => (lista || []).map(feiticoId).filter(Boolean);
@@ -2949,12 +2986,41 @@ function CondicoesScreen({ onBack }) {
 
    A Defesa é o número cheio que vai aparecer na ficha: a fábrica desconta a
    base 10 e as Motoras sozinha. */
+/* ---------- escala de encontro ----------
+   Toda ficha pronta é escrita para um grupo de QUATRO. Um jogador a mais não é
+   só mais dano: é mais uma ação por rodada, e o inimigo continua com a dele.
+   Medido com o simulador em 19/10/2026: um boss final sem isso levava 5 rodadas
+   e tirava 11% da vida de um grupo de seis, sem derrubar ninguém.
+
+   Daí as duas alavancas, nessa ordem de importância:
+     · AÇÕES — o boss age mais de uma vez por rodada. É o que devolve a ameaça
+       sem alongar o combate, porque não mexe na vida dele.
+     · VIDA — 25% a mais por jogador além do quarto, só para o boss não cair
+       antes de usar o que tem.
+   Com um grupo de seis (3 ações, vida ×1,5) o boss final passa a tirar 36% a
+   60% da vida do grupo e a derrubar alguém. */
+const JOGADORES_BASE = 4;
+const VIDA_POR_JOGADOR_EXTRA = 0.25;
+const JOGADORES_POR_ACAO_EXTRA = 2;
+
 const CATEGORIAS_INIMIGO = [
-  { id: 'npc', nome: 'NPC', frase: 'Cai em 1 ou 2 rodadas contra um grupo de 4 no nível 3. Capanga, guarda, bicho de estrada.' },
-  { id: 'medio', nome: 'Boss médio', frase: 'Aguenta 3 ou 4 rodadas contra um grupo de 4 no nível 5. Chefe de cena, fim de capítulo curto.' },
-  { id: 'forte', nome: 'Boss forte', frase: 'Aguenta 5 ou 6 rodadas contra um grupo de 4 no nível 7. Precisa de plano, não só de dado.' },
-  { id: 'final', nome: 'Boss final', frase: 'Aguenta 7 ou 8 rodadas contra um grupo de 4 no nível 10. Fecha arco, e o grupo sai marcado.' },
+  { id: 'npc', nome: 'NPC', acoes: 1, frase: 'Cai em 1 ou 2 rodadas contra um grupo de 4 no nível 3. Capanga, guarda, bicho de estrada. Vem em bando, e é o bando que faz o trabalho.' },
+  { id: 'medio', nome: 'Boss médio', acoes: 2, frase: 'Aguenta 3 ou 4 rodadas contra um grupo de 4 no nível 5. Chefe de cena, fim de capítulo curto.' },
+  { id: 'forte', nome: 'Boss forte', acoes: 2, frase: 'Aguenta 5 ou 6 rodadas contra um grupo de 4 no nível 7. Precisa de plano, não só de dado.' },
+  { id: 'final', nome: 'Boss final', acoes: 2, frase: 'Aguenta 7 ou 8 rodadas contra um grupo de 4 no nível 10. Fecha arco, e o grupo sai marcado.' },
 ];
+
+/* O que muda numa ficha pronta quando a mesa não tem quatro jogadores. NPC não
+   escala: quem ajusta um bando é o número de capangas, não a ficha de cada um. */
+function escalaDeEncontro(categoriaId, jogadores) {
+  const extras = Math.max(0, (Number(jogadores) || JOGADORES_BASE) - JOGADORES_BASE);
+  const base = CATEGORIAS_INIMIGO.find((c) => c.id === categoriaId)?.acoes || 1;
+  if (categoriaId === 'npc') return { vida: 1, acoes: base };
+  return {
+    vida: 1 + VIDA_POR_JOGADOR_EXTRA * extras,
+    acoes: base + Math.floor(extras / JOGADORES_POR_ACAO_EXTRA),
+  };
+}
 
 /* attrs: [intelecto, psique, físico, motoras] · armas: [nome, dano, perícia do teste] */
 const INIMIGOS_PRONTOS = [
@@ -3074,8 +3140,9 @@ const INIMIGOS_PRONTOS = [
 /* Expande o modelo acima numa ficha de inimigo pronta para salvar. A Defesa do
    modelo é o número cheio: aqui ela vira o ajuste que falta, já descontadas a
    base 10 da ficha sem classe e as Motoras. */
-function fichaDeInimigo(modelo, owner) {
+function fichaDeInimigo(modelo, owner, jogadores = JOGADORES_BASE) {
   const [intelecto, psique, fisico, motoras] = modelo.attrs;
+  const escala = escalaDeEncontro(modelo.cat, jogadores);
   const item = (nome, extra) => ({ id: `${modelo.id}_${nome.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`, nome, peso: 0, escopo: 'inimigo', createdAt: Date.now(), ...extra });
   const armas = (modelo.armas || []).map(([nome, dano, teste]) => item(nome, { dano, teste, descricao: '' }));
   const habilidades = (modelo.habilidades || []).map(([nome, descricao]) => item(nome, { descricao }));
@@ -3086,7 +3153,10 @@ function fichaDeInimigo(modelo, owner) {
     historia: modelo.historia || '',
     attributes: { intelecto, psique, fisico, motoras },
     pericias: { ...(modelo.pericias || {}) },
-    recursosLivres: { vidaMax: modelo.vida, sanidadeMax: modelo.sanidade, manaMax: modelo.mana || 0 },
+    recursosLivres: {
+      vidaMax: Math.round(modelo.vida * escala.vida), sanidadeMax: modelo.sanidade,
+      manaMax: modelo.mana || 0, acoes: escala.acoes,
+    },
     defesas: { equipamento: 0, defesaOutros: modelo.defesa - BALANCO_PADRAO.defesaBase - motoras, bloqueioOutros: 0, esquivaOutros: 0 },
     custom: { armas, armaduras: [], habilidades },
     armas: armas.map((a) => a.id),
@@ -3100,6 +3170,7 @@ function fichaDeInimigo(modelo, owner) {
 function CatalogoDeInimigos({ cor, onUsar }) {
   const [aberto, setAberto] = useState(false);
   const [criando, setCriando] = useState(null);
+  const [jogadores, setJogadores] = useState(JOGADORES_BASE);
 
   return (
     <div className="rounded-xl mb-4" style={{ background: G.surface, border: `1px solid ${G.border}` }}>
@@ -3115,31 +3186,54 @@ function CatalogoDeInimigos({ cor, onUsar }) {
       {aberto && (
         <div className="px-4 pb-4">
           <p className="text-xs leading-relaxed mb-3" style={{ fontFamily: F.body, color: G.muted }}>
-            A vida de cada categoria foi calibrada pelo dano real do sistema: um grupo de 4
-            no nível 5 entrega perto de 50 por rodada. Usar um deles cria uma ficha normal,
-            que você edita como qualquer outra.
+            As fichas são escritas para um grupo de {JOGADORES_BASE}. Diga quantos jogadores vão estar na
+            cena e eu ajusto a vida e as ações por rodada antes de criar — um jogador a mais
+            não é só mais dano, é mais uma ação por rodada contra um inimigo que continua
+            com a dele. Depois de criada, a ficha é normal e você edita como qualquer outra.
           </p>
+          <div className="rounded-lg px-3 py-2.5 mb-3 flex items-center justify-between gap-3 flex-wrap"
+            style={{ background: '#171029', border: `1px solid ${G.border}` }}>
+            <span className="text-xs" style={{ fontFamily: F.body, color: G.text }}>Jogadores na cena</span>
+            <div className="flex items-center gap-1.5">
+              {[3, 4, 5, 6, 7, 8].map((n) => (
+                <button key={n} onClick={() => setJogadores(n)}
+                  className="text-xs rounded-md w-7 h-7"
+                  style={{
+                    background: jogadores === n ? cor : 'transparent',
+                    color: jogadores === n ? '#111' : G.muted,
+                    border: `1px solid ${jogadores === n ? cor : G.border}`,
+                    fontFamily: F.mono, fontWeight: jogadores === n ? 700 : 400,
+                  }}>{n}</button>
+              ))}
+            </div>
+          </div>
           {CATEGORIAS_INIMIGO.map((c) => (
             <div key={c.id} className="mb-3">
               <p className="text-xs uppercase tracking-widest" style={{ fontFamily: F.body, color: cor }}>{c.nome}</p>
               <p className="text-xs mb-1.5" style={{ fontFamily: F.body, color: G.muted }}>{c.frase}</p>
               <div className="space-y-1.5">
-                {INIMIGOS_PRONTOS.filter((i) => i.cat === c.id).map((i) => (
+                {INIMIGOS_PRONTOS.filter((i) => i.cat === c.id).map((i) => {
+                  const escala = escalaDeEncontro(i.cat, jogadores);
+                  const vidaEscalada = Math.round(i.vida * escala.vida);
+                  return (
                   <div key={i.id} className="rounded-lg px-3 py-2 flex items-center justify-between gap-3"
                     style={{ background: '#171029', border: `1px solid ${G.border}` }}>
                     <div className="min-w-0">
                       <p className="text-sm" style={{ fontFamily: F.body, color: G.text }}>{i.nome}</p>
                       <p className="text-xs" style={{ fontFamily: F.mono, color: G.muted }}>
-                        vida {i.vida} · sanidade {i.sanidade} · Defesa {i.defesa}
+                        vida {vidaEscalada}{vidaEscalada !== i.vida && <span style={{ color: cor }}> (de {i.vida})</span>}
+                        {' · '}sanidade {i.sanidade} · Defesa {i.defesa}
+                        {escala.acoes > 1 && <span style={{ color: cor }}> · {escala.acoes} ações por rodada</span>}
                       </p>
                     </div>
-                    <button onClick={async () => { setCriando(i.id); await onUsar(i); setCriando(null); }}
+                    <button onClick={async () => { setCriando(i.id); await onUsar(i, jogadores); setCriando(null); }}
                       disabled={!!criando} className="text-xs rounded-lg px-2.5 py-1.5 shrink-0 disabled:opacity-50"
                       style={{ background: cor, color: '#111', fontFamily: F.body, fontWeight: 600 }}>
                       {criando === i.id ? 'Criando…' : 'Usar'}
                     </button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -3270,6 +3364,13 @@ function stepsDaFicha(draft) {
      nível de personagem, e o nível é escolhido lá atrás, em Atributos. */
   if (draft?.originId === 'druida' && draft?.subdivisaoAnimalTipo) {
     passos.splice(passos.indexOf('Perícias') + 1, 0, 'Animais');
+  }
+  /* O nível mágico do mago desce para depois de Atributos pelo mesmo motivo:
+     ele tem teto de dez por nível de classe, e o nível é escolhido lá. É a
+     Herança que guarda o slider — Origem é a narrativa da classe. */
+  if (draft?.originId === 'mago' && passos.includes('Herança')) {
+    passos.splice(passos.indexOf('Herança'), 1);
+    passos.splice(passos.indexOf('Atributos') + 1, 0, 'Herança');
   }
   return passos;
 }
@@ -3419,20 +3520,35 @@ function StepHeranca({ draft, setDraft, origin }) {
         </div>
       )}
 
-      {origin.subdivisao === 'nivel' && (
+      {origin.subdivisao === 'nivel' && (() => {
+        const teto = tetoDoNivelMagico(draft.nivel);
+        const escolhido = draft.subdivisaoNivel || NIVEL_MIN;
+        const efetivo = Math.min(escolhido, teto);
+        return (
         <div>
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: V.muted, fontFamily: F.body }}>Nível mágico</p>
           <div className="flex items-center gap-3 mb-2">
-            <input type="range" min={NIVEL_MIN} max={NIVEL_MAX} step={NIVEL_STEP} value={draft.subdivisaoNivel}
+            <input type="range" min={NIVEL_MIN} max={NIVEL_MAX} step={NIVEL_STEP} value={escolhido}
               onChange={(e) => setDraft({ ...draft, subdivisaoNivel: Number(e.target.value) })} className="flex-1" />
             <div className="w-9 h-9 rounded-full shrink-0" style={{ background: mColor, border: '1px solid #463a6e' }} />
-            <span className="w-10 text-right text-sm" style={{ fontFamily: F.mono, color: V.text }}>{draft.subdivisaoNivel}</span>
+            <span className="w-10 text-right text-sm" style={{ fontFamily: F.mono, color: efetivo < escolhido ? '#c9899f' : V.text }}>{efetivo}</span>
           </div>
+          {efetivo < escolhido && (
+            <p className="text-xs mb-2" style={{ color: '#c9899f', fontFamily: F.body }}>
+              No nível {draft.nivel} a sua magia vai até {teto}. O {escolhido} fica guardado na ficha
+              e volta a valer quando você subir de nível — você não perde a escolha, só não usa ainda.
+            </p>
+          )}
           <p className="text-xs" style={{ color: '#6f6291', fontFamily: F.body }}>
-            Todo mago nasce com um pouco de magia (mínimo 5). A marca escurece conforme o nível sobe, até ficar negra no 100. O nível mágico também enche a mana e define quantas vagas de feitiço você tem. A mana só é gasta ao conjurar magias, e todo feitiço é lançado com um teste de Dicionário mental.
+            Todo mago nasce com um pouco de magia (mínimo {NIVEL_MIN}) e cresce {NIVEL_MAGICO_POR_NIVEL} de
+            nível mágico a cada nível de personagem — no nível {draft.nivel}, até {teto}. A marca escurece
+            conforme o nível sobe, até ficar negra no {NIVEL_MAX}. O nível mágico também enche a mana, define
+            quantas vagas de feitiço você tem e soma no dano dos feitiços que escalam. A mana só é gasta ao
+            conjurar magias, e todo feitiço é lançado com um teste de Dicionário mental.
           </p>
         </div>
-      )}
+        );
+      })()}
 
       {origin.subdivisao === 'familia' && (
         <div className="space-y-3">
@@ -3650,16 +3766,19 @@ function StepAtributos({ draft, setDraft, origin }) {
 
         <p className="text-xs uppercase tracking-widest mb-1" style={{ color: V.muted, fontFamily: F.body }}>Recursos</p>
         <p className="text-xs mb-4 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
-          Começam em 0 e não seguem nenhuma fórmula. A mana aparece na ficha mesmo sem classe de mago.
+          Começam em 0 e não seguem nenhuma fórmula. A mana aparece na ficha mesmo sem classe
+          de mago. As ações por rodada só aparecem na ficha quando são mais de uma — é o que
+          deixa um inimigo só encarar uma mesa inteira.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
           {[
             { campo: 'vidaMax', label: 'Vida máxima', cor: '#e0577a' },
             { campo: 'sanidadeMax', label: 'Sanidade máxima', cor: '#caa24a' },
             { campo: 'manaMax', label: 'Mana máxima', cor: '#8FB4F5' },
+            { campo: 'acoes', label: 'Ações por rodada', cor: '#ff8a3d' },
           ].map(({ campo, label, cor }) => (
             <Field key={campo} label={label}>
-              <input type="number" min="0" value={draft.recursosLivres?.[campo] ?? 0} onChange={(e) => setRec(campo, e.target.value)}
+              <input type="number" min="0" value={draft.recursosLivres?.[campo] ?? (campo === 'acoes' ? 1 : 0)} onChange={(e) => setRec(campo, e.target.value)}
                 className="w-full rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-violet-500"
                 style={{ ...inputStyle, color: cor, fontFamily: F.mono }} />
             </Field>
@@ -4577,7 +4696,7 @@ function StepEquipamento({ draft, setDraft, origin, account, content, onCreateCo
         canCreate onCreate={(d) => createContent('habilidade', d)} />
 
       {origin?.id === 'mago' && (
-        <SeletorFeiticos nivelMagico={draft.subdivisaoNivel || NIVEL_MIN} selecionados={draft.feiticos}
+        <SeletorFeiticos nivelMagico={nivelMagicoDaFicha(draft)} selecionados={draft.feiticos}
           onToggle={toggleFeitico} onEvolucao={mudarEvolucao} vagas={tipo ? undefined : vagasDeFeitico(draft)}
           color={color} customs={customsDe(content, 'feiticos', idsDeFeiticos(draft.feiticos), account?.isMaster)} semCatalogo={!!tipo}
           canCreate={account?.isMaster} onCreate={(d) => createContent('feitico', d)} />
@@ -5007,7 +5126,10 @@ function PainelDefesas({ char, color, armadurasCustom = [], compacto }) {
       <p className="text-xs uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: V.muted, fontFamily: F.body }}>
         <Shield size={12} /> Defesas
       </p>
-      <div className="grid grid-cols-3 gap-2">
+      <div className={`grid gap-2 ${acoesDaFicha(char) > 1 ? 'grid-cols-2 xl:grid-cols-4' : 'grid-cols-3'}`}>
+        {acoesDaFicha(char) > 1 && (
+          <Bloco titulo="Ações" valor={acoesDaFicha(char)} formula="por rodada" destaque />
+        )}
         <Bloco titulo="Defesa" valor={d.defesa} destaque
           formula={`${d.defesaPartes.base}+${d.defesaPartes.atributo}${d.defesaPartes.equip ? `+${d.defesaPartes.equip}` : ''}${d.defesaPartes.outros ? `+${d.defesaPartes.outros}` : ''}`} />
         <Bloco titulo="Bloqueio" valor={d.bloqueio}
@@ -5031,6 +5153,13 @@ function PainelDefesas({ char, color, armadurasCustom = [], compacto }) {
           rodada: a <strong style={{ color }}>Esquiva</strong> entra no lugar da Defesa como DT
           daquele ataque, e o <strong style={{ color }}>Bloqueio</strong> abate o próprio valor
           do dano que passou.
+        </p>
+      )}
+      {!compacto && acoesDaFicha(char) > 1 && (
+        <p className="text-xs mt-2 leading-relaxed" style={{ color: '#6f6291', fontFamily: F.body }}>
+          Esta ficha age <strong style={{ color }}>{acoesDaFicha(char)} vezes por rodada</strong>, em
+          sequência, no mesmo turno — atacando o mesmo alvo ou alvos diferentes, como você quiser.
+          A reação continua sendo uma só, dela e de cada jogador.
         </p>
       )}
     </div>
@@ -5795,14 +5924,15 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
             </div>
             {fichaLivre(editDraft) ? (
               /* Sem fórmula: os máximos são digitados direto, sem teto. */
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
                 {[
                   { campo: 'vidaMax', label: 'Vida máxima', cor: '#e0577a' },
                   { campo: 'sanidadeMax', label: 'Sanidade máxima', cor: '#caa24a' },
                   { campo: 'manaMax', label: 'Mana máxima', cor: '#8FB4F5' },
+                  { campo: 'acoes', label: 'Ações por rodada', cor: '#ff8a3d' },
                 ].map(({ campo, label, cor }) => (
                   <Field key={campo} label={label}>
-                    <input type="number" min="0" value={editDraft.recursosLivres?.[campo] ?? 0}
+                    <input type="number" min="0" value={editDraft.recursosLivres?.[campo] ?? (campo === 'acoes' ? 1 : 0)}
                       onChange={(e) => setEditDraft({ ...editDraft, recursosLivres: { ...(editDraft.recursosLivres || {}), [campo]: Math.max(0, Math.floor(Number(e.target.value) || 0)) } })}
                       className="w-full rounded-lg px-3 py-2 outline-none" style={{ ...inputStyle, color: cor, fontFamily: F.mono }} />
                   </Field>
@@ -5887,7 +6017,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                 canCreate onCreate={(d) => createAndAttach('habilidade', d)} />
 
               {editDraft.originId === 'mago' && (
-                <SeletorFeiticos nivelMagico={editDraft.subdivisaoNivel || NIVEL_MIN} selecionados={editDraft.feiticos || []}
+                <SeletorFeiticos nivelMagico={nivelMagicoDaFicha(editDraft)} selecionados={editDraft.feiticos || []}
                   onToggle={(id) => {
                     const atuais = editDraft.feiticos || [];
                     const jaTem = atuais.some((f) => feiticoId(f) === id);
@@ -6165,6 +6295,6 @@ export default function App() {
       onOpen={(c) => { setViewingChar(c); setScreen('sheet'); }} onLogout={handleLogout}
       onDicionarios={() => { setDicionarioInicial('geral'); setScreen('dicionarios'); }}
       onCondicoes={() => setScreen('condicoes')}
-      onUsarInimigo={(modelo) => handleSaveDraft(fichaDeInimigo(modelo, account.username))} />
+      onUsarInimigo={(modelo, jogadores) => handleSaveDraft(fichaDeInimigo(modelo, account.username, jogadores))} />
   );
 }
