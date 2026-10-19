@@ -216,7 +216,12 @@ function armasDisponiveis(classe, subId) {
   });
 }
 
-const NIVEL_MAGICO = (() => { const i = process.argv.indexOf('--nivel-magico'); return i > 0 && process.argv[i + 1] ? Number(process.argv[i + 1]) : 50; })();
+/* Sem --nivel-magico, o mago simulado tem o máximo que o nível dele permite:
+   é o caso típico da mesa, e é o que o teto por nível passou a garantir. */
+const NIVEL_MAGICO = (() => {
+  const i = process.argv.indexOf('--nivel-magico');
+  return i > 0 && process.argv[i + 1] ? Number(process.argv[i + 1]) : 100;
+})();
 /* O mesmo teto do App.jsx: dez de nível mágico por nível de classe. */
 const NIVEL_MAGICO_POR_NIVEL = num('NIVEL_MAGICO_POR_NIVEL');
 const NIVEL_MAX_MAGICO = num('NIVEL_MAX');

@@ -505,8 +505,17 @@ Além das ações de inimigo e do teto de nível mágico (acima):
   **O custo de cada uma cabe abaixo da terceira mais cara da classe**, senão a
   reserva de sanidade subiria para todo mundo (druida e nascido de ouro já estão
   no teto de 30). Conferido: nenhuma reserva mudou.
-- O mago ficou de fora das habilidades novas: ele já escolhe entre a arma e 29
+- O mago ficou de fora das habilidades novas: ele já escolhe entre a arma e 30
   feitiços.
+- **Primeira palavra** (nível 5, 3d8, escala), escrita na segunda rodada de
+  medição: com o teto novo, o mago apareceu em último lugar em dano nos níveis
+  1, 3 e 5, e a causa não era o teto — era um buraco do catálogo. **Abaixo do
+  nível mágico 20 não existia nenhum feitiço de ataque**, então a classe de
+  magia começava sem magia de ataque e batia com uma pena de aço cujo teste é
+  Savoir-faire (Motoras), atributo que o mago não investe. O dado é o mesmo da
+  melhor arma dele: começa igual e cresce, porque escala e a arma não.
+  O texto é meu. Com ela, o nível 3 subiu de 7,5 para 9,9 e o nível 5 de 12,5
+  para 13,1 de dano por rodada.
 
 **O que a medição desmentiu**: a primeira leitura dizia que o Bobo da Corte era
 o elo fraco pela Defesa baixa. Medindo quem de fato cai, o elo fraco é o **mago**

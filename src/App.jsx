@@ -1719,6 +1719,13 @@ function periciaDoTexto(texto) {
 /* ---------- catálogo de feitiços dos magos ----------
    nivelMin = nível mágico exigido. 'negro' = exclusivo de magos negros (nível 100). */
 const FEITICOS_CATALOGO = [
+  { id: 'fei_primeira_palavra', escala: true, resistencia: 'Resiste com Velocidade de reação, recebendo metade do dano.', nome: 'Primeira palavra', nivelMin: 5,
+    descricao: 'A primeira coisa que qualquer mago aprende a fazer, e a última que esquece: você diz uma palavra curta e ela chega antes de você. Causa 3d8 de dano a um alvo que você esteja vendo. Não gasta mana — se gastasse, você não teria aprendido ela primeiro.',
+    evolucoes: [
+      'A primeira coisa que qualquer mago aprende a fazer, e a última que esquece: você diz uma palavra curta e ela chega antes de você. Causa 3d8 de dano a um alvo que você esteja vendo. Não gasta mana — se gastasse, você não teria aprendido ela primeiro.',
+      'Você aprendeu a dizer duas. Causa 3d8 de dano e você escolhe: ou acerta um segundo alvo com 1d8, ou empurra o primeiro para longe do seu alcance.',
+      'A palavra não precisa mais sair da sua boca. Causa 3d8 de dano, acerta mesmo o alvo que você não esteja vendo — desde que saiba o nome dele — e ninguém na cena escuta nada.',
+    ] },
   { id: 'fei_espirito_incandescente', resistencia: 'Resiste com Resistência, recebendo metade do dano.', nota: 'Para sustentar esse efeito você gasta 4 de mana por rodada e se você receber um ataque enquanto mantém a magia sustentada a DT é de Dicionário mental igual a metade do dano tomado.', nome: 'Espírito incandescente', nivelMin: 5,
     descricao: 'Você produz fogo. É uma quantidade minúscula, sim, mas, se souber usar, pode ser bem útil. Você gasta 1 de mana para acender um dedo de fogo. Causa 1d4 de dano a mais em ataques.',
     evolucoes: [
@@ -4729,7 +4736,7 @@ function CharacterSheetBody({ char, contentIndex, onChangeAtual, onChangeRedenca
   const subdivLabel = () => {
     if (origin.subdivisao === 'animal') return TIPOS_ANIMAL.find((t) => t.id === char.subdivisaoAnimalTipo)?.nome || null;
     if (origin.subdivisao === 'tipo') return TIPOS_AGUA.find((t) => t.id === char.subdivisaoId)?.nome || null;
-    if (origin.subdivisao === 'nivel') return `Nível mágico ${char.subdivisaoNivel}`;
+    if (origin.subdivisao === 'nivel') return `Nível mágico ${nivelMagicoDaFicha(char)}`;
     if (origin.subdivisao === 'familia') return FAMILIAS_GUERREIRO.find((f) => f.id === char.subdivisaoId)?.nome || null;
     if (origin.subdivisao === 'reputacao') return REPUTACOES_PIRATA.find((r) => r.id === char.subdivisaoId)?.nome || null;
     if (origin.subdivisao === 'corte') return CORTE_NASCIDO_OURO.find((c) => c.id === char.subdivisaoId)?.nome || null;
@@ -6159,7 +6166,7 @@ function SheetScreen({ char, account, onBack, onDelete, onSaveEdit }) {
                 </p>
                 <span className="text-xs rounded-full px-2.5 py-1 flex items-center gap-1.5" style={{ fontFamily: F.mono, background: '#171029', border: `1px solid ${V.border}`, color: origin.corClara }}>
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: markColor(origin, char), border: '1px solid #463a6e' }} />
-                  nível {char.subdivisaoNivel}{char.subdivisaoNivel === NIVEL_MAX ? ' · mago negro' : ''}
+                  nível {nivelMagicoDaFicha(char)}{nivelMagicoDaFicha(char) === NIVEL_MAX ? ' · mago negro' : ''}
                 </span>
               </div>
               <div className="rounded-lg p-3 mb-3" style={{ background: '#171029', border: `1px solid ${V.border}` }}>
